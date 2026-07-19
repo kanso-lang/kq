@@ -49,3 +49,6 @@ then eleven fixture cases over non-trivial JSON — unicode/CJK/emoji and
 escapes, precision-edge numbers, deep nesting and empty containers, and the
 188 KB nested document — each checked against a committed golden AND against
 live `jq -S` byte-for-byte. CI gates on all of it.
+
+Intel macs: no GitHub runners exist for that target anymore; build from
+source (`kanso build .`) or use Rosetta until a cross-build lands.
