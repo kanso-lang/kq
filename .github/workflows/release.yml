@@ -1,0 +1,41 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-14
+            target: macos-arm64
+          - os: macos-13
+            target: macos-x86_64
+          - os: ubuntu-latest
+            target: linux-x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: build the kanso toolchain
+        run: |
+          git clone --depth 1 https://github.com/kanso-lang/kanso /tmp/kanso
+          cd /tmp/kanso && cargo build --release
+      - name: build kq
+        run: |
+          /tmp/kanso/target/release/kanso build "$(pwd)" --release
+          tar czf "kq-${{ github.ref_name }}-${{ matrix.target }}.tar.gz" kq LICENSE README.md
+          shasum -a 256 kq-*.tar.gz > "kq-${{ github.ref_name }}-${{ matrix.target }}.sha256"
+      - name: attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.ref_name }}" kq-*.tar.gz kq-*.sha256 --clobber
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" --title "kq ${{ github.ref_name }}" --notes "jq-compatible JSON queries, byte-identical to jq -S, faster on path extraction. Written in kanso." || true
