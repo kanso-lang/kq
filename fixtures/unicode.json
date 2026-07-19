@@ -1,0 +1,1 @@
+{"greeting": "konnichiwa sekai", "cjk": "世界", "emoji": "🎌🍡", "escapes": "tab\there quoted\"and back\\slash", "bell": "\u0007", "mixed": ["ascii", "é", "た", {"deep_key": {"nested": "value"}}]}

@@ -1,0 +1,17 @@
+{
+  "bell": "\u0007",
+  "cjk": "世界",
+  "emoji": "🎌🍡",
+  "escapes": "tab\there quoted\"and back\\slash",
+  "greeting": "konnichiwa sekai",
+  "mixed": [
+    "ascii",
+    "é",
+    "た",
+    {
+      "deep_key": {
+        "nested": "value"
+      }
+    }
+  ]
+}

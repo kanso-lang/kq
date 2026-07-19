@@ -1,0 +1,19 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: build the kanso toolchain
+        run: |
+          git clone --depth 1 https://github.com/kanso-lang/kanso /tmp/kanso
+          cd /tmp/kanso && cargo build --release
+      - name: jq (the oracle)
+        run: sudo apt-get install -y jq
+      - name: specs (unit + fixture goldens + jq byte-identity)
+        run: KANSO=/tmp/kanso/target/release/kanso sh spec.sh

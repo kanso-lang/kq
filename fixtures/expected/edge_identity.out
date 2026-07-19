@@ -1,0 +1,30 @@
+{
+  "aaa_sort": "first",
+  "bools": [
+    true,
+    false
+  ],
+  "deep": {
+    "a": {
+      "b": {
+        "c": {
+          "d": {
+            "e": [
+              1,
+              {
+                "f": "bottom"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "empty_arr": [],
+  "empty_obj": {},
+  "nulls": [
+    null,
+    null
+  ],
+  "zzz_sort": "last"
+}
