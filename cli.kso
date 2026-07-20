@@ -1,0 +1,17 @@
+fn apply text query
+  render_result (walk (decode text) (parse_path query))
+
+fn dispatch argv
+  if ((length argv) == 0) usage (with_query argv)
+
+fn render_result (err reason)
+  err reason
+
+fn render_result v
+  print (pretty v 0)
+
+usage = print "usage: kq <path> [file.json]   e.g. kq .users[3].name data.json"
+
+fn with_query argv
+  source = if ((length argv) > 1) (read_file argv[2]) stdin
+  source . apply argv[1]
