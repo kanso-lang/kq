@@ -2,7 +2,7 @@ import "std/text"
 
 # a query path is `.` for the whole document, or steps: .key, [index]
 fn index_end cs p
-  if (both (47 < (cs[p])) ((cs[p]) < 58)) (index_end cs (p + 1)) p
+  if ((47 < (cs[p])) && ((cs[p]) < 58)) (index_end cs (p + 1)) p
 
 fn key_end cs p
   key_end_at cs (cs[p]) p
