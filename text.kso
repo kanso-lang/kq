@@ -124,7 +124,8 @@ fn string_ok _ v
   v
 
 fn string_scan cs start p
-  string_at cs (cs[p]) start p
+  n = text/find2 cs p 34 92
+  string_at cs (cs[n]) start n
 
 fn u_escape c
   "\\u{hex4 (text/char_code c)}"
