@@ -4,9 +4,9 @@ import "std/text"
 type defect
   reason:string
 
-type json_null
+pub type json_null
 
-type parse_failure
+pub type parse_failure
   position:int
   reason:string
 
@@ -14,38 +14,50 @@ type parsed
   pos:int
   value:json
 
-fn decode s
+pub fn decode s
   cs = text/bytes s
   finish cs (parse_value cs 1)
 
-fn encode true
+pub fn encode true
   "true"
 
-fn encode false
+pub fn encode false
   "false"
 
-fn encode json_null
+pub fn encode json_null
   "null"
 
-fn encode n:int
+pub fn encode n:int
   "{n}"
 
-fn encode x:float64
+pub fn encode x:float64
   "{x}"
 
-fn encode s:string
+pub fn encode s:string
   "\"{escape_str s}\""
 
-fn encode xs:json[]
+pub fn encode xs:json[]
   inner = text/join (list/map xs (v -> encode v)) ","
   "[{inner}]"
 
-fn encode m:json[string]
+pub fn encode m:json[string]
   inner = text/join (list/map (entries m) (e -> encode_entry e)) ","
   "\{{inner}}"
 
 fn encode_entry (entry k v)
   "{encode k}:{encode v}"
+
+pub fn failure_position (err (parse_failure p _))
+  p
+
+pub fn failure_position _
+  0
+
+pub fn failure_reason (err (parse_failure _ reason))
+  reason
+
+pub fn failure_reason _
+  ""
 
 fn finish _ none
   err (parse_failure 0 "unexpected end of input")
