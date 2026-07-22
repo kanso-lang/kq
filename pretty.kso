@@ -36,11 +36,11 @@ fn pretty_entry (entry k v) depth
   "{indent (depth + 1)}\"{escape_str k}\": {pretty v (depth + 1)}"
 
 fn pretty_list xs depth
-  rows = list/map xs (v -> "{indent (depth + 1)}{pretty v (depth + 1)}")
+  rows = list/to_list (list/map xs (v -> "{indent (depth + 1)}{pretty v (depth + 1)}"))
   inner = text/join rows ",\n"
   "[\n{inner}\n{indent depth}]"
 
 fn pretty_map m depth
-  rows = list/map (entries m) (e -> pretty_entry e depth)
+  rows = list/to_list (list/map (entries m) (e -> pretty_entry e depth))
   inner = text/join rows ",\n"
   "\{\n{inner}\n{indent depth}}"
