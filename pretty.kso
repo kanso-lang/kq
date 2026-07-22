@@ -1,4 +1,5 @@
 import "std/list"
+import "std/text"
 
 # pretty printer: two-space indent, sorted keys (maps iterate sorted)
 fn indent 0
@@ -36,10 +37,10 @@ fn pretty_entry (entry k v) depth
 
 fn pretty_list xs depth
   rows = list/map xs (v -> "{indent (depth + 1)}{pretty v (depth + 1)}")
-  inner = join rows ",\n"
+  inner = text/join rows ",\n"
   "[\n{inner}\n{indent depth}]"
 
 fn pretty_map m depth
   rows = list/map (entries m) (e -> pretty_entry e depth)
-  inner = join rows ",\n"
+  inner = text/join rows ",\n"
   "\{\n{inner}\n{indent depth}}"

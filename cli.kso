@@ -1,3 +1,5 @@
+import "std/io"
+
 fn apply text query
   render_result (walk (decode text) (parse_path query))
 
@@ -13,5 +15,5 @@ fn render_result v
 usage = print "usage: kq <path> [file.json]   e.g. kq .users[3].name data.json"
 
 fn with_query argv
-  source = if ((length argv) > 1) (read_file argv[2]) stdin
+  source = if ((length argv) > 1) (io/read_file argv[2]) io/stdin
   source . apply argv[1]

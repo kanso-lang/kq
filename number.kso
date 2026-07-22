@@ -1,3 +1,5 @@
+import "std/text"
+
 # number bytes: + - . E e, then the ascii digits
 fn is_number_char 43
   true
@@ -55,6 +57,6 @@ fn number_ok _ n
   n
 
 fn number_value cs p q
-  text = utf8 (slice cs p q)
-  raw = if (mark_from cs p q) (to_float text) (to_int text)
+  text = text/utf8 (text/slice cs p q)
+  raw = if (mark_from cs p q) (text/to_float text) (text/to_int text)
   number_ok p raw
