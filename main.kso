@@ -1,1 +1,3 @@
-args . dispatch
+import "std/io"
+
+io/args . dispatch
