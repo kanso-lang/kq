@@ -6,20 +6,23 @@ claimed.
 
 ## Speed
 
-Interleaved runs, best-of-25, whole-process wall time (startup + read + parse +
-query + print), Apple M-series. Reproduce: `sh bench/kq_race.sh`.
+Interleaved runs (kq and jq alternate, so machine load hits both alike),
+whole-process wall time (startup + read + parse + query + print), best of N
+per side, byte-identity verified before any timing. Apple M-series,
+2026-07-23. Reproduce: `sh bench/kq_race.sh`.
 
-| workload | kq | jq 1.7.1 | |
-|---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **3.2 ms** | 4.8 ms | kq 1.49x faster, 25/25 runs |
-| path query, 1.9 MB (`.[0].k0_30`) | **15.5 ms** | 25.0 ms | kq 1.61x faster, 15/15 runs |
-| full pretty-print, 188 KB (`.`) | **12.0 ms** | 12.8 ms | kq 1.07x faster, 24/25 runs |
-| full pretty-print, 1.9 MB | 109 ms | **106 ms** | jq 1.03x faster |
+| workload | speedup vs jq 1.7.1 | kq wins |
+|---|---:|---:|
+| path query, 188 KB (`.[0].k0_30`) | **1.53x** | 44/50 |
+| path query, 1.9 MB (`.[0].k0_30`) | **1.71x** | 21/30 |
+| full pretty-print, 188 KB (`.`) | **1.93x** | 45/50 |
+| full pretty-print, 1.9 MB (`.`) | **3.30x** | 30/30 |
 
 The path-query gap grows with document size: kq decodes, walks to the subtree,
 and prints only that — the win compounds as the part you didn't ask for gets
-bigger. Full-document dumps are printer-bound, where the two are at parity;
-kq's pretty-printer is the next optimization target on the ledger.
+bigger. Pretty-printing used to be jq's board; the byte builder in the encode
+path (one accumulator threaded through the whole tree, escape scanning proven
+clean in one SIMD pass) flipped it, hardest on the biggest documents.
 
 **One deliberate difference:** on a path that doesn't exist, `jq` prints
 `null`; kq reports an error naming the missing key. kanso treats a missing
