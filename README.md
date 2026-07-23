@@ -18,6 +18,12 @@ Apple M-series. Reproduce: `sh bench/kq_race.sh`.
 | full pretty-print, 188 KB (`.`) | **6.5 ms** | 12.7 ms | kq 1.97x faster, 25/25 runs |
 | full pretty-print, 1.9 MB (`.`) | **49.7 ms** | 104.9 ms | kq 2.11x faster, 15/15 runs |
 
+**Latest sitting (2026-07-23, after the compiler gained the eisel-lemire
+float parser; loaded desktop, interleaved so both tools face the same
+conditions):** path 1.36x / 1.69x, pretty-print 1.98x / 1.91x over jq,
+kq ahead on all four boards. The idle-machine table above refreshes on
+the next quiet sitting.
+
 The path-query gap grows with document size: kq decodes, walks to the subtree,
 and prints only that — the win compounds as the part you didn't ask for gets
 bigger. Pretty-printing used to be jq's board; the byte builder in the encode
