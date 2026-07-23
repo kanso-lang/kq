@@ -6,17 +6,17 @@ claimed.
 
 ## Speed
 
-Interleaved runs (kq and jq alternate, so machine load hits both alike),
+Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
-per side, byte-identity verified before any timing. Apple M-series,
-2026-07-23. Reproduce: `sh bench/kq_race.sh`.
+per side on an idle machine, byte-identity verified before any timing.
+Apple M-series. Reproduce: `sh bench/kq_race.sh`.
 
-| workload | speedup vs jq 1.7.1 | kq wins |
-|---|---:|---:|
-| path query, 188 KB (`.[0].k0_30`) | **1.53x** | 44/50 |
-| path query, 1.9 MB (`.[0].k0_30`) | **1.71x** | 21/30 |
-| full pretty-print, 188 KB (`.`) | **1.93x** | 45/50 |
-| full pretty-print, 1.9 MB (`.`) | **3.30x** | 30/30 |
+| workload | kq | jq 1.7.1 | |
+|---|---:|---:|---|
+| path query, 188 KB (`.[0].k0_30`) | **3.0 ms** | 4.8 ms | kq 1.62x faster, 25/25 runs |
+| path query, 1.9 MB (`.[0].k0_30`) | **13.9 ms** | 24.6 ms | kq 1.78x faster, 15/15 runs |
+| full pretty-print, 188 KB (`.`) | **6.5 ms** | 12.7 ms | kq 1.97x faster, 25/25 runs |
+| full pretty-print, 1.9 MB (`.`) | **49.7 ms** | 104.9 ms | kq 2.11x faster, 15/15 runs |
 
 The path-query gap grows with document size: kq decodes, walks to the subtree,
 and prints only that — the win compounds as the part you didn't ask for gets
