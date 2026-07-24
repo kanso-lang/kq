@@ -8,16 +8,21 @@ claimed.
 
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
-per side, byte-identity verified before any timing. Apple M-series, quiet
-sitting, **2026-07-23** (after the compiler gained eisel-lemire float
-parsing). Reproduce: `sh bench/kq_race.sh`.
+per side, byte-identity verified before any timing. Apple M-series,
+**2026-07-23, loaded desktop** (after the compiler adopted ryū float
+rendering — dtoa is gone from the encode path entirely). Reproduce:
+`sh bench/kq_race.sh`.
 
 | workload | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **3.6 ms** | 5.8 ms | kq 1.59x faster, 29/30 runs |
-| path query, 1.9 MB (`.[0].k0_30`) | **16.0 ms** | 28.2 ms | kq 1.76x faster, 20/20 runs |
-| full pretty-print, 188 KB (`.`) | **7.8 ms** | 14.7 ms | kq 1.88x faster, 30/30 runs |
-| full pretty-print, 1.9 MB (`.`) | **56.9 ms** | 114.9 ms | kq 2.02x faster, 20/20 runs |
+| path query, 188 KB (`.[0].k0_30`) | **5.1 ms** | 7.9 ms | kq 1.54x faster |
+| path query, 1.9 MB (`.[0].k0_30`) | **20.6 ms** | 33.8 ms | kq 1.64x faster |
+| full pretty-print, 188 KB (`.`) | **8.7 ms** | 17.5 ms | kq 2.00x faster |
+| full pretty-print, 1.9 MB (`.`) | **62.8 ms** | 299 ms | kq 4.76x faster, 20/20 runs |
+
+Idle-machine floors from the last quiet sitting: path 3.6 ms / 16.0 ms,
+pretty 7.8 ms / 56.9 ms — absolutes shrink when the box is quiet; the
+ratios hold or widen (a loaded box hurts jq's longer runtimes more).
 
 The path-query gap grows with document size: kq decodes, walks to the subtree,
 and prints only that — the win compounds as the part you didn't ask for gets
