@@ -17,8 +17,8 @@ rendering — dtoa is gone from the encode path entirely). Reproduce:
 |---|---:|---:|---|
 | path query, 188 KB (`.[0].k0_30`) | **5.1 ms** | 7.9 ms | kq 1.54x faster |
 | path query, 1.9 MB (`.[0].k0_30`) | **20.6 ms** | 33.8 ms | kq 1.64x faster |
-| full pretty-print, 188 KB (`.`) | **8.7 ms** | 17.5 ms | kq 2.00x faster |
-| full pretty-print, 1.9 MB (`.`) | **62.8 ms** | 299 ms | kq 4.76x faster, 20/20 runs |
+| full pretty-print, 188 KB (`.`) | **7.2 ms** | 14.7 ms | kq 2.04x faster |
+| full pretty-print, 1.9 MB (`.`) | **50.4 ms** | 114.7 ms | kq 2.28x faster |
 
 Idle-machine floors from the last quiet sitting: path 3.6 ms / 16.0 ms,
 pretty 7.8 ms / 56.9 ms — absolutes shrink when the box is quiet; the
