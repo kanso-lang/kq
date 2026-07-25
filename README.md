@@ -9,15 +9,16 @@ claimed.
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
 per side, byte-identity verified before any timing. Apple M-series,
-**2026-07-25, loaded desktop** (load average near 50; every row measured
-in that one sitting). Reproduce: `sh bench/kq_race.sh`.
+**2026-07-25, loaded desktop** (every row measured in that one sitting, after
+the compiler stopped rebuilding constants per call). Reproduce:
+`sh bench/kq_race.sh`.
 
 | workload | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **4.7 ms** | 9.6 ms | kq 2.07x faster |
-| path query, 1.9 MB (`.[0].k0_30`) | **19.2 ms** | 66.4 ms | kq 3.46x faster |
-| full pretty-print, 188 KB (`.`) | **7.7 ms** | 15.9 ms | kq 2.05x faster |
-| full pretty-print, 1.9 MB (`.`) | **194.7 ms** | 746.4 ms | kq 3.83x faster |
+| path query, 188 KB (`.[0].k0_30`) | **4.0 ms** | 6.3 ms | kq 1.57x faster |
+| path query, 1.9 MB (`.[0].k0_30`) | **16.4 ms** | 35.6 ms | kq 2.17x faster |
+| full pretty-print, 188 KB (`.`) | **7.5 ms** | 16.9 ms | kq 2.26x faster |
+| full pretty-print, 1.9 MB (`.`) | **55.5 ms** | 261.0 ms | kq 4.70x faster |
 
 Absolutes here carry the load; a quiet box brings every row down. The
 ratios move the other way — a loaded box hurts jq's longer runtimes more,
