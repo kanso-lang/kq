@@ -25,24 +25,29 @@ so a passing background task cannot inflate it; wall time is what a user
 waits. kq leads by more under cpu because its wall figure carries process
 startup that the query itself does not.
 
-There is a third instrument that no sitting can move at all: retired
-instructions, which count the work a process actually did. It reproduces to
-within a few tenths of a percent run to run, and it is the honest answer to
-"which program does less."
+There is a third instrument that no sitting can move at all: the hardware
+counters. Retired instructions are the work a process actually did, cycles are
+what that work cost the processor, and neither is affected by anything else
+running. They reproduce to within a few tenths of a percent run to run.
 
-| workload | kq instructions | jq instructions | |
+| full pretty-print, 1.9 MB | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB | 31,854,045 | 66,121,065 | 2.08x less work |
-| path query, 1.9 MB | 221,348,374 | 421,427,785 | 1.90x less work |
-| full pretty-print, 188 KB | 81,624,617 | 257,638,100 | 3.16x less work |
-| full pretty-print, 1.9 MB | 723,351,894 | 2,341,189,352 | 3.24x less work |
+| instructions retired | **723,278,924** | 2,341,559,451 | kq does 3.24x less work |
+| cycles elapsed | **157,554,785** | 439,262,926 | but only 2.79x fewer cycles |
+| instructions per cycle | 4.59 | **5.33** | so kq stalls ~14% more often |
+| peak footprint | 211.9 MB | **30.7 MB** | kq holds 6.9x more |
+| peak / input size | 107.6x | **15.6x** | |
+| page reclaims | 13,123 | **2,097** | kq faults 6.3x more pages |
 
-Reading it beside the clock is the interesting part. On the largest row kq
-does 3.24x less work but takes only 2.85x fewer cycles, because its
-instructions retire at 4.55 per cycle against jq's 5.16 — kq's arena grows
-monotonically and touches more distinct cache lines, where jq's malloc reuses
-memory that is already hot. kq is further ahead in work than in time, and the
-difference between those two numbers is what is still on the table.
+Reading the rows together is the point, and the story they tell is not
+flattering in one place. kq does a third of jq's work and wins every clock, but
+it banks only part of that lead: a working set seven times larger costs it
+about a seventh of its instruction throughput. The reason is upstream in the
+compiler rather than in kq — encoding carries the decoded document across every
+round, and a carried value too large to copy stops the arena from rewinding at
+all, so memory grows with the work instead of staying flat the way decoding
+does. That is a named entry on kanso's optimisation ledger, and closing it
+takes the footprint down and the stalled fifth back.
 
 Absolutes here carry the load; a quiet box brings every row down.
 
