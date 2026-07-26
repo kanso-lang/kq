@@ -9,20 +9,29 @@ claimed.
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
 per side, byte-identity verified before any timing. Apple M-series,
-**2026-07-25, loaded desktop** (every row measured in that one sitting, after
-the compiler stopped rebuilding constants per call). Reproduce:
-`sh bench/kq_race.sh`.
+**2026-07-26, loaded desktop** (load average 9.6; every row measured in that
+one sitting, after the utf-8 validator stopped paying vector setup on short
+ascii keys). Reproduce: `sh bench/kq_race.sh`.
 
 | workload | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **4.0 ms** | 6.3 ms | kq 1.57x faster |
-| path query, 1.9 MB (`.[0].k0_30`) | **16.4 ms** | 35.6 ms | kq 2.17x faster |
-| full pretty-print, 188 KB (`.`) | **7.5 ms** | 16.9 ms | kq 2.26x faster |
-| full pretty-print, 1.9 MB (`.`) | **55.5 ms** | 261.0 ms | kq 4.70x faster |
+| path query, 188 KB (`.[0].k0_30`) | **2.7 ms** | 4.6 ms | kq 1.67x faster |
+| path query, 1.9 MB (`.[0].k0_30`) | **12.6 ms** | 24.3 ms | kq 1.93x faster |
+| full pretty-print, 188 KB (`.`) | **5.5 ms** | 12.4 ms | kq 2.28x faster |
+| full pretty-print, 1.9 MB (`.`) | **40.8 ms** | 105.4 ms | kq 2.58x faster |
 
 Absolutes here carry the load; a quiet box brings every row down. The
 ratios move the other way — a loaded box hurts jq's longer runtimes more,
-so treat these multiples as the loaded-sitting figures, not idle ones.
+so treat these multiples as the loaded-sitting figures, not idle ones. The
+previous table's larger multiples came from a heavier sitting, where jq's
+big pretty-print read 261 ms against today's 105; kq's own absolutes fell on
+every row between the two.
+
+Racing the previous kq binary against this one in a single sitting isolates
+what the compiler change bought, with byte-identity checked first: +5.7% and
++9.4% on the path queries, +2.9% and +4.4% on the pretty-prints. Whole-process
+timing dilutes it — the decode itself got about a tenth faster, but startup,
+the file read and the print do not.
 
 The path-query gap grows with document size: kq decodes, walks to the subtree,
 and prints only that — the win compounds as the part you didn't ask for gets
