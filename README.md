@@ -42,12 +42,21 @@ running. They reproduce to within a few tenths of a percent run to run.
 Reading the rows together is the point, and the story they tell is not
 flattering in one place. kq does a third of jq's work and wins every clock, but
 it banks only part of that lead: a working set seven times larger costs it
-about a seventh of its instruction throughput. The reason is upstream in the
-compiler rather than in kq — encoding carries the decoded document across every
-round, and a carried value too large to copy stops the arena from rewinding at
-all, so memory grows with the work instead of staying flat the way decoding
-does. That is a named entry on kanso's optimisation ledger, and closing it
-takes the footprint down and the stalled fifth back.
+about a seventh of its instruction throughput.
+
+The reason is upstream in the compiler rather than in kq. kanso's arena rewinds
+between loop iterations when it can prove the iteration keeps nothing across
+the line, and an accumulator breaks that proof by construction:
+`encode_items acc xs i` hands `(elem_onto acc xs[i])` onward, so the value
+crossing the boundary was born this iteration and has to outlive the rewind.
+The analysis declines, and then nothing is reclaimed — including everything the
+iteration allocated that was *not* the accumulator. Exactly one of kq's loops
+rewinds today; the three on the pretty-print path all decline on their
+accumulator.
+
+The output being accumulated is a few megabytes. The process holds 211.9. That
+gap is the opportunity, it is a named entry on kanso's optimisation ledger, and
+closing it takes both the footprint and the stalled seventh back.
 
 Absolutes here carry the load; a quiet box brings every row down.
 
