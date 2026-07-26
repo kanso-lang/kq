@@ -13,19 +13,46 @@ per side, byte-identity verified before any timing. Apple M-series,
 one sitting, after the utf-8 validator stopped paying vector setup on short
 ascii keys). Reproduce: `sh bench/kq_race.sh`.
 
-| workload | kq | jq 1.7.1 | |
-|---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **2.7 ms** | 4.6 ms | kq 1.67x faster |
-| path query, 1.9 MB (`.[0].k0_30`) | **12.6 ms** | 24.3 ms | kq 1.93x faster |
-| full pretty-print, 188 KB (`.`) | **5.5 ms** | 12.4 ms | kq 2.28x faster |
-| full pretty-print, 1.9 MB (`.`) | **40.8 ms** | 105.4 ms | kq 2.58x faster |
+| workload | kq | jq 1.7.1 | wall | kq cpu | jq cpu | cpu |
+|---|---:|---:|---|---:|---:|---|
+| path query, 188 KB (`.[0].k0_30`) | **2.7 ms** | 4.6 ms | 1.72x | **2.0 ms** | 4.0 ms | 2.01x |
+| path query, 1.9 MB (`.[0].k0_30`) | **12.7 ms** | 24.3 ms | 1.91x | **11.4 ms** | 23.5 ms | 2.06x |
+| full pretty-print, 188 KB (`.`) | **5.5 ms** | 12.5 ms | 2.28x | **4.4 ms** | 11.6 ms | 2.67x |
+| full pretty-print, 1.9 MB (`.`) | **40.5 ms** | 103.8 ms | 2.57x | **36.5 ms** | 102.0 ms | 2.79x |
 
-Absolutes here carry the load; a quiet box brings every row down. The
-ratios move the other way — a loaded box hurts jq's longer runtimes more,
-so treat these multiples as the loaded-sitting figures, not idle ones. The
-previous table's larger multiples came from a heavier sitting, where jq's
-big pretty-print read 261 ms against today's 105; kq's own absolutes fell on
-every row between the two.
+Both instruments, same sitting. cpu time counts only what each process spent,
+so a passing background task cannot inflate it; wall time is what a user
+waits. kq leads by more under cpu because its wall figure carries process
+startup that the query itself does not.
+
+There is a third instrument that no sitting can move at all: retired
+instructions, which count the work a process actually did. It reproduces to
+within a few tenths of a percent run to run, and it is the honest answer to
+"which program does less."
+
+| workload | kq instructions | jq instructions | |
+|---|---:|---:|---|
+| path query, 188 KB | 31,854,045 | 66,121,065 | 2.08x less work |
+| path query, 1.9 MB | 221,348,374 | 421,427,785 | 1.90x less work |
+| full pretty-print, 188 KB | 81,624,617 | 257,638,100 | 3.16x less work |
+| full pretty-print, 1.9 MB | 723,351,894 | 2,341,189,352 | 3.24x less work |
+
+Reading it beside the clock is the interesting part. On the largest row kq
+does 3.24x less work but takes only 2.85x fewer cycles, because its
+instructions retire at 4.55 per cycle against jq's 5.16 — kq's arena grows
+monotonically and touches more distinct cache lines, where jq's malloc reuses
+memory that is already hot. kq is further ahead in work than in time, and the
+difference between those two numbers is what is still on the table.
+
+Absolutes here carry the load; a quiet box brings every row down.
+
+An earlier table published 4.70x on the last row. That figure does not
+reproduce and should not have been a headline. It came from a sitting at load
+~50, where the same binary timed twice ran 87% apart — jq measured 261 ms there
+against 104 ms today, and jq is unchanged software, so the old number was the
+artifact. kq's own absolute fell over the same period, 55.5 ms to 40.5 ms.
+Today's multiples reproduce across two loads and both instruments, which is why
+they are the ones here.
 
 Racing the previous kq binary against this one in a single sitting isolates
 what the compiler change bought, with byte-identity checked first: +5.7% and
