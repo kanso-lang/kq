@@ -25,6 +25,25 @@ so a passing background task cannot inflate it; wall time is what a user
 waits. kq leads by more under cpu because its wall figure carries process
 startup that the query itself does not.
 
+There is a third instrument that no sitting can move at all: retired
+instructions, which count the work a process actually did. It reproduces to
+within a few tenths of a percent run to run, and it is the honest answer to
+"which program does less."
+
+| workload | kq instructions | jq instructions | |
+|---|---:|---:|---|
+| path query, 188 KB | 31,854,045 | 66,121,065 | 2.08x less work |
+| path query, 1.9 MB | 221,348,374 | 421,427,785 | 1.90x less work |
+| full pretty-print, 188 KB | 81,624,617 | 257,638,100 | 3.16x less work |
+| full pretty-print, 1.9 MB | 723,351,894 | 2,341,189,352 | 3.24x less work |
+
+Reading it beside the clock is the interesting part. On the largest row kq
+does 3.24x less work but takes only 2.85x fewer cycles, because its
+instructions retire at 4.55 per cycle against jq's 5.16 — kq's arena grows
+monotonically and touches more distinct cache lines, where jq's malloc reuses
+memory that is already hot. kq is further ahead in work than in time, and the
+difference between those two numbers is what is still on the table.
+
 Absolutes here carry the load; a quiet box brings every row down.
 
 An earlier table published 4.70x on the last row. That figure does not
