@@ -9,16 +9,17 @@ claimed.
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
 per side, byte-identity verified before any timing. Apple M-series,
-**2026-07-27, loaded desktop** (load average 2.2; every row measured in that
-one sitting, after the encode loops started rewinding the arena between
-iterations). Reproduce: `sh bench/kq_race.sh`.
+**2026-07-27, loaded desktop** (load average 3.5; every row measured in that
+one sitting, after outgrown collection buffers started reaching the reuse
+shelf and string literals started building once). Reproduce:
+`sh bench/kq_race.sh`.
 
 | workload | kq | jq 1.7.1 | wall | kq cpu | jq cpu | cpu |
 |---|---:|---:|---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **2.6 ms** | 4.4 ms | 1.74x | **1.8 ms** | 3.8 ms | 2.11x |
-| path query, 1.9 MB (`.[0].k0_30`) | **11.1 ms** | 23.5 ms | 2.11x | **10.2 ms** | 22.6 ms | 2.22x |
-| full pretty-print, 188 KB (`.`) | **4.9 ms** | 12.7 ms | 2.57x | **3.9 ms** | 11.7 ms | 2.99x |
-| full pretty-print, 1.9 MB (`.`) | **33.6 ms** | 103.1 ms | 3.06x | **31.1 ms** | 101.1 ms | 3.25x |
+| path query, 188 KB (`.[0].k0_30`) | **2.6 ms** | 4.4 ms | 1.71x | **1.9 ms** | 3.9 ms | 2.06x |
+| path query, 1.9 MB (`.[0].k0_30`) | **11.0 ms** | 23.1 ms | 2.11x | **10.2 ms** | 22.6 ms | 2.21x |
+| full pretty-print, 188 KB (`.`) | **4.5 ms** | 12.2 ms | 2.75x | **3.5 ms** | 11.5 ms | 3.27x |
+| full pretty-print, 1.9 MB (`.`) | **29.5 ms** | 101.4 ms | 3.43x | **27.0 ms** | 100.0 ms | 3.71x |
 
 Both instruments, same sitting. cpu time counts only what each process spent,
 so a passing background task cannot inflate it; wall time is what a user
@@ -32,17 +33,19 @@ running. They reproduce to within a few tenths of a percent run to run.
 
 | full pretty-print, 1.9 MB | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| instructions retired | **673,879,756** | 2,340,940,274 | kq does 3.47x less work |
-| cycles elapsed | **132,086,589** | 440,599,791 | and 3.34x fewer cycles |
-| instructions per cycle | 5.10 | **5.31** | within 4% of jq's throughput |
-| peak footprint | 50.9 MB | **30.7 MB** | kq holds 1.7x more |
-| peak / input size | 25.8x | **15.6x** | |
-| page reclaims | 3,302 | **2,096** | kq faults 1.6x more pages |
+| instructions retired | **622,892,680** | 2,341,438,053 | kq does 3.76x less work |
+| cycles elapsed | **118,534,097** | 450,180,134 | and 3.80x fewer cycles |
+| instructions per cycle | **5.25** | 5.20 | kq out-executes jq per cycle |
+| peak footprint | 47.5 MB | **30.7 MB** | kq holds 1.5x more |
+| peak / input size | 24.1x | **15.6x** | |
+| page reclaims | 3,094 | **2,096** | kq faults 1.5x more pages |
 
-Reading the rows together is the point. kq does under a third of jq's work,
-wins every clock, and holds within four percent of jq's per-cycle throughput:
-every loop on the print path — encode, pretty, indent — rewinds the arena
-between iterations, so each iteration's temporaries die at the boundary. On
+Reading the rows together is the point. kq does barely a quarter of jq's
+work, wins every clock, and out-executes jq per cycle: every loop on the
+print path — encode, pretty, indent — rewinds the arena between iterations,
+so each iteration's temporaries die at the boundary. On the plain decode, kq
+now holds less memory than jq (26.7 MB against 29.2) and faults fewer pages
+(1,825 against 2,005). On
 the path queries kq's footprint is at parity or smaller than jq's on both
 documents, and on the 188 KB pretty-print the two are within half a megabyte.
 
