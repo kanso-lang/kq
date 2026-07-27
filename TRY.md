@@ -38,8 +38,8 @@ cat bench/large.json | kq '.[0].k0_30'
 Notes:
 
 - Quote paths containing `[` — zsh globs them otherwise.
-- Expected: both diffs print IDENTICAL; the path query runs ~2.7ms vs ~4.6ms at
-  188 KB and ~13ms vs ~24ms at 1.9 MB (kq walks to the subtree and prints
+- Expected: both diffs print IDENTICAL; the path query runs ~2.6ms vs ~4.4ms at
+  188 KB and ~12ms vs ~23ms at 1.9 MB (kq walks to the subtree and prints
   only that). The race script refuses to time anything that is not
   byte-identical to jq first.
 - The race script rebuilds kq from source; the other commands exercise the
