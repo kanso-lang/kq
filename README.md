@@ -32,34 +32,33 @@ running. They reproduce to within a few tenths of a percent run to run.
 
 | full pretty-print, 1.9 MB | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| instructions retired | **641,645,064** | 2,341,125,917 | kq does 3.65x less work |
-| cycles elapsed | **141,072,402** | 439,166,846 | and 3.11x fewer cycles |
-| instructions per cycle | 4.55 | **5.33** | so kq stalls ~15% more often |
-| peak footprint | 117.8 MB | **30.7 MB** | kq holds 3.8x more |
-| peak / input size | 59.8x | **15.6x** | |
-| page reclaims | 7,482 | **2,097** | kq faults 3.6x more pages |
+| instructions retired | **673,879,756** | 2,340,940,274 | kq does 3.47x less work |
+| cycles elapsed | **132,086,589** | 440,599,791 | and 3.34x fewer cycles |
+| instructions per cycle | 5.10 | **5.31** | within 4% of jq's throughput |
+| peak footprint | 50.9 MB | **30.7 MB** | kq holds 1.7x more |
+| peak / input size | 25.8x | **15.6x** | |
+| page reclaims | 3,302 | **2,096** | kq faults 1.6x more pages |
 
-Reading the rows together is the point, and the story they tell is not
-flattering in one place. kq does under a third of jq's work and wins every
-clock, but it banks only part of that lead: a working set four times larger
-costs it about a seventh of its instruction throughput. On the plain path
-query — decode and print a subtree, no full encode — the footprints are now
-nearly level: 30.9 MB against jq's 29.2 on the 1.9 MB document, and 4.2
-against 4.8 on the 188 KB one, where kq's is the smaller.
+Reading the rows together is the point. kq does under a third of jq's work,
+wins every clock, and holds within four percent of jq's per-cycle throughput:
+every loop on the print path — encode, pretty, indent — rewinds the arena
+between iterations, so each iteration's temporaries die at the boundary. On
+the path queries kq's footprint is at parity or smaller than jq's on both
+documents, and on the 188 KB pretty-print the two are within half a megabyte.
 
-The reason is upstream in the compiler rather than in kq. kanso's arena rewinds
-between loop iterations when it can prove the iteration keeps nothing across
-the line, and an accumulator breaks that proof by construction:
-`encode_items acc xs i` hands `(elem_onto acc xs[i])` onward, so the value
-crossing the boundary was born this iteration and has to outlive the rewind.
-The analysis declines, and then nothing is reclaimed — including everything the
-iteration allocated that was *not* the accumulator. Exactly one of kq's loops
-rewinds today; the three on the pretty-print path all decline on their
-accumulator.
+The machinery under those rows is kanso's, and it is worth a paragraph. The
+arena rewinds between loop iterations when the compiler proves the iteration
+keeps nothing across the line, and a byte accumulator earns that proof by
+pointer identity: it is the very object that arrived at the loop's entry,
+threaded through appends the uniqueness analysis showed in place, with its
+growth outside the arena where a rewind cannot reach. Every loop on kq's
+print path qualifies, so each element's temporaries die the moment the next
+element begins.
 
-The output being accumulated is a few megabytes. The process holds 117.8. That
-gap is the opportunity, it is a named entry on kanso's optimisation ledger, and
-closing it takes both the footprint and the rest of the stall back.
+What remains of the 1.9 MB gap is the decoded document and the output being
+built — live across the whole run by construction — plus roughly twenty
+megabytes of per-run structure around them, which is the current working
+front on kanso's optimisation ledger.
 
 Absolutes here carry the load; a quiet box brings every row down.
 
