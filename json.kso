@@ -1,25 +1,10 @@
+import "json"
 import "std/list"
 import "std/text"
 
 type defect
   reason
 
-pub type json_null
-
-pub type parse_failure
-  position
-  reason
-
-type parsed
-  pos
-  value
-
-pub fn decode s
-  cs = text/bytes s
-  finish cs (parse_value cs 1)
-
-# one byte accumulator threads the whole tree, so every emitted byte is
-# copied once into the builder and once into the final string
 fn elem_onto acc x
   encode_onto (text/append acc 44) x
 
@@ -81,13 +66,6 @@ pub fn failure_reason (err (parse_failure _ reason))
 
 pub fn failure_reason _
   ""
-
-fn finish _ none
-  err (parse_failure 0 "unexpected end of input")
-
-fn finish cs (parsed p v)
-  p2 = skip_ws cs p
-  if (p2 > (length cs)) v (fail p2 "unexpected trailing characters")
 
 fn must (err reason)
   err (defect "{reason}")
