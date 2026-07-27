@@ -1,7 +1,11 @@
 import "std/io"
+import "std/text"
 
 fn apply text query
   render_result (walk (decode text) (parse_path query))
+
+fn elem_chunk v lead
+  text/utf8 (pretty_onto (text/append (text/bytes lead) "  ") v 1)
 
 fn dispatch argv
   if ((length argv) == 0) usage (with_query argv)
@@ -9,8 +13,28 @@ fn dispatch argv
 fn render_result (err reason)
   err reason
 
+# the whole document never becomes one string: each top-level element is
+# rendered, written, and dead before the next is built
+fn render_result xs:json[]
+  if ((length xs) == 0) (print "[]") (stream_list xs)
+
 fn render_result v
   print (pretty v 0)
+
+fn sep 1
+  ""
+
+fn sep _
+  ",\n"
+
+fn stream_elems xs i
+  if (length xs < i) (io/write "\n]\n") (stream_one xs i)
+
+fn stream_list xs
+  io/write "[\n" . (_ -> stream_elems xs 1)
+
+fn stream_one xs i
+  io/write (elem_chunk xs[i] (sep i)) . (_ -> stream_elems xs (i + 1))
 
 usage = print "usage: kq <path> [file.json]   e.g. kq .users[3].name data.json"
 
