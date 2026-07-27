@@ -35,8 +35,8 @@ running. They reproduce to within a few tenths of a percent run to run.
 | instructions retired | **641,645,064** | 2,341,125,917 | kq does 3.65x less work |
 | cycles elapsed | **141,072,402** | 439,166,846 | and 3.11x fewer cycles |
 | instructions per cycle | 4.55 | **5.33** | so kq stalls ~15% more often |
-| peak footprint | 119.4 MB | **30.7 MB** | kq holds 3.9x more |
-| peak / input size | 60.6x | **15.6x** | |
+| peak footprint | 117.8 MB | **30.7 MB** | kq holds 3.8x more |
+| peak / input size | 59.8x | **15.6x** | |
 | page reclaims | 7,482 | **2,097** | kq faults 3.6x more pages |
 
 Reading the rows together is the point, and the story they tell is not
@@ -44,7 +44,7 @@ flattering in one place. kq does under a third of jq's work and wins every
 clock, but it banks only part of that lead: a working set four times larger
 costs it about a seventh of its instruction throughput. On the plain path
 query — decode and print a subtree, no full encode — the footprints are now
-nearly level: 32.5 MB against jq's 29.2 on the 1.9 MB document, and 4.2
+nearly level: 30.9 MB against jq's 29.2 on the 1.9 MB document, and 4.2
 against 4.8 on the 188 KB one, where kq's is the smaller.
 
 The reason is upstream in the compiler rather than in kq. kanso's arena rewinds
@@ -57,7 +57,7 @@ iteration allocated that was *not* the accumulator. Exactly one of kq's loops
 rewinds today; the three on the pretty-print path all decline on their
 accumulator.
 
-The output being accumulated is a few megabytes. The process holds 119.4. That
+The output being accumulated is a few megabytes. The process holds 117.8. That
 gap is the opportunity, it is a named entry on kanso's optimisation ledger, and
 closing it takes both the footprint and the rest of the stall back.
 
