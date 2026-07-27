@@ -16,10 +16,10 @@ shelf and string literals started building once). Reproduce:
 
 | workload | kq | jq 1.7.1 | wall | kq cpu | jq cpu | cpu |
 |---|---:|---:|---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **2.6 ms** | 4.4 ms | 1.71x | **1.9 ms** | 3.9 ms | 2.06x |
-| path query, 1.9 MB (`.[0].k0_30`) | **11.0 ms** | 23.1 ms | 2.11x | **10.2 ms** | 22.6 ms | 2.21x |
-| full pretty-print, 188 KB (`.`) | **4.5 ms** | 12.2 ms | 2.75x | **3.5 ms** | 11.5 ms | 3.27x |
-| full pretty-print, 1.9 MB (`.`) | **29.5 ms** | 101.4 ms | 3.43x | **27.0 ms** | 100.0 ms | 3.71x |
+| path query, 188 KB (`.[0].k0_30`) | **3.0 ms** | 4.8 ms | 1.61x | **2.3 ms** | 4.2 ms | 1.87x |
+| path query, 1.9 MB (`.[0].k0_30`) | **12.6 ms** | 25.6 ms | 2.03x | **11.5 ms** | 24.6 ms | 2.13x |
+| full pretty-print, 188 KB (`.`) | **5.2 ms** | 13.4 ms | 2.57x | **4.4 ms** | 12.6 ms | 2.89x |
+| full pretty-print, 1.9 MB (`.`) | **34.9 ms** | 106.1 ms | 3.04x | **33.5 ms** | 104.7 ms | 3.13x |
 
 Both instruments, same sitting. cpu time counts only what each process spent,
 so a passing background task cannot inflate it; wall time is what a user
@@ -33,21 +33,21 @@ running. They reproduce to within a few tenths of a percent run to run.
 
 | full pretty-print, 1.9 MB | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| instructions retired | **622,892,680** | 2,341,438,053 | kq does 3.76x less work |
-| cycles elapsed | **118,534,097** | 450,180,134 | and 3.80x fewer cycles |
-| instructions per cycle | **5.25** | 5.20 | kq out-executes jq per cycle |
-| peak footprint | 47.5 MB | **30.7 MB** | kq holds 1.5x more |
-| peak / input size | 24.1x | **15.6x** | |
-| page reclaims | 3,094 | **2,096** | kq faults 1.5x more pages |
+| instructions retired | **681,402,687** | 2,340,205,820 | kq does 3.43x less work |
+| cycles elapsed | **138,839,540** | 433,314,812 | and 3.12x fewer cycles |
+| instructions per cycle | 4.91 | **5.40** | jq packs its work tighter |
+| peak footprint | **30.0 MB** | 30.8 MB | kq now holds less |
+| peak / input size | **15.2x** | 15.6x | |
+| page reclaims | **2,027** | 2,102 | and faults fewer pages |
 
-Reading the rows together is the point. kq does barely a quarter of jq's
-work, wins every clock, and out-executes jq per cycle: every loop on the
-print path — encode, pretty, indent — rewinds the arena between iterations,
-so each iteration's temporaries die at the boundary. On the plain decode, kq
-now holds less memory than jq (26.7 MB against 29.2) and faults fewer pages
-(1,825 against 2,005). On
-the path queries kq's footprint is at parity or smaller than jq's on both
-documents, and on the 188 KB pretty-print the two are within half a megabyte.
+Reading the rows together is the point. kq does under a third of jq's
+work, wins every clock, and now holds less memory on every workload: the
+pretty printer streams — each top-level element is rendered, written, and
+dead before the next is built, so the output never exists as one string —
+and every loop on the print path rewinds the arena between iterations, so
+each iteration's temporaries die at the boundary. The one row jq keeps is
+instructions per cycle, and it reads correctly: kq spends fewer total
+instructions and more of them are the stream's bookkeeping.
 
 The machinery under those rows is kanso's, and it is worth a paragraph. The
 arena rewinds between loop iterations when the compiler proves the iteration
@@ -58,10 +58,9 @@ growth outside the arena where a rewind cannot reach. Every loop on kq's
 print path qualifies, so each element's temporaries die the moment the next
 element begins.
 
-What remains of the 1.9 MB gap is the decoded document and the output being
-built — live across the whole run by construction — plus roughly twenty
-megabytes of per-run structure around them, which is the current working
-front on kanso's optimisation ledger.
+What remains of kq's footprint is the decoded document — live across the
+whole run by construction — plus the decode-phase transients the region
+holds until exit. The output no longer contributes: it streams.
 
 Absolutes here carry the load; a quiet box brings every row down.
 
