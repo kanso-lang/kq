@@ -9,16 +9,16 @@ claimed.
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
 per side, byte-identity verified before any timing. Apple M-series,
-**2026-07-26, loaded desktop** (load average 3.6; every row measured in that
-one sitting, after escaped strings stopped decoding a character at a time).
-Reproduce: `sh bench/kq_race.sh`.
+**2026-07-27, loaded desktop** (load average 2.2; every row measured in that
+one sitting, after the encode loops started rewinding the arena between
+iterations). Reproduce: `sh bench/kq_race.sh`.
 
 | workload | kq | jq 1.7.1 | wall | kq cpu | jq cpu | cpu |
 |---|---:|---:|---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **2.6 ms** | 4.6 ms | 1.76x | **1.9 ms** | 4.0 ms | 2.10x |
-| path query, 1.9 MB (`.[0].k0_30`) | **11.5 ms** | 24.1 ms | 2.10x | **10.3 ms** | 23.2 ms | 2.26x |
-| full pretty-print, 188 KB (`.`) | **5.0 ms** | 12.6 ms | 2.54x | **4.0 ms** | 11.7 ms | 2.95x |
-| full pretty-print, 1.9 MB (`.`) | **35.0 ms** | 103.0 ms | 2.95x | **32.3 ms** | 102.7 ms | 3.18x |
+| path query, 188 KB (`.[0].k0_30`) | **2.6 ms** | 4.4 ms | 1.74x | **1.8 ms** | 3.8 ms | 2.11x |
+| path query, 1.9 MB (`.[0].k0_30`) | **11.1 ms** | 23.5 ms | 2.11x | **10.2 ms** | 22.6 ms | 2.22x |
+| full pretty-print, 188 KB (`.`) | **4.9 ms** | 12.7 ms | 2.57x | **3.9 ms** | 11.7 ms | 2.99x |
+| full pretty-print, 1.9 MB (`.`) | **33.6 ms** | 103.1 ms | 3.06x | **31.1 ms** | 101.1 ms | 3.25x |
 
 Both instruments, same sitting. cpu time counts only what each process spent,
 so a passing background task cannot inflate it; wall time is what a user
