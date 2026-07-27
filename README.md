@@ -9,16 +9,16 @@ claimed.
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of N
 per side, byte-identity verified before any timing. Apple M-series,
-**2026-07-26, loaded desktop** (load average 9.6; every row measured in that
-one sitting, after the utf-8 validator stopped paying vector setup on short
-ascii keys). Reproduce: `sh bench/kq_race.sh`.
+**2026-07-26, loaded desktop** (load average 4.0; every row measured in that
+one sitting, after the encoder stopped allocating a header for every append).
+Reproduce: `sh bench/kq_race.sh`.
 
 | workload | kq | jq 1.7.1 | wall | kq cpu | jq cpu | cpu |
 |---|---:|---:|---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **2.7 ms** | 4.6 ms | 1.72x | **2.0 ms** | 4.0 ms | 2.01x |
-| path query, 1.9 MB (`.[0].k0_30`) | **12.7 ms** | 24.3 ms | 1.91x | **11.4 ms** | 23.5 ms | 2.06x |
-| full pretty-print, 188 KB (`.`) | **5.5 ms** | 12.5 ms | 2.28x | **4.4 ms** | 11.6 ms | 2.67x |
-| full pretty-print, 1.9 MB (`.`) | **40.5 ms** | 103.8 ms | 2.57x | **36.5 ms** | 102.0 ms | 2.79x |
+| path query, 188 KB (`.[0].k0_30`) | **2.6 ms** | 4.4 ms | 1.73x | **2.0 ms** | 3.9 ms | 1.97x |
+| path query, 1.9 MB (`.[0].k0_30`) | **12.3 ms** | 23.3 ms | 1.89x | **11.2 ms** | 22.7 ms | 2.02x |
+| full pretty-print, 188 KB (`.`) | **5.0 ms** | 12.1 ms | 2.43x | **4.0 ms** | 11.4 ms | 2.88x |
+| full pretty-print, 1.9 MB (`.`) | **35.4 ms** | 101.0 ms | 2.85x | **32.4 ms** | 100.3 ms | 3.10x |
 
 Both instruments, same sitting. cpu time counts only what each process spent,
 so a passing background task cannot inflate it; wall time is what a user
@@ -32,17 +32,17 @@ running. They reproduce to within a few tenths of a percent run to run.
 
 | full pretty-print, 1.9 MB | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| instructions retired | **723,278,924** | 2,341,559,451 | kq does 3.24x less work |
-| cycles elapsed | **157,554,785** | 439,262,926 | but only 2.79x fewer cycles |
-| instructions per cycle | 4.59 | **5.33** | so kq stalls ~14% more often |
-| peak footprint | 211.9 MB | **30.7 MB** | kq holds 6.9x more |
-| peak / input size | 107.6x | **15.6x** | |
-| page reclaims | 13,123 | **2,097** | kq faults 6.3x more pages |
+| instructions retired | **680,353,290** | 2,341,058,047 | kq does 3.44x less work |
+| cycles elapsed | **144,050,539** | 438,457,550 | and 3.04x fewer cycles |
+| instructions per cycle | 4.72 | **5.34** | so kq stalls ~12% more often |
+| peak footprint | 139.9 MB | **30.7 MB** | kq holds 4.6x more |
+| peak / input size | 71.0x | **15.6x** | |
+| page reclaims | 8,731 | **2,096** | kq faults 4.2x more pages |
 
 Reading the rows together is the point, and the story they tell is not
-flattering in one place. kq does a third of jq's work and wins every clock, but
-it banks only part of that lead: a working set seven times larger costs it
-about a seventh of its instruction throughput.
+flattering in one place. kq does under a third of jq's work and wins every
+clock, but it banks only part of that lead: a working set four and a half times
+larger costs it about an eighth of its instruction throughput.
 
 The reason is upstream in the compiler rather than in kq. kanso's arena rewinds
 between loop iterations when it can prove the iteration keeps nothing across
@@ -54,9 +54,9 @@ iteration allocated that was *not* the accumulator. Exactly one of kq's loops
 rewinds today; the three on the pretty-print path all decline on their
 accumulator.
 
-The output being accumulated is a few megabytes. The process holds 211.9. That
+The output being accumulated is a few megabytes. The process holds 139.9. That
 gap is the opportunity, it is a named entry on kanso's optimisation ledger, and
-closing it takes both the footprint and the stalled seventh back.
+closing it takes both the footprint and the rest of the stall back.
 
 Absolutes here carry the load; a quiet box brings every row down.
 
