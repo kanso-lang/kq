@@ -1,5 +1,5 @@
 allocs=98304
-alloc_bytes=5712912
+alloc_bytes=5757088
 arena_blocks=3
 arena_peak_bytes=3145728
 cohort_frees=0
