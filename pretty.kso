@@ -19,7 +19,7 @@ fn pretty v depth
   text/utf8 (pretty_onto (text/bytes "") v depth)
 
 fn pretty_elems acc xs i depth
-  return acc if (length xs < i)
+  return acc if length xs < i
   pretty_elems (elem_row acc xs[i] depth) xs (i + 1) depth
 
 fn pretty_entry acc (entry k v) depth
@@ -59,11 +59,11 @@ fn pretty_onto acc s:string _
   text/append closed 34
 
 fn pretty_onto acc xs:json[] depth
-  if ((length xs) == 0) (text/append acc "[]") (pretty_list acc xs depth)
+  if (length xs == 0) (text/append acc "[]") (pretty_list acc xs depth)
 
 fn pretty_onto acc m:json[string] depth
-  if ((length m) == 0) (text/append acc "\{}") (pretty_map acc m depth)
+  if (length m == 0) (text/append acc "\{}") (pretty_map acc m depth)
 
 fn pretty_pairs acc es i depth
-  return acc if (length es < i)
+  return acc if length es < i
   pretty_pairs (pair_row acc es[i] depth) es (i + 1) depth
