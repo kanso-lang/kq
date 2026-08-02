@@ -25,3 +25,39 @@ jobs:
         run: sudo apt-get install -y jq
       - name: specs (unit + fixture goldens + jq byte-identity)
         run: KANSO=/tmp/kanso/target/release/kanso sh spec.sh
+
+  # The README's wall-clock and hardware-counter tables are a dated sitting on
+  # a quiet box, moved by hand, and gated by bench/numbers_gate.kso so they
+  # cannot outlive the compiler they describe. This is the other half: the
+  # allocator counters are deterministic to the byte on any machine, so they
+  # are regenerated here and committed, and are never stale by an oversight.
+  publish:
+    name: the measured numbers, regenerated
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: spec
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: build the pinned kanso toolchain
+        run: |
+          git clone https://github.com/kanso-lang/kanso /tmp/kanso
+          cd /tmp/kanso && git checkout "$(cat $GITHUB_WORKSPACE/.kanso-version)"
+          cargo build --release
+      - name: measure and write bench/MEASURED.md
+        run: |
+          export KANSO=/tmp/kanso/target/release/kanso
+          "$KANSO" build "$(pwd)" --release >/dev/null
+          "$KANSO" run bench/publish_numbers.kso
+      - name: commit it if it moved
+        run: |
+          if git diff --quiet -- bench/MEASURED.md; then
+            echo "measured numbers unchanged"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bench/MEASURED.md
+          git commit -m "the measured numbers, regenerated"
+          git push
