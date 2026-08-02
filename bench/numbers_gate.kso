@@ -1,0 +1,63 @@
+import "std/io"
+import "std/list"
+import "std/text"
+
+# The README publishes instructions retired, cycles and peak footprint from a
+# sitting on a quiet machine. A CI runner cannot reproduce those: they come
+# from macOS `/usr/bin/time -l`, and a shared ubuntu box could not time
+# anything trustworthy even if it could read the counters. So the numbers
+# cannot be re-measured here, and re-measuring is not the mechanism anyway —
+# a table CI rewrites to match whatever it finds is a table that can never be
+# wrong and never says anything, which is regenerating a golden one level up.
+#
+# What CI can do is notice that the compiler the numbers were measured against
+# is no longer the compiler in the tree. The allocator counters are
+# deterministic, so a stamp of them taken when the table was published is a
+# fingerprint of that sitting. When it stops matching, the published numbers
+# describe a program that no longer exists and somebody has to sit them again.
+#
+# This is the check that was missing on 2026-08-01: kanso #639 moved
+# carry_dedup and the README went on claiming a three-times-faster row that
+# had become ten times slower.
+stamp = "bench/numbers_stamp.txt"
+
+golden = "bench/cost_golden.txt"
+
+pub play = compared
+
+compared = io/read_file stamp . (was -> against was)
+
+fn against was
+  io/read_file golden . (now -> judged (text/trim was) (text/trim now))
+
+fn judged was now
+  told (was == now) was now
+
+fn told true _ _
+  io/write "published numbers: measured against this compiler\n"
+
+fn told false was now
+  io/write_err "{complaint}\n{difference was now}\n" . (_ -> io/exit 1)
+
+complaint = """
+  PUBLISHED NUMBERS STALE: the counters moved since the README table was sat.
+  The instructions, cycles and footprint rows describe a compiler that is no
+  longer in the tree.
+
+  Sit them again and refresh bench/numbers_stamp.txt from bench/cost_golden.txt
+  in the same change. If the move genuinely cannot reach the published rows,
+  say why in the commit and re-stamp anyway: the stamp records which sitting
+  the table belongs to, so it moves whenever the table is re-confirmed.
+"""
+
+# Naming the counters that moved, so the message says what changed rather
+# than only that something did.
+fn difference was now
+  moved = list_moved (text/split was "\n") (text/split now "\n")
+  "  moved: {text/join moved " "}"
+
+fn list_moved olds news
+  list/to_list (list/select olds (o -> gone? o news))
+
+fn gone? line news
+  list/all? news (n -> n != line)

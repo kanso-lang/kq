@@ -60,3 +60,6 @@ check_costs '.[0].k0_30'  bench/cost_golden_decode.txt
 
 echo "== scale gate (every counter linear in the input) =="
 "$KANSO" run bench/scale_gate.kso
+
+echo "== published numbers still describe this compiler =="
+"$KANSO" run bench/numbers_gate.kso
