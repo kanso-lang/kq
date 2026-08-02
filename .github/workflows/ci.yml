@@ -9,10 +9,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: build the kanso toolchain
+      # Pinned, not floating. kq used to build against kanso main, so a
+      # compiler regression arrived inside whatever kq PR happened to run
+      # next and read as that PR's doing — which is how carry_dedup's rise
+      # came to be explained as a kq change. A kq PR is now tested against a
+      # fixed compiler, so its failures are its own, and moving the pin is
+      # its own PR whose diff is the compiler and nothing else. Catching a
+      # compiler regression is kanso's job, in kanso's CI.
+      - name: build the pinned kanso toolchain
         run: |
-          git clone --depth 1 https://github.com/kanso-lang/kanso /tmp/kanso
-          cd /tmp/kanso && cargo build --release
+          git clone https://github.com/kanso-lang/kanso /tmp/kanso
+          cd /tmp/kanso && git checkout "$(cat $GITHUB_WORKSPACE/.kanso-version)"
+          cargo build --release
       - name: jq (the oracle)
         run: sudo apt-get install -y jq
       - name: specs (unit + fixture goldens + jq byte-identity)
