@@ -41,7 +41,7 @@ run_case '.[0].k0_30'           nested   nested_path
 
 echo "kq specs: all green"
 
-echo "== cost goldens (allocator counters, deterministic, ratcheted) =="
+echo "== cost goldens (allocator counters, deterministic, diffed) =="
 check_costs() {
   query=$1; golden=$2
   KANSO_COUNTERS=1 ./kq "$query" bench/large.json >/dev/null 2>/tmp/kq_counters.txt
@@ -49,10 +49,14 @@ check_costs() {
   if ! diff "$golden" /tmp/kq_counters_clean.txt; then
     echo "COST DRIFT: $golden — the allocator counters moved. A fall is a win"
     echo "to bank and a rise is a regression to explain; either way, say which"
-    echo "in the PR and regenerate the golden there."
+    echo "in the PR and regenerate the golden there. This diff has no opinion"
+    echo "about direction — the scale gate below is what refuses a regression."
     exit 1
   fi
   echo "ok: $golden"
 }
 check_costs '.'           bench/cost_golden.txt
 check_costs '.[0].k0_30'  bench/cost_golden_decode.txt
+
+echo "== scale gate (every counter linear in the input) =="
+"$KANSO" run bench/scale_gate.kso

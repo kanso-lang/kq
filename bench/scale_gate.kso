@@ -1,0 +1,139 @@
+import "std/io"
+import "std/list"
+import "std/text"
+
+# A cost golden compares one workload against one stored number, so the only
+# thing it can report is that a counter moved. It cannot report that the
+# counter stopped being linear in the input, and that is what it let through:
+# carry_dedup went 1 -> 2721 on the 188 KB fixture and was banked as a small
+# rise, while the same counter on ten times the data was 286,401. Ten times
+# the input, a hundred and five times the work.
+#
+# So every counter is measured at two sizes and its ratio is bounded. Work
+# that is linear in the input lands near ten. A counter needing a looser
+# bound is named in bench/scale_exceptions.txt, which is a hand edit and reads
+# as one, where regenerating a golden is a routine-looking command.
+#
+# Bounds are in tenths, so the arithmetic is integer and nothing rounds:
+# `after * 10 > before * limit` is the whole test.
+default_limit = 120
+
+fixture = "bench/large.json"
+
+grown = "bench/.scale_x10.json"
+
+exceptions = "bench/scale_exceptions.txt"
+
+pub play = gated
+
+gated = io/read_file fixture . spread
+
+# Ten copies of the fixture's elements in one flat array — the same shape at
+# ten times the length, which is what makes the ratio mean something. A nested
+# array would be a different shape and the counters would not compare.
+fn spread text
+  body = text/trim text
+  inner = text/slice body 2 (length body - 1)
+  io/write_file grown (ten_times inner) . (_ -> measured)
+
+fn ten_times inner
+  five = "{inner},{inner},{inner},{inner},{inner}"
+  "[{five},{five}]"
+
+measured = counted fixture . against
+
+fn against small
+  counted grown . (big -> read_limits small big)
+
+fn counted path
+  io/run "env" ["KANSO_COUNTERS=1" "./kq" "." path] . (r -> pairs_of r.stderr)
+
+fn pairs_of text
+  lines = list/select (text/split text "\n") counter?
+  list/to_list (list/map lines pair_of)
+
+fn counter? line
+  parts = text/split line "="
+  length parts == 2 and numeric? parts[2]!
+
+fn pair_of line
+  parts = text/split line "="
+  [parts[1]! (text/to_int parts[2]!)]
+
+fn name_of p
+  p[1]!
+
+fn value_of p
+  p[2]!
+
+fn digit? c
+  c >= "0" and c <= "9"
+
+fn numeric? v
+  length v > 0 and list/all? (text/chars v) digit?
+
+fn read_limits small big
+  io/read_file exceptions . (text -> judged small big (limits_of text))
+
+fn limits_of text
+  lines = list/select (text/split text "\n") body?
+  list/to_list (list/map lines limit_of)
+
+fn body? line
+  trimmed = text/trim line
+  length trimmed > 0 and text/slice trimmed 1 1 != "#"
+
+fn limit_of line
+  parts = text/split (text/trim line) " "
+  [parts[1]! (text/to_int parts[2]!)]
+
+fn judged small big limits
+  bad = list/to_list (list/select small (p -> over? p big limits))
+  said bad big limits
+
+fn lookup pairs name
+  list/find pairs (p -> name_of p == name)
+
+fn found_value none
+  0
+
+fn found_value pair
+  value_of pair
+
+# A counter that is zero on the small run has no ratio to bound, and the
+# golden diff already refuses one that appears from nowhere.
+fn over? pair big limits
+  before = value_of pair
+  after = found_value (lookup big (name_of pair))
+  limit = limit_for (name_of pair) limits
+  before > 0 and after * 10 > before * limit
+
+fn limit_for name limits
+  or_default (lookup limits name)
+
+fn or_default none
+  default_limit
+
+fn or_default pair
+  value_of pair
+
+fn said bad big limits
+  told (length bad == 0) bad big limits
+
+fn told true _ _ _
+  io/write "scale gate: every counter is linear in the input\n"
+
+fn told false bad big limits
+  lines = list/to_list (list/map bad (p -> reported p big limits))
+  io/write_err "{text/join lines "\n"}\n" . (_ -> io/exit 1)
+
+fn reported pair big limits
+  before = value_of pair
+  after = found_value (lookup big (name_of pair))
+  limit = limit_for (name_of pair) limits
+  grew = tenths (after * 10 / before)
+  seen = "{name_of pair} {before} -> {after} on ten times the input"
+  "SCALE: {seen} ({grew}x, bound {tenths limit}x)"
+
+fn tenths n
+  "{n / 10}.{n % 10}"

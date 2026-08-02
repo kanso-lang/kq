@@ -1,0 +1,14 @@
+# A counter whose work is genuinely not linear in the input length names
+# itself here, with the reason. Editing this file is the deliberate act that
+# regenerating a golden was not. Bounds are in tenths: 120 is 12.0x.
+#
+# There is one entry and it is a debt, not a bound. kanso #639 ("share a node
+# only when its interior survives too") made carry_dedup quadratic in the
+# document: 1 -> 2721 at 188 KB, and 1 -> 286,401 at ten times that. kq#39
+# banked the rise as costing nothing, which is how it survived — a golden diff
+# cannot see a ratio, and this gate did not exist yet.
+#
+# The number is the measured 105.2x rounded up. It is here so the gate can
+# protect the other twenty-nine counters while the regression is hunted, and
+# it goes back to 120 when the fix lands.
+carry_dedup 1060
