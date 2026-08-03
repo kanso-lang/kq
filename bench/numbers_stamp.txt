@@ -1,5 +1,5 @@
-allocs=98304
-alloc_bytes=5757088
+allocs=98310
+alloc_bytes=5757232
 arena_blocks=3
 arena_peak_bytes=3145728
 cohort_frees=0
@@ -19,7 +19,7 @@ find2_calls=20950
 append_fast=242226
 append_grow=2568
 utf8_zerocopy=1933
-carry_dedup=2721
+carry_dedup=69
 bytes_malloc=616
 bytes_freed=616
 buf_reuse=2233

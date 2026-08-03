@@ -11,8 +11,8 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 98304 | 982690 | 9.9x |
-| `alloc_bytes` | 5757088 | 57491892 | 9.9x |
+| `allocs` | 98310 | 982696 | 9.9x |
+| `alloc_bytes` | 5757232 | 57492036 | 9.9x |
 | `arena_blocks` | 3 | 24 | 8.0x |
 | `arena_peak_bytes` | 3145728 | 26004240 | 8.2x |
 | `cohort_frees` | 0 | 0 | — |
@@ -32,7 +32,7 @@ Work that is linear in the input lands near 10.
 | `append_fast` | 242226 | 2422260 | 10.0x |
 | `append_grow` | 2568 | 25680 | 10.0x |
 | `utf8_zerocopy` | 1933 | 19330 | 10.0x |
-| `carry_dedup` | 2721 | 286401 | 105.2x |
+| `carry_dedup` | 69 | 717 | 10.3x |
 | `bytes_malloc` | 616 | 6160 | 10.0x |
 | `bytes_freed` | 616 | 6160 | 10.0x |
 | `buf_reuse` | 2233 | 22357 | 10.0x |
