@@ -15,7 +15,7 @@ fn render_result (err reason)
 
 # the whole document never becomes one string: each top-level element is
 # rendered, written, and dead before the next is built
-fn render_result xs:json[]
+fn render_result xs:[]some
   if (length xs == 0) (print "[]") (stream_list xs)
 
 fn render_result v
