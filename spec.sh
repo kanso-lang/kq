@@ -2,8 +2,26 @@
 # kq's spec suite: unit tests, then fixture goldens, then (when jq is
 # present) byte-identity against jq -S on every fixture x query. CI gates
 # on all three. KANSO points at the compiler binary.
+#
+# KQ_STORED=report downgrades the checks that compare against a FILE — the
+# cost goldens and the published-numbers stamp — from gating to reporting.
+# Nothing else changes, and the default is unchanged.
+#
+# The split is by what a check compares itself to, not by what it measures.
+# Unit tests, the fixture goldens and the scale gate all compute their
+# reference inside the same run, so they cannot be stale and stay gating
+# wherever they run. The cost goldens and the stamp compare against values
+# committed here, which are only true for the compiler this repo pins.
+#
+# That matters upstream. kanso's CI runs this suite against the compiler on
+# its pull request, and between a kanso merge and the pin bump here the two
+# disagree — so every unrelated kanso PR opened in that window failed on a
+# stored number that had nothing to do with it. Correctness is what kanso
+# needs to gate on; these numbers are this repo's to judge, at the moment it
+# chooses to absorb a compiler.
 set -e
 KANSO=${KANSO:-kanso}
+STORED=${KQ_STORED:-gate}
 
 echo "== unit tests =="
 "$KANSO" test .
@@ -51,7 +69,9 @@ check_costs() {
     echo "to bank and a rise is a regression to explain; either way, say which"
     echo "in the PR and regenerate the golden there. This diff has no opinion"
     echo "about direction — the scale gate below is what refuses a regression."
-    exit 1
+    [ "$STORED" = report ] || exit 1
+    echo "(reported, not gated: this golden belongs to the pinned compiler)"
+    return 0
   fi
   echo "ok: $golden"
 }
@@ -62,4 +82,9 @@ echo "== scale gate (every counter linear in the input) =="
 "$KANSO" run bench/scale_gate.kso
 
 echo "== published numbers still describe this compiler =="
-"$KANSO" run bench/numbers_gate.kso
+if [ "$STORED" = report ]; then
+  "$KANSO" run bench/numbers_gate.kso \
+    || echo "(reported, not gated: the stamp belongs to the pinned compiler)"
+else
+  "$KANSO" run bench/numbers_gate.kso
+fi
