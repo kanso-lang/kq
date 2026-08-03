@@ -58,10 +58,10 @@ fn pretty_onto acc s:string _
   closed = escape_onto (text/append acc 34) s
   text/append closed 34
 
-fn pretty_onto acc xs:json[] depth
+fn pretty_onto acc xs:[]some depth
   if (length xs == 0) (text/append acc "[]") (pretty_list acc xs depth)
 
-fn pretty_onto acc m:json[string] depth
+fn pretty_onto acc m:map[string some] depth
   if (length m == 0) (text/append acc "\{}") (pretty_map acc m depth)
 
 fn pretty_pairs acc es i depth
