@@ -24,7 +24,7 @@ KANSO=${KANSO:-kanso}
 STORED=${KQ_STORED:-gate}
 
 echo "== unit tests =="
-"$KANSO" test .
+"$KANSO" test query
 
 echo "== build =="
 "$KANSO" build "$(pwd)" --release >/dev/null

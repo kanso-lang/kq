@@ -7,7 +7,7 @@ fn apply text query
 fn elem_chunk v lead
   text/utf8 (pretty_onto (text/append (text/bytes lead) "  ") v 1)
 
-fn dispatch argv
+pub fn dispatch argv
   if (length argv == 0) usage (with_query argv)
 
 fn render_result (err reason)
