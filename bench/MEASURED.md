@@ -36,7 +36,7 @@ Work that is linear in the input lands near 10.
 | `bytes_malloc` | 616 | 6160 | 10.0x |
 | `bytes_freed` | 616 | 6160 | 10.0x |
 | `buf_reuse` | 2233 | 22357 | 10.0x |
-| `bytes_peak` | 26298 | 26298 | 1.0x |
+| `held_peak_bytes` | 336956 | 3142508 | 9.3x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
 | `sh_str` | 603056 | 6029632 | 9.9x |
