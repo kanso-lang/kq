@@ -60,7 +60,7 @@ jobs:
       # method kanso's own decode board uses.
       - name: race kq against jq, interleaved
         run: |
-          sudo apt-get install -y jq >/dev/null
+          jq --version
           export KANSO=/tmp/kanso/target/release/kanso
           "$KANSO" build "$(pwd)" --release >/dev/null
           "$KANSO" run bench/scale_gate >/dev/null
