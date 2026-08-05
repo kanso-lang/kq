@@ -27,7 +27,7 @@ jobs:
         run: KANSO=/tmp/kanso/target/release/kanso sh spec.sh
 
   # The README's wall-clock and hardware-counter tables are a dated sitting on
-  # a quiet box, moved by hand, and gated by bench/numbers_gate.kso so they
+  # a quiet box, moved by hand, and gated by bench/numbers_gate so they
   # cannot outlive the compiler they describe. This is the other half: the
   # allocator counters are deterministic to the byte on any machine, so they
   # are regenerated here and committed, and are never stale by an oversight.
@@ -50,7 +50,7 @@ jobs:
         run: |
           export KANSO=/tmp/kanso/target/release/kanso
           "$KANSO" build "$(pwd)" --release >/dev/null
-          "$KANSO" run bench/publish_numbers.kso
+          "$KANSO" run bench/publish_numbers
       - name: commit it if it moved
         run: |
           if git diff --quiet -- bench/MEASURED.md README.md; then
