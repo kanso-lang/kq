@@ -62,8 +62,8 @@ jobs:
         run: |
           jq --version
           export KANSO=/tmp/kanso/target/release/kanso
-          "$KANSO" build "$(pwd)" --release >/dev/null
-          "$KANSO" run bench/scale_gate >/dev/null
+          "$KANSO" build "$(pwd)" --release
+          "$KANSO" run bench/scale_gate
           rounds=5
           : > bench/.race.txt
           race() {
