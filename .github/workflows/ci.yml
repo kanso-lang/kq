@@ -64,13 +64,15 @@ jobs:
           export KANSO=/tmp/kanso/target/release/kanso
           "$KANSO" build "$(pwd)" --release
           "$KANSO" run bench/scale_gate
+          # the binary is named for the directory it was built from
+          bin="./$(basename "$(pwd)")"
           rounds=5
           : > bench/.race.txt
           race() {
             label="$1"; query="$2"; fixture="$3"
             ktot=0; jtot=0
             for i in $(seq $rounds); do
-              ks=$( { /usr/bin/time -f %e ./main "$query" "$fixture" >/dev/null; } 2>&1 )
+              ks=$( { /usr/bin/time -f %e "$bin" "$query" "$fixture" >/dev/null; } 2>&1 )
               js=$( { /usr/bin/time -f %e jq "$query" "$fixture" >/dev/null; } 2>&1 )
               ktot=$(awk -v t=$ktot -v x=$ks 'BEGIN{print t+x*1000}')
               jtot=$(awk -v t=$jtot -v x=$js 'BEGIN{print t+x*1000}')
