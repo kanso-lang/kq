@@ -79,12 +79,12 @@ check_costs '.'           bench/cost_golden.txt
 check_costs '.[0].k0_30'  bench/cost_golden_decode.txt
 
 echo "== scale gate (every counter linear in the input) =="
-"$KANSO" run bench/scale_gate.kso
+"$KANSO" run bench/scale_gate
 
 echo "== published numbers still describe this compiler =="
 if [ "$STORED" = report ]; then
-  "$KANSO" run bench/numbers_gate.kso \
+  "$KANSO" run bench/numbers_gate \
     || echo "(reported, not gated: the stamp belongs to the pinned compiler)"
 else
-  "$KANSO" run bench/numbers_gate.kso
+  "$KANSO" run bench/numbers_gate
 fi
