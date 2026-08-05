@@ -43,7 +43,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      # the branch itself, not the merge commit a pull request checks out by
+      # default — a detached head has nothing to push back
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - uses: dtolnay/rust-toolchain@stable
       - name: build the pinned kanso toolchain
         run: |
