@@ -9,16 +9,16 @@ claimed.
 Interleaved runs (kq and jq alternate, so machine state hits both alike),
 whole-process wall time (startup + read + parse + query + print), best of
 three sittings over N repetitions per side, byte-identity verified before any
-timing. Apple M-series, **2026-08-02**. The 2.1 MB fixture is ten flat copies
+timing. Apple M-series, **2026-08-05**. The 1.9 MB fixture is ten flat copies
 of `bench/large.json`'s elements, so it is reproducible from what the repo
 already carries.
 
 | workload | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **3.17 ms** | 5.11 ms | kq 1.61x faster |
-| path query, 2.1 MB (`.[0].k0_30`) | **14.18 ms** | 27.54 ms | kq 1.94x faster |
-| full pretty-print, 188 KB (`.`) | **5.30 ms** | 13.09 ms | kq 2.47x faster |
-| full pretty-print, 1.9 MB (`.`) | 141.21 ms | **103.76 ms** | jq 1.36x faster |
+| path query, 188 KB (`.[0].k0_30`) | **3.02 ms** | 5.12 ms | kq 1.70x faster |
+| path query, 1.9 MB (`.[0].k0_30`) | **11.51 ms** | 25.45 ms | kq 2.21x faster |
+| full pretty-print, 188 KB (`.`) | **5.72 ms** | 12.44 ms | kq 2.17x faster |
+| full pretty-print, 1.9 MB (`.`) | 140.06 ms | **100.59 ms** | jq 1.39x faster |
 
 The large row used to read 1113 ms, ten times jq's. kanso #639 changed when the
 copy walk may share a node and made the walk quadratic in document size; the
@@ -46,10 +46,10 @@ the 188 KB fixture — work that is linear in the input lands near 10.
 
 | full pretty-print, 1.9 MB | kq | jq 1.7.1 |
 |---|---:|---:|
-| wall clock, best of seven | 141.21 ms | **103.76 ms** |
-| peak footprint | **30.1 MB** | 31.4 MB |
+| wall clock, best of seven | 140.06 ms | **100.59 ms** |
+| peak footprint | **28.8 MB** | 29.9 MB |
 
-Measured in one interleaved sitting on 2026-08-02, alternating the two binaries
+Measured in one interleaved sitting on 2026-08-05, alternating the two binaries
 so neither gets a warm machine the other did not. kq holds less memory and
 takes about a third longer. Retired instructions and cycles are the honest way
 to say this without a clock in it, and they want a box that can read the
