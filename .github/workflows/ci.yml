@@ -54,13 +54,62 @@ jobs:
           git clone https://github.com/kanso-lang/kanso /tmp/kanso
           cd /tmp/kanso && git checkout "$(cat $GITHUB_WORKSPACE/.kanso-version)"
           cargo build --release
+      # Absolute milliseconds on a shared runner wobble; kq against jq on the
+      # same box under the same contention does not. Both lanes alternate so
+      # neither gets a machine the other did not, five rounds, averaged — the
+      # method kanso's own decode board uses.
+      - name: race kq against jq, interleaved
+        run: |
+          jq --version
+          export KANSO=/tmp/kanso/target/release/kanso
+          "$KANSO" build "$(pwd)" --release
+          "$KANSO" run bench/scale_gate
+          # the binary is named for the directory it was built from
+          bin="./$(basename "$(pwd)")"
+          rounds=5
+          : > bench/.race.txt
+          # `%e` is centiseconds, and the path query runs in three
+          # milliseconds — so each lap times `reps` runs and divides, the way
+          # jsonbench amortises its clock over 150 decodes.
+          reps=20
+          lap() {
+            cmd="$1"; query="$2"; fixture="$3"
+            { /usr/bin/time -f %e sh -c \
+              'for i in $(seq '"$reps"'); do "$0" "$1" "$2" >/dev/null; done' \
+              "$cmd" "$query" "$fixture"; } 2>&1 | tail -1
+          }
+          race() {
+            label="$1"; query="$2"; fixture="$3"
+            ktot=0; jtot=0
+            for i in $(seq $rounds); do
+              ks=$(lap "$bin" "$query" "$fixture")
+              js=$(lap jq "$query" "$fixture")
+              ktot=$(awk -v t="$ktot" -v x="$ks" -v r="$reps" 'BEGIN{print t+x*1000/r}')
+              jtot=$(awk -v t="$jtot" -v x="$js" -v r="$reps" 'BEGIN{print t+x*1000/r}')
+            done
+            kavg=$(awk -v t=$ktot -v n=$rounds 'BEGIN{printf "%.2f", t/n}')
+            javg=$(awk -v t=$jtot -v n=$rounds 'BEGIN{printf "%.2f", t/n}')
+            printf '%s\t%s\t%s\n' "$label" "$kavg" "$javg" >> bench/.race.txt
+          }
+          race "path query, 188 KB" ".[0].k0_30" bench/large.json
+          race "path query, 1.9 MB" ".[0].k0_30" bench/.scale_x10.json
+          race "full pretty-print, 188 KB" "." bench/large.json
+          race "full pretty-print, 1.9 MB" "." bench/.scale_x10.json
+          cat bench/.race.txt
       - name: measure and write bench/MEASURED.md
         run: |
           export KANSO=/tmp/kanso/target/release/kanso
-          "$KANSO" build "$(pwd)" --release >/dev/null
           "$KANSO" run bench/publish_numbers
       - name: commit it if it moved
         run: |
+          # A race moves every run, so a branch whose head is already a
+          # regeneration would be handed another one, and that one another.
+          # The regeneration still gets a full run of every gate; what stops
+          # here is the second one, which is what lets the branch settle.
+          if [ "$(git log -1 --pretty=%s)" = "the measured numbers, regenerated" ]; then
+            echo "the head commit is the regeneration; a second would never settle"
+            exit 0
+          fi
           if git diff --quiet -- bench/MEASURED.md README.md; then
             echo "measured numbers unchanged"; exit 0
           fi

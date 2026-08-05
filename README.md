@@ -13,12 +13,22 @@ timing. Apple M-series, **2026-08-05**. The 1.9 MB fixture is ten flat copies
 of `bench/large.json`'s elements, so it is reproducible from what the repo
 already carries.
 
+<!-- raced:begin — every pull request races the two binaries; edit
+     bench/publish_numbers, not this -->
+
+kq against jq 1.7.1, both alternating on the same runner under the same
+contention, five rounds, averaged. A shared box cannot hand out an absolute
+millisecond worth quoting; it compares two programs on one machine perfectly
+well, which is what this says.
+
 | workload | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB (`.[0].k0_30`) | **3.02 ms** | 5.12 ms | kq 1.70x faster |
-| path query, 1.9 MB (`.[0].k0_30`) | **11.51 ms** | 25.45 ms | kq 2.21x faster |
-| full pretty-print, 188 KB (`.`) | **5.72 ms** | 12.44 ms | kq 2.17x faster |
-| full pretty-print, 1.9 MB (`.`) | 140.06 ms | **100.59 ms** | jq 1.39x faster |
+| path query, 188 KB | 4.00 ms | 7.10 ms | kq 1.78x faster |
+| path query, 1.9 MB | 35.70 ms | 54.50 ms | kq 1.53x faster |
+| full pretty-print, 188 KB | 9.50 ms | 12.90 ms | kq 1.36x faster |
+| full pretty-print, 1.9 MB | 140.10 ms | 113.00 ms | jq 1.24x faster |
+
+<!-- raced:end -->
 
 The large row used to read 1113 ms, ten times jq's. kanso #639 changed when the
 copy walk may share a node and made the walk quadratic in document size; the
