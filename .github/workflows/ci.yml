@@ -102,6 +102,14 @@ jobs:
           "$KANSO" run bench/publish_numbers
       - name: commit it if it moved
         run: |
+          # A race moves every run, so a branch whose head is already a
+          # regeneration would be handed another one, and that one another.
+          # The regeneration still gets a full run of every gate; what stops
+          # here is the second one, which is what lets the branch settle.
+          if [ "$(git log -1 --pretty=%s)" = "the measured numbers, regenerated" ]; then
+            echo "the head commit is the regeneration; a second would never settle"
+            exit 0
+          fi
           if git diff --quiet -- bench/MEASURED.md README.md; then
             echo "measured numbers unchanged"; exit 0
           fi
