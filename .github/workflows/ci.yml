@@ -68,14 +68,24 @@ jobs:
           bin="./$(basename "$(pwd)")"
           rounds=5
           : > bench/.race.txt
+          # `%e` is centiseconds, and the path query runs in three
+          # milliseconds — so each lap times `reps` runs and divides, the way
+          # jsonbench amortises its clock over 150 decodes.
+          reps=20
+          lap() {
+            cmd="$1"; query="$2"; fixture="$3"
+            { /usr/bin/time -f %e sh -c \
+              'for i in $(seq '"$reps"'); do "$0" "$1" "$2" >/dev/null; done' \
+              "$cmd" "$query" "$fixture"; } 2>&1 | tail -1
+          }
           race() {
             label="$1"; query="$2"; fixture="$3"
             ktot=0; jtot=0
             for i in $(seq $rounds); do
-              ks=$( { /usr/bin/time -f %e "$bin" "$query" "$fixture" >/dev/null; } 2>&1 )
-              js=$( { /usr/bin/time -f %e jq "$query" "$fixture" >/dev/null; } 2>&1 )
-              ktot=$(awk -v t=$ktot -v x=$ks 'BEGIN{print t+x*1000}')
-              jtot=$(awk -v t=$jtot -v x=$js 'BEGIN{print t+x*1000}')
+              ks=$(lap "$bin" "$query" "$fixture")
+              js=$(lap jq "$query" "$fixture")
+              ktot=$(awk -v t="$ktot" -v x="$ks" -v r="$reps" 'BEGIN{print t+x*1000/r}')
+              jtot=$(awk -v t="$jtot" -v x="$js" -v r="$reps" 'BEGIN{print t+x*1000/r}')
             done
             kavg=$(awk -v t=$ktot -v n=$rounds 'BEGIN{printf "%.2f", t/n}')
             javg=$(awk -v t=$jtot -v n=$rounds 'BEGIN{printf "%.2f", t/n}')
