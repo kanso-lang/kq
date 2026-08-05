@@ -33,13 +33,21 @@ jobs:
   # are regenerated here and committed, and are never stale by an oversight.
   publish:
     name: the measured numbers, regenerated
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # On the pull request, where a push is allowed: main is protected, so a
+    # direct write is refused — GH006 — and every regeneration since the
+    # protection went on had been failing silently behind a green spec job.
+    # What a PR measured IS the code that merges, so main needs no write.
+    if: github.head_ref != ''
     needs: spec
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      # the branch itself, not the merge commit a pull request checks out by
+      # default — a detached head has nothing to push back
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - uses: dtolnay/rust-toolchain@stable
       - name: build the pinned kanso toolchain
         run: |
@@ -60,4 +68,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add bench/MEASURED.md README.md
           git commit -m "the measured numbers, regenerated"
-          git push
+          git push origin "HEAD:${{ github.head_ref }}"
