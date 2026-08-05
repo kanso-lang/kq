@@ -23,10 +23,10 @@ well, which is what this says.
 
 | workload | kq | jq 1.7.1 | |
 |---|---:|---:|---|
-| path query, 188 KB | 3.02 ms | 5.12 ms | kq 1.70x faster |
-| path query, 1.9 MB | 11.51 ms | 25.45 ms | kq 2.21x faster |
-| full pretty-print, 188 KB | 5.72 ms | 12.44 ms | kq 2.17x faster |
-| full pretty-print, 1.9 MB | 140.06 ms | 100.59 ms | jq 1.39x faster |
+| path query, 188 KB | 4.10 ms | 7.00 ms | kq 1.71x faster |
+| path query, 1.9 MB | 36.10 ms | 55.10 ms | kq 1.53x faster |
+| full pretty-print, 188 KB | 9.60 ms | 13.10 ms | kq 1.36x faster |
+| full pretty-print, 1.9 MB | 139.70 ms | 114.30 ms | jq 1.22x faster |
 
 <!-- raced:end -->
 
