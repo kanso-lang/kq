@@ -19,6 +19,8 @@ Work that is linear in the input lands near 10.
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
 | `beat_iters` | 131202 | 1312002 | 9.9x |
+| `evac_allocs` | 989 | 9629 | 9.7x |
+| `evac_bytes` | 488624 | 4878032 | 9.9x |
 | `thunk_allocs` | 0 | 0 | — |
 | `thunk_forces` | 0 | 0 | — |
 | `thunk_evals` | 0 | 0 | — |
