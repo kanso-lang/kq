@@ -37,6 +37,8 @@ Work that is linear in the input lands near 10.
 | `carry_dedup` | 69 | 717 | 10.3x |
 | `bytes_malloc` | 616 | 6160 | 10.0x |
 | `bytes_freed` | 616 | 6160 | 10.0x |
+| `str_scans` | 0 | 0 | — |
+| `str_scan_bytes` | 0 | 0 | — |
 | `buf_reuse` | 2233 | 22357 | 10.0x |
 | `held_peak_bytes` | 336956 | 3142508 | 9.3x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
