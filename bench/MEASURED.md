@@ -21,6 +21,10 @@ Work that is linear in the input lands near 10.
 | `beat_iters` | 131202 | 1312002 | 9.9x |
 | `evac_allocs` | 989 | 9629 | 9.7x |
 | `evac_bytes` | 488624 | 4878032 | 9.9x |
+| `put_mut_fast` | 3896 | 38960 | 10.0x |
+| `put_mut_grow` | 4465 | 44650 | 10.0x |
+| `push_mut_fast` | 7438 | 74415 | 10.0x |
+| `push_mut_slow` | 2294 | 22905 | 9.9x |
 | `thunk_allocs` | 0 | 0 | — |
 | `thunk_forces` | 0 | 0 | — |
 | `thunk_evals` | 0 | 0 | — |

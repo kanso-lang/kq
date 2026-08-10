@@ -107,10 +107,17 @@ fn rewritten text rows
   tail = text/split halves[2]! closed
   "{halves[1]!}{banner}{text/join rows "\n"}\n\n{closed}{tail[2]!}"
 
-timed = io/read_file raced . laps
+# The wall-clock table is a dated sitting on a quiet box, moved by hand: a
+# shared runner is a different machine every run and interleaving cannot
+# cancel that. So there is normally no race file, and asking is how one finds
+# out — a read that fails answers an err, which no arm here could catch.
+timed = io/exists raced . reading
 
-fn laps none
-  print "no race this run — bench/.race.txt is what the workflow leaves"
+fn reading false
+  print "no race this run — the wall-clock table is a hand sitting"
+
+fn reading true
+  io/read_file raced . laps
 
 fn laps text
   io/read_file readme . (page -> raced_into page text)
