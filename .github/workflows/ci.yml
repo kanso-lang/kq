@@ -65,6 +65,14 @@ jobs:
       # file always said it was, a dated sitting on a quiet box moved by hand.
       # publish_numbers leaves the raced block alone when there is no
       # bench/.race.txt, which is now every run.
+      # publish_numbers runs the built binary under KANSO_COUNTERS and needs
+      # the 2.1 MB fixture, which the scale gate writes. Both used to sit in
+      # the race step that went.
+      - name: build kq and the scaled fixture
+        run: |
+          export KANSO=/tmp/kanso/target/release/kanso
+          "$KANSO" build "$(pwd)" --release
+          "$KANSO" run bench/scale_gate
       - name: measure and write bench/MEASURED.md
         run: |
           export KANSO=/tmp/kanso/target/release/kanso
