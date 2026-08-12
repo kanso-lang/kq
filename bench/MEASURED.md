@@ -11,10 +11,10 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 98310 | 982696 | 9.9x |
-| `alloc_bytes` | 5757232 | 57492036 | 9.9x |
-| `arena_blocks` | 3 | 24 | 8.0x |
-| `arena_peak_bytes` | 3145728 | 26004240 | 8.2x |
+| `allocs` | 89607 | 895675 | 9.9x |
+| `alloc_bytes` | 5478736 | 54707364 | 9.9x |
+| `arena_blocks` | 3 | 21 | 7.0x |
+| `arena_peak_bytes` | 3145728 | 22858512 | 7.2x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
@@ -51,7 +51,7 @@ Work that is linear in the input lands near 10.
 | `sh_rec` | 535104 | 5351040 | 10.0x |
 | `sh_buf` | 1097696 | 10906064 | 9.9x |
 | `sh_map` | 0 | 0 | — |
-| `sh_bytes` | 800472 | 8004072 | 9.9x |
+| `sh_bytes` | 591600 | 5915568 | 9.9x |
 
 The 2.1 MB fixture is ten flat copies of bench/large.json's elements, built
 at measurement time, so every row reproduces from what the repo carries.
