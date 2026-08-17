@@ -45,62 +45,44 @@ jobs:
   # allocator counters are deterministic to the byte on any machine, so they
   # are regenerated here and committed, and are never stale by an oversight.
   publish:
-    name: the measured numbers, regenerated
-    # On the pull request, where a push is allowed: main is protected, so a
-    # direct write is refused — GH006 — and every regeneration since the
-    # protection went on had been failing silently behind a green spec job.
-    # What a PR measured IS the code that merges, so main needs no write.
-    if: github.head_ref != ''
+    name: the measured numbers, verified
+    # This job used to regenerate the numbers and push a bot commit onto the
+    # PR branch. A commit pushed with the default token schedules no
+    # workflows, and the pushed commit became the PR head, so the status
+    # rollup read a SHA with no runs and a fully verified PR showed zero
+    # checks — indistinguishable from one whose CI never started (kq PR 61).
+    # The counters are deterministic, so the fix is the same discipline as
+    # every other golden in the project: the author commits the numbers, CI
+    # regenerates and refuses a mismatch. The referee does not write the
+    # score.
     needs: spec
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      # the branch itself, not the merge commit a pull request checks out by
-      # default — a detached head has nothing to push back
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
       - uses: dtolnay/rust-toolchain@stable
       - name: build the pinned kanso toolchain
         run: |
           git clone https://github.com/kanso-lang/kanso /tmp/kanso
           cd /tmp/kanso && git checkout "$(cat $GITHUB_WORKSPACE/.kanso-version)"
           cargo build --release
-      # No race here. A shared runner is a different physical machine every
-      # run, sometimes a different cpu generation, and interleaving only
-      # cancels the noise WITHIN a run — the machine itself is the variable
-      # and one run is one sample of it. Two consecutive runs of the same code
-      # moved every published row by nine to twenty-two per cent and disagreed
-      # about the direction: 145.10 ms became 171.90 on a row a controlled
-      # head-to-head measured 4.2% FASTER. The counters below are exact on any
-      # machine and stay; the wall-clock table goes back to being what this
-      # file always said it was, a dated sitting on a quiet box moved by hand.
-      # publish_numbers leaves the raced block alone when there is no
-      # bench/.race.txt, which is now every run.
       # publish_numbers runs the built binary under KANSO_COUNTERS and needs
-      # the 2.1 MB fixture, which the scale gate writes. Both used to sit in
-      # the race step that went.
+      # the 2.1 MB fixture, which the scale gate writes. The counters are
+      # exact on any machine; the wall-clock table stays what this file
+      # always said it was, a dated sitting on a quiet box moved by hand.
       - name: build kq and the scaled fixture
         run: |
           export KANSO=/tmp/kanso/target/release/kanso
           "$KANSO" build "$(pwd)" --release
           "$KANSO" run bench/scale_gate
-      - name: measure and write bench/MEASURED.md
+      - name: regenerate bench/MEASURED.md
         run: |
           export KANSO=/tmp/kanso/target/release/kanso
           "$KANSO" run bench/publish_numbers
-      - name: commit it if it moved
+      - name: refuse a mismatch
         run: |
-          # The counters are deterministic, so a regeneration reproduces
-          # itself and the branch settles on its own. The guard that used to
-          # stop a second regeneration was for the race, which moved every
-          # run; with the race gone there is nothing left to chase its tail.
-          if git diff --quiet -- bench/MEASURED.md README.md; then
-            echo "measured numbers unchanged"; exit 0
+          if ! git diff --exit-code -- bench/MEASURED.md README.md; then
+            echo "the committed numbers do not match this code."
+            echo "regenerate and commit them with the change that moved them:"
+            echo "  kanso run bench/scale_gate && kanso run bench/publish_numbers"
+            exit 1
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add bench/MEASURED.md README.md
-          git commit -m "the measured numbers, regenerated"
-          git push origin "HEAD:${{ github.head_ref }}"
