@@ -18,10 +18,10 @@
 # First sitting 2026-08-14, against the compiler in .kanso-version — the pin
 # carrying kanso #895 and #888, the two fixes that took the print row from
 # 147 ms to 39.8 ms.
-print_small 78711536
-print_big 794511344
-path_small 21372066
-path_big 219611289
+print_small 78711518
+print_big 794511326
+path_small 21372048
+path_big 219611271
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an
@@ -45,3 +45,20 @@ path_big 219611289
 #
 # kanso's own vein recorded +74 on encodebench and widebench over the same
 # window, the same number for the same reason.
+# 2026-08-17 (later): all four rows FALL by exactly 18, and the constant is
+# again the finding. print_big does forty times the work of path_small and
+# collects the same 18, so this is a fixed cost per run rather than per row.
+#
+# The pin carries gavel 20b's second half: rendering forces what it prints
+# and a container goes on the render path. The prediction written into the
+# PR was that kq would RISE, because it renders on every row it prints and
+# the container path is paid per rendered container. That prediction is
+# wrong and the direction is the evidence — a per-row cost cannot show up as
+# a flat offset across fixtures forty times apart.
+#
+# What the rows actually collect: k_render's thunk arm lost its early-out
+# and now forces, but kq renders no cell that has not run, so that branch is
+# never taken and nothing per-row changes. Eighteen instructions of layout
+# around code the linker places differently, in kq's favour this time.
+# kanso's own vein recorded -18 on encodebench, oneshot and widebench over
+# the same window, the same number for the same reason.
