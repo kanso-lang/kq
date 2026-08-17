@@ -3,6 +3,12 @@ on:
   pull_request:
   push:
     branches: [main]
+  # A pull request that produces no run at all reads exactly like one whose
+  # checks passed. vse hit that on 2026-08-15 — three events that should each
+  # have scheduled a run produced nothing, and closing and reopening the PR
+  # was the only lever available, which did not work either. This is the lever
+  # that would have.
+  workflow_dispatch:
 jobs:
   spec:
     runs-on: ubuntu-latest
