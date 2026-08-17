@@ -18,10 +18,10 @@
 # First sitting 2026-08-14, against the compiler in .kanso-version — the pin
 # carrying kanso #895 and #888, the two fixes that took the print row from
 # 147 ms to 39.8 ms.
-print_small 78711462
-print_big 794511270
-path_small 21371992
-path_big 219611215
+print_small 78711536
+print_big 794511344
+path_small 21372066
+path_big 219611289
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an
@@ -29,3 +29,19 @@ path_big 219611215
 # six benchmarks. kq's allocator counters move the other way over the same
 # window — evacuations 989 to 533, evacuated bytes 488,624 to 395,376 — and
 # this vein cannot see that, which is the division of labour between the two.
+# 2026-08-17: all four rows rise by EXACTLY 74 instructions, and the constant
+# is the finding. print_big does forty times the work of path_small and pays
+# the same 74, so this is a fixed cost per run rather than a cost per row —
+# 0.00009% on the big print and 0.0003% on the small path.
+#
+# The pin walks eleven commits to kanso cd1142e7, carrying gavel 20 (a
+# guarded self-reference completes at its constructor) and 20b's cycle guard.
+# What kq collects is the completion itself: k_caf_complete now answers the
+# seed cell with the frozen value, which is a couple of stores per constant,
+# paid once at k_caf_init before any input is read. The render guard it also
+# carries is a test per FORCED CELL rendered, and kq renders none — which is
+# exactly why these rows show a flat offset instead of one that grows with
+# the output.
+#
+# kanso's own vein recorded +74 on encodebench and widebench over the same
+# window, the same number for the same reason.
