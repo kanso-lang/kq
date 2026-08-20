@@ -18,10 +18,16 @@
 # First sitting 2026-08-14, against the compiler in .kanso-version — the pin
 # carrying kanso #895 and #888, the two fixes that took the print row from
 # 147 ms to 39.8 ms.
-print_small 78711518
-print_big 794511326
-path_small 21372048
-path_big 219611271
+# 2026-08-20: every row falls under the pin bump c7f302c6 -> cc26898a —
+# print_small -331,611 (-0.4%), print_big -2,256,286 (-0.3%), path_small
+# -304,464 (-1.4%), path_big -2,243,856 (-1.0%). Forty kanso commits moved
+# codegen (the alternating fixpoint sweep among them); the surrogate
+# machinery this PR adds runs only on `\u` escapes, which these inputs do
+# not contain. Banked, not explained row by row.
+print_small 78379907
+print_big 792255040
+path_small 21067584
+path_big 217367415
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an

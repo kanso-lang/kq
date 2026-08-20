@@ -2,6 +2,8 @@ test_path_trail =
   trail = encode (parse_path ".users[3].name")
   trail == "[\"users\",4,\"name\"]"
 
+test_decode_surrogate_pair = decode "\"\\ud83c\\udf8c\"" == "🎌"
+
 test_pretty_list = pretty (must (decode "[1,2]")) 0 == "[\n  1,\n  2\n]"
 
 test_pretty_map =
