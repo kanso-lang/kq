@@ -24,10 +24,14 @@
 # codegen (the alternating fixpoint sweep among them); the surrogate
 # machinery this PR adds runs only on `\u` escapes, which these inputs do
 # not contain. Banked, not explained row by row.
-print_small 78379907
-print_big 792255040
-path_small 21067584
-path_big 217367415
+# 2026-08-20 (shorthands): print rows split — print_small falls 340 (two
+# fewer frozen startup constants) while print_big pays 12,078 for the two
+# new jump-table arms its escape-heavy output compares against; both path
+# rows fall by ~1,300. Net well under a thousandth of a percent per row.
+print_small 78379567
+print_big 792267118
+path_small 21066265
+path_big 217366074
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an
