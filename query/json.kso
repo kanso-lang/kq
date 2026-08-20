@@ -3,6 +3,9 @@ import "std/text"
 type defect
   reason
 
+pub type decimal
+  literal
+
 pub type json_null
 
 pub type parse_failure
@@ -44,6 +47,9 @@ fn encode_onto acc false
 
 fn encode_onto acc json_null
   text/append acc "null"
+
+fn encode_onto acc (decimal lit)
+  text/append acc (canonical lit)
 
 fn encode_onto acc n:int
   text/append acc "{n}"

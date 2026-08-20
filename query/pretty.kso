@@ -48,6 +48,9 @@ fn pretty_onto acc false _
 fn pretty_onto acc json_null _
   text/append acc "null"
 
+fn pretty_onto acc (decimal lit) _
+  text/append acc (canonical lit)
+
 fn pretty_onto acc n:int _
   text/append acc "{n}"
 
