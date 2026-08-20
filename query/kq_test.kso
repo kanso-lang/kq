@@ -1,6 +1,12 @@
+import "std/text"
+
 test_path_trail =
   trail = encode (parse_path ".users[3].name")
   trail == "[\"users\",4,\"name\"]"
+
+test_encode_shorthands =
+  raw = text/utf8 [120 8 121 12 122]
+  encode raw == "\"x\\by\\fz\""
 
 test_decode_surrogate_pair = decode "\"\\ud83c\\udf8c\"" == "🎌"
 
