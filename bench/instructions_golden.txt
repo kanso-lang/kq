@@ -28,10 +28,16 @@
 # fewer frozen startup constants) while print_big pays 12,078 for the two
 # new jump-table arms its escape-heavy output compares against; both path
 # rows fall by ~1,300. Net well under a thousandth of a percent per row.
-print_small 78379567
-print_big 792267118
-path_small 21066265
-path_big 217366074
+# 2026-08-20 (the literal is the number): both path rows fall ~4.1% —
+# decode no longer parses a single float, so Eisel-Lemire's work leaves
+# the path entirely — while print_big pays 1.44M (+0.18%) for the GDA
+# reassembly of exponent-marked literals and print_small nets slightly
+# down. The trade the change makes: decode cheaper, print marginally
+# dearer, and every byte identical to jq.
+print_small 78376607
+print_big 793707899
+path_small 20179131
+path_big 208470198
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an

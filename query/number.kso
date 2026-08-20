@@ -1,21 +1,5 @@
 import "std/text"
 
-fn mark_from? cs p q
-  if (p > q) false (mark_step? cs cs[p] p q)
-
-# float marks: . E e
-fn mark_step? _ 46 _ _
-  true
-
-fn mark_step? _ 69 _ _
-  true
-
-fn mark_step? _ 101 _ _
-  true
-
-fn mark_step? cs _ p q
-  mark_from? cs (p + 1) q
-
 # number bytes: + - . E e, then the ascii digits
 fn number_char? 43
   true
@@ -57,6 +41,4 @@ fn number_start? c
   47 < c and c < 58
 
 fn number_value cs p q
-  digits = text/slice cs p q
-  raw = if (mark_from? cs p q) (text/to_float digits) (text/to_int digits)
-  number_ok p raw
+  number_ok p (decimal (text/utf8 (text/slice cs p q)))

@@ -1,0 +1,130 @@
+# A JSON number rides through kq as the decimal its author wrote — jq keeps
+# passed-through literals at full precision and reprints them by the General
+# Decimal Arithmetic to-scientific-string rule, so byte-identity is string
+# arithmetic on the literal, and no double is ever consulted. The rule:
+# split the literal into sign, coefficient digits and a decimal exponent;
+# print plainly when the exponent is at most zero and the adjusted exponent
+# is at least -6, scientifically otherwise, with an unpadded E exponent.
+import "std/text"
+
+# a marker-free JSON literal is already canonical unless it is a small
+# fraction: leading zeros are not JSON, trailing zeros are preserved, and
+# the dot never moves while the adjusted exponent stays at least -6 —
+# which holds until `0.` is followed by six zeros, where the rule flips
+# to scientific and the literal is reassembled like any marked one
+pub fn canonical lit
+  bs = text/bytes lit
+  if (marker_at bs 1 > length lit and settled? bs) lit (canon_signed lit bs[1]!)
+
+fn settled? bs
+  start = if (bs[1]! == 45) 2 1
+  fractional = bs[start]! == 48 and bs[start + 1] == 46
+  if fractional (frac_zeros bs (start + 2) 0 < 6) true
+
+fn frac_zeros bs p seen
+  if (bs[p] == 48 and seen < 6) (frac_zeros bs (p + 1) (seen + 1)) seen
+
+fn canon_signed lit 45
+  "-{canon_body (text/slice lit 2 (length lit))}"
+
+fn canon_signed lit _
+  canon_body lit
+
+fn canon_body body
+  bs = text/bytes body
+  split = marker_at bs 1
+  mantissa = text/slice body 1 (split - 1)
+  canon_parts mantissa (expo_after body split)
+
+# the marker position, or one past the end when the literal has no exponent
+fn marker_at bs p
+  probe = bs[p]
+  if (probe == 101 or probe == 69) p (marker_next bs p probe)
+
+fn marker_next _ p none
+  p
+
+fn marker_next bs p _
+  marker_at bs (p + 1)
+
+fn expo_after body split
+  etext = text/slice body (split + 1) (length body)
+  if (split > length body) 0 (expo_signed etext)
+
+fn expo_signed etext
+  bs = text/bytes etext
+  expo_lead etext bs[1]!
+
+fn expo_lead etext 43
+  text/to_int (text/slice etext 2 (length etext))
+
+fn expo_lead etext 45
+  0 - text/to_int (text/slice etext 2 (length etext))
+
+fn expo_lead etext _
+  text/to_int etext
+
+fn canon_parts mantissa expo
+  dot = dot_at (text/bytes mantissa) 1
+  whole = text/slice mantissa 1 (dot - 1)
+  frac = frac_after mantissa dot
+  canon_scaled "{whole}{frac}" (expo - length frac)
+
+fn dot_at bs p
+  probe = bs[p]
+  if (probe == 46) p (dot_next bs p probe)
+
+fn dot_next _ p none
+  p
+
+fn dot_next bs p _
+  dot_at bs (p + 1)
+
+fn frac_after mantissa dot
+  tail = text/slice mantissa (dot + 1) (length mantissa)
+  if (dot > length mantissa) "" tail
+
+fn canon_scaled raw e
+  d = strip_zeros raw
+  canon_route d e (e + length d - 1)
+
+fn strip_zeros raw
+  run = zero_run (text/bytes raw) 1 (length raw)
+  if (run == 0) raw (text/slice raw (run + 1) (length raw))
+
+# leading zeros, stopping one short of the end so zero keeps its digit
+fn zero_run bs p last
+  if (p < last and bs[p]! == 48) (zero_run bs (p + 1) last) (p - 1)
+
+fn canon_route d e a
+  if (e <= 0 and 0 - 7 < a) (canon_plain d e) (canon_sci d a)
+
+fn canon_plain d 0
+  d
+
+fn canon_plain d e
+  n = length d
+  if (n > 0 - e) (canon_split d (n + e)) (canon_small d (0 - e - n))
+
+fn canon_split d cut
+  "{text/slice d 1 cut}.{text/slice d (cut + 1) (length d)}"
+
+fn canon_small d pad
+  "0.{zeros pad}{d}"
+
+zero_pool = "00000"
+
+fn zeros 0
+  ""
+
+fn zeros n
+  text/slice zero_pool 1 n
+
+fn canon_sci d a
+  "{sci_head d}E{sci_expo a}"
+
+fn sci_head d
+  if (length d == 1) d "{text/slice d 1 1}.{text/slice d 2 (length d)}"
+
+fn sci_expo a
+  if (a < 0) "-{0 - a}" "+{a}"

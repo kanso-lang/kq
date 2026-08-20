@@ -8,6 +8,16 @@ test_encode_shorthands =
   raw = text/utf8 [120 8 121 12 122]
   encode raw == "\"x\\by\\fz\""
 
+test_decimal_boundary =
+  pair = "{canonical "6.946505e-06"} {canonical "1e-7"}"
+  pair == "0.000006946505 1E-7"
+
+test_decimal_trailing =
+  trio = "{canonical "10e2"} {canonical "1.50"} {canonical "-0.0"}"
+  trio == "1.0E+3 1.50 -0.0"
+
+test_decimal_wide = canonical "99999999999999999999" == "99999999999999999999"
+
 test_decode_surrogate_pair = decode "\"\\ud83c\\udf8c\"" == "🎌"
 
 test_pretty_list = pretty (must (decode "[1,2]")) 0 == "[\n  1,\n  2\n]"
@@ -20,4 +30,4 @@ test_pretty_scalar = pretty 42 0 == "42"
 
 test_walk =
   found = walk (must (decode "\{\"a\":[\{\"b\":7}]}")) (parse_path ".a[0].b")
-  found == 7
+  encode found == "7"

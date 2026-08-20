@@ -11,16 +11,16 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 89607 | 895675 | 9.9x |
-| `alloc_bytes` | 5478736 | 54707364 | 9.9x |
-| `arena_blocks` | 3 | 21 | 7.0x |
-| `arena_peak_bytes` | 3145728 | 22858512 | 7.2x |
+| `allocs` | 93824 | 937845 | 9.9x |
+| `alloc_bytes` | 5681152 | 56731524 | 9.9x |
+| `arena_blocks` | 3 | 23 | 7.6x |
+| `arena_peak_bytes` | 3145728 | 24955664 | 7.9x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
-| `perm_allocs` | 16 | 16 | 1.0x |
+| `perm_allocs` | 18 | 18 | 1.0x |
 | `beat_iters` | 131286 | 1312842 | 9.9x |
-| `evac_allocs` | 531 | 5067 | 9.5x |
-| `evac_bytes` | 395328 | 3945504 | 9.9x |
+| `evac_allocs` | 533 | 5069 | 9.5x |
+| `evac_bytes` | 395360 | 3945536 | 9.9x |
 | `put_mut_fast` | 3896 | 38960 | 10.0x |
 | `put_mut_grow` | 4465 | 44650 | 10.0x |
 | `push_mut_fast` | 7438 | 74415 | 10.0x |
@@ -31,9 +31,9 @@ Work that is linear in the input lands near 10.
 | `thunk_frees` | 0 | 0 | — |
 | `thunk_escaped` | 0 | 0 | — |
 | `thunk_live_exit` | 0 | 0 | — |
-| `el_parses` | 2123 | 21230 | 10.0x |
-| `ryu_renders` | 2123 | 21230 | 10.0x |
-| `utf8_bytes` | 531389 | 5313908 | 10.0x |
+| `el_parses` | 0 | 0 | — |
+| `ryu_renders` | 0 | 0 | — |
+| `utf8_bytes` | 562350 | 5623518 | 10.0x |
 | `find2_calls` | 20950 | 209500 | 10.0x |
 | `append_fast` | 242226 | 2422260 | 10.0x |
 | `append_grow` | 2568 | 25680 | 10.0x |
@@ -43,14 +43,14 @@ Work that is linear in the input lands near 10.
 | `bytes_freed` | 616 | 6160 | 10.0x |
 | `perm_live_bytes` | 0 | 0 | — |
 | `perm_peak_bytes` | 0 | 0 | — |
-| `str_scans` | 0 | 0 | — |
-| `str_scan_bytes` | 0 | 0 | — |
+| `str_scans` | 4217 | 42170 | 10.0x |
+| `str_scan_bytes` | 30961 | 309610 | 10.0x |
 | `buf_reuse` | 2233 | 22357 | 10.0x |
 | `held_peak_bytes` | 336956 | 3142508 | 9.3x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
 | `sh_str` | 603056 | 6029632 | 9.9x |
-| `sh_rec` | 535104 | 5351040 | 10.0x |
+| `sh_rec` | 737520 | 7375200 | 10.0x |
 | `sh_buf` | 1097696 | 10906064 | 9.9x |
 | `sh_map` | 0 | 0 | — |
 | `sh_bytes` | 591600 | 5915568 | 9.9x |
