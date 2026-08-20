@@ -61,8 +61,8 @@ echo "kq specs: all green"
 
 echo "== cost goldens (allocator counters, deterministic, diffed) =="
 check_costs() {
-  query=$1; golden=$2
-  KANSO_COUNTERS=1 ./kq "$query" bench/large.json >/dev/null 2>/tmp/kq_counters.txt
+  query=$1; golden=$2; fixture=$3
+  KANSO_COUNTERS=1 ./kq "$query" "$fixture" >/dev/null 2>/tmp/kq_counters.txt
   grep -E "^[a-z0-9_]+=" /tmp/kq_counters.txt > /tmp/kq_counters_clean.txt
   if ! diff "$golden" /tmp/kq_counters_clean.txt; then
     echo "COST DRIFT: $golden — the allocator counters moved. A fall is a win"
@@ -75,8 +75,9 @@ check_costs() {
   fi
   echo "ok: $golden"
 }
-check_costs '.'           bench/cost_golden.txt
-check_costs '.[0].k0_30'  bench/cost_golden_decode.txt
+check_costs '.'           bench/cost_golden.txt         bench/large.json
+check_costs '.[0].k0_30'  bench/cost_golden_decode.txt  bench/large.json
+check_costs '.[0].name'   bench/cost_golden_escapes.txt bench/escapes.json
 
 echo "== scale gate (every counter linear in the input) =="
 "$KANSO" run bench/scale_gate
