@@ -3,6 +3,13 @@
 # allocated nothing new, so every other gate in this repo stayed green across a
 # 3.7x change in the published number.
 #
+# Which runner, made checkable. bench/instructions.sh reads the line below and
+# refuses to measure anywhere else, because the sentence above it is a rule
+# that nothing enforced: kanso pasted a container's numbers over its runner's
+# on 2026-08-23 on the strength of a diff, and two ubuntu 24.04 boxes one glibc
+# revision apart differ by more than most of what this vein catches.
+# measured-on glibc=2.39-0ubuntu8.8
+#
 # Watched, not frozen. A rise is a regression to explain and a fall is a win to
 # bank; moving the pin moves these rows and that is the point of having them.
 # Say which way and why in the PR, then regenerate.
