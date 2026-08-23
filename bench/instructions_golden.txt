@@ -34,10 +34,23 @@
 # reassembly of exponent-marked literals and print_small nets slightly
 # down. The trade the change makes: decode cheaper, print marginally
 # dearer, and every byte identical to jq.
-print_small 78376607
-print_big 793707899
-path_small 20179131
-path_big 208470198
+# 2026-08-23: every row falls under the pin bump cc26898a -> 2601a7a5, and the
+# shape says where it comes from. The small rows each lose 6,250 and the big
+# rows each lose 62,500 — ten times over, matching the ten copies the big
+# fixture is made of — and print and path lose the same amount as each other.
+# A cost that scales with the input and is identical across the two operations
+# lives in the reading and decoding they share.
+#
+# That rules out the change the window is named for. Eleven kanso commits are
+# in it, the std/os split among them, and the split saves module-init work done
+# before any input is read. This file has twice established that such a saving
+# lands as a flat offset across fixtures of very different sizes, and a flat
+# offset cannot present as a 10x spread. Banked without a row-by-row account,
+# with the shape recorded so the next reader starts at the input path.
+print_small 78370357
+print_big 793645399
+path_small 20172881
+path_big 208407698
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an
