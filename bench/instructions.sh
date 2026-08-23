@@ -21,6 +21,35 @@
 set -e
 : "${KQ:=./kq}"
 
+# Whose numbers these are. The first line of the golden says these rows are
+# counted on the linux runner, and until this existed nothing checked it —
+# kanso learned on 2026-08-23 that two ubuntu 24.04 boxes one glibc revision
+# apart read a vein like this one hundreds of instructions apart, which is
+# larger than most of what it exists to catch. Anywhere but the host named in
+# the golden, this refuses before spending a minute measuring, and prints no
+# numbers at all: a diff is what invites somebody to paste it.
+#
+# glibc alone, not valgrind: callgrind's version moves every row at once the
+# way any toolchain bump does, and pinning it here would make this unanswerable
+# on a box with no valgrind to ask.
+glibc=$(ldd --version 2>/dev/null | head -1 | sed -n 's/.*GLIBC \([^)]*\)).*/\1/p')
+if [ -z "$glibc" ]; then
+  glibc=$(ldd --version 2>/dev/null | head -1 | awk '{print $NF}')
+fi
+have="glibc=${glibc:-unknown}"
+want=$(sed -n 's/^# measured-on //p' bench/instructions_golden.txt)
+echo "instructions vein: measured-on $want; here $have"
+if [ "$want" != "$have" ]; then
+  echo "::error::these rows were measured on $want and this host is $have,"
+  echo "::error::so the two cannot be compared. Do not regenerate"
+  echo "::error::bench/instructions_golden.txt from here — let CI measure it"
+  echo "::error::and copy the rows out of the job log. If the runner image"
+  echo "::error::itself moved, every row moves with it and none has"
+  echo "::error::regressed: regenerate all four in one go, update the"
+  echo "::error::measured-on line, and say so in the pull request."
+  exit 1
+fi
+
 # The 1.9 MB fixture is ten flat copies of what the repo already carries, the
 # same one bench/kq_race.sh builds. It is the row the two quadratics lived in,
 # so a vein that skipped it would miss the thing it exists for.
