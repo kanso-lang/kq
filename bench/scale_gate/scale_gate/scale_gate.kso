@@ -1,5 +1,6 @@
 import "std/io"
 import "std/list"
+import "std/os"
 import "std/text"
 
 # A cost golden compares one workload against one stored number, so the only
@@ -26,7 +27,7 @@ exceptions = "bench/scale_exceptions.txt"
 
 pub play = gated
 
-gated = io/read_file fixture . spread
+gated = os/read_file fixture . spread
 
 # Ten copies of the fixture's elements in one flat array — the same shape at
 # ten times the length, which is what makes the ratio mean something. A nested
@@ -34,7 +35,7 @@ gated = io/read_file fixture . spread
 fn spread text
   body = text/trim text
   inner = text/slice body 2 (length body - 1)
-  io/write_file grown (ten_times inner) . (_ -> measured)
+  os/write_file grown (ten_times inner) . (_ -> measured)
 
 fn ten_times inner
   five = "{inner},{inner},{inner},{inner},{inner}"
@@ -46,7 +47,7 @@ fn against small
   counted grown . (big -> read_limits small big)
 
 fn counted path
-  io/run "env" ["KANSO_COUNTERS=1" "./kq" "." path] . (r -> pairs_of r.stderr)
+  os/run "env" ["KANSO_COUNTERS=1" "./kq" "." path] . (r -> pairs_of r.stderr)
 
 fn pairs_of text
   lines = list/select (text/split text "\n") counter?
@@ -73,7 +74,7 @@ fn numeric? v
   length v > 0 and list/all? (text/chars v) digit?
 
 fn read_limits small big
-  io/read_file exceptions . (text -> judged small big (limits_of text))
+  os/read_file exceptions . (text -> judged small big (limits_of text))
 
 fn limits_of text
   lines = list/select (text/split text "\n") body?
@@ -125,7 +126,7 @@ fn told true _ _ _
 
 fn told false bad big limits
   lines = list/to_list (list/map bad (p -> reported p big limits))
-  io/write_err "{text/join lines "\n"}\n" . (_ -> io/exit 1)
+  io/write_err "{text/join lines "\n"}\n" . (_ -> os/exit 1)
 
 fn reported pair big limits
   before = value_of pair
