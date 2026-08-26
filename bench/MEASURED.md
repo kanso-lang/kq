@@ -17,10 +17,10 @@ Work that is linear in the input lands near 10.
 | `arena_peak_bytes` | 3145728 | 24955664 | 7.9x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
-| `perm_allocs` | 18 | 18 | 1.0x |
+| `perm_allocs` | 16 | 16 | 1.0x |
 | `beat_iters` | 131286 | 1312842 | 9.9x |
-| `evac_allocs` | 533 | 5069 | 9.5x |
-| `evac_bytes` | 395360 | 3945536 | 9.9x |
+| `evac_allocs` | 531 | 5067 | 9.5x |
+| `evac_bytes` | 395328 | 3945504 | 9.9x |
 | `put_mut_fast` | 3896 | 38960 | 10.0x |
 | `put_mut_grow` | 4465 | 44650 | 10.0x |
 | `push_mut_fast` | 7438 | 74415 | 10.0x |
@@ -51,7 +51,7 @@ Work that is linear in the input lands near 10.
 | `view_frees` | 0 | 0 | — |
 | `sh_str` | 603056 | 6029632 | 9.9x |
 | `sh_rec` | 737520 | 7375200 | 10.0x |
-| `sh_buf` | 1097696 | 10906064 | 9.9x |
+| `sh_buf` | 1097792 | 10906160 | 9.9x |
 | `sh_map` | 0 | 0 | — |
 | `sh_bytes` | 591600 | 5915568 | 9.9x |
 

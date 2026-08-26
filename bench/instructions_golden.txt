@@ -54,10 +54,6 @@
 # lands as a flat offset across fixtures of very different sizes, and a flat
 # offset cannot present as a 10x spread. Banked without a row-by-row account,
 # with the shape recorded so the next reader starts at the input path.
-print_small 78370357
-print_big 793645399
-path_small 20172881
-path_big 208407698
 # 2026-08-15: all four rows rise, 0.12% to 0.35%. The pin walks twenty
 # commits forward and what it collects is kanso's escaped-buffer registry
 # (kanso#912), which every program links whether or not it grows an
@@ -98,3 +94,38 @@ path_big 208407698
 # around code the linker places differently, in kq's favour this time.
 # kanso's own vein recorded -18 on encodebench, oneshot and widebench over
 # the same window, the same number for the same reason.
+#
+# 2026-08-26: all four rows RISE, and unlike every entry above this one the
+# rise is proportional to the DOCUMENT rather than flat.
+#
+#     print_small  78,370,357 ->  78,758,842   +388,485   +0.50%
+#     path_small   20,172,881 ->  20,560,668   +387,787   +1.92%
+#     print_big   793,645,399 -> 797,583,853 +3,938,454   +0.50%
+#     path_big    208,407,698 -> 212,343,588 +3,935,890   +1.89%
+#
+# print and path collect the SAME number on the same fixture — 388k on the
+# small one, 3.94M on the big — so the cost is in the decode both share and
+# not in printing or in path extraction. It is ten times larger on the ten
+# times larger document, which is what a per-element cost looks like.
+#
+# Most of it is kanso gavel 24: an arm cannot see an err its own hako raised,
+# and that is dispatch semantics, so an arm that could match its own hako's
+# failure asks before it matches, every time it runs. Measured rather than
+# inferred, by building this repo against kanso main with the ruling and
+# against main without it, on one host so the glibc offset cancels:
+#
+#     print_small  78,409,395 -> 78,758,433   +349,038
+#     path_small   20,211,413 -> 20,560,255   +348,842
+#
+# So gavel 24 is about 349k of the 388k, and the remaining 39k is the rest of
+# the twenty merges this pin bump absorbs. The allocator counters are the
+# other half of the story and they FELL — the guard allocates nothing, which
+# is exactly why this vein exists and why cost_golden could not see it.
+#
+# kanso's own vein recorded the same shape on the same day: jsonbench +1.81%,
+# oneshot +0.74%, and three benchmarks whose hot paths hold no err-admitting
+# arm did not move at all.
+print_small 78758842
+print_big 797583853
+path_small 20560668
+path_big 212343588
