@@ -125,7 +125,28 @@
 # kanso's own vein recorded the same shape on the same day: jsonbench +1.81%,
 # oneshot +0.74%, and three benchmarks whose hot paths hold no err-admitting
 # arm did not move at all.
-print_small 78758842
-print_big 797583853
-path_small 20560668
-path_big 212343588
+#
+# 2026-08-29, absorbing seventy-three merges (kanso #1043 -> #1120): print
+# rows rise 0.42% and path rows fall 0.07%, and one commit is nearly all of
+# both. kanso#1052, "Two failures in a record merge, and `some` is not a
+# failure", bisected on a container where the two SMALL rows read:
+#
+#   #1051 (the commit before)   print_small 78,758,433   path_small 20,560,255
+#   #1052                       print_small 79,089,693   path_small 20,545,520
+#   #1120 (this pin)            print_small 79,090,274   path_small 20,545,552
+#
+# So #1052 is +331,260 and -14,735, and the sixty-eight merges after it add
+# +581 and +32 between them. That container cannot compare its absolute
+# numbers with the runner's — a glibc revision apart, about 410 instructions
+# on these rows — but its DELTAS matched the runner's to the instruction,
+# which is what made the bisect trustworthy and cheap.
+#
+# The trade reads the way the change reads. Printing builds records, so it
+# pays the merge that makes a construction holding two failures answer both;
+# `.[0].k0_30` selects one field and builds none, so it does not. Every
+# allocator counter in this repo is byte-identical across the same window,
+# which is the second time this vein has seen something they could not.
+print_small 79090683
+print_big 800902056
+path_small 20545965
+path_big 212175336
