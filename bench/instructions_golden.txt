@@ -190,7 +190,42 @@
 # this file's 79,090,683, a 409-instruction offset matching the one the
 # 2026-08-29 entry recorded. So the rows below are the runner's committed
 # values moved by the container's deltas, and CI is what confirms them.
-print_small 77933867
-print_big 789934094
-path_small 20153719
-path_big 208611129
+#
+# 2026-08-31, the pin moves five kanso merges to b32c5c77. Every row falls
+# again, and this time one commit is the whole of it.
+#
+#     print_small   77,933,867 -> 76,695,994   -1,237,873   -1.588%
+#     print_big    789,934,094 -> 777,577,892  -12,356,202   -1.564%
+#     path_small    20,153,719 ->  20,010,298     -143,421   -0.712%
+#     path_big     208,611,129 -> 207,264,436   -1,346,693   -0.646%
+#
+# Four of the five merges cannot reach this vein: #1182 fixes a staging
+# collision in a rust test, #1183 and #1184 move the log and the compiler
+# page, and #1185 writes an attribution and a branch list. None of them
+# touches src/ or lib/.
+#
+# #1186 is the one, and it is two changes to the byte builder's append.
+# k_b_append_into wrote its grow path twice, differing in the allocator and
+# the sign of a cap and nothing else, and one tail serves both now. Then the
+# growth went out of line: the fast path needs two registers and the growth
+# needs eight, so every append was pushing six callee-saved registers and
+# building a frame before it could test anything, and it pushes three now.
+# kq prints by appending to a buffer, which is why print falls twice as far
+# as path.
+#
+# Every allocation counter here is byte-identical across the bump — all three
+# cost goldens pass unregenerated, the scale gate passes, and numbers_gate
+# says the published numbers still describe the compiler. This is the case
+# the file's header exists for: kanso's own veins recorded a 3.06% fall on
+# its encode benchmark and not one allocation counter moved, here or there.
+#
+# The container that produced these deltas is one glibc revision behind the
+# runner, and read the pinned compiler's rows 409, 177, 413 and 413 below
+# this file's. So the rows below are the committed values moved by the
+# container's deltas. kanso#1186 had four rows where that arithmetic came out
+# fourteen instructions high, so CI confirming them is the point rather than
+# a formality.
+print_small 76695994
+print_big 777577892
+path_small 20010298
+path_big 207264436
