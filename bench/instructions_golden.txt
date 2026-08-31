@@ -146,7 +146,51 @@
 # `.[0].k0_30` selects one field and builds none, so it does not. Every
 # allocator counter in this repo is byte-identical across the same window,
 # which is the second time this vein has seen something they could not.
-print_small 79090683
-print_big 800902056
-path_small 20545965
-path_big 212175336
+#
+# 2026-08-31, absorbing sixty-one merges (kanso #1121 -> #1181): every row
+# falls, print by about 1.4% and path by 1.7 to 1.9%. The rows were measured
+# at #1180; #1181 edits only markdown.
+#
+#     print_small  79,090,683 ->  77,933,867  -1,156,816  -1.46%
+#     path_small   20,545,965 ->  20,153,719    -392,246  -1.91%
+#     print_big   800,902,056 -> 789,934,094 -10,967,962  -1.37%
+#     path_big    212,175,336 -> 208,611,129  -3,564,207  -1.68%
+#
+# Print and path do not collect the same number here, so the saving does not
+# live in the decode they share. Bisected on a container at seven points in
+# the window, small rows only:
+#
+#   #1143  a subtype of a primitive is a heap value  print +128,464  path   +186
+#   #1171  two byte-level costs in the runtime       print -955,739  path -320,184
+#   #1172-#1173  the string index gets the cursor    print +113,192  path   +470
+#   #1174-#1177  the wide benchmark's two costs      print  -40,141  path  -59,157
+#   #1178-#1180  the tenure walk answers on ranges   print -402,592  path  -13,561
+#
+# Both columns sum to the end-to-end delta exactly.
+#
+# Fifty of the sixty-one commits move neither row by one instruction: two
+# runs of them, 22 commits from #1121 to #1142 and 26 from #1145 to #1170,
+# plus #1144 and #1181, which edit only markdown. The rest of that fifty is
+# front-end work, and this vein counts what the compiled program executes, so
+# a change that only makes compiling cheaper cannot show up here. kanso's own
+# compile veins recorded every one of them.
+#
+# The two large movers split the way their subjects predict. #1171 is byte
+# handling in the runtime, which decoding and rendering both do, and it is the
+# only entry that takes a large amount off both rows. #1178 and #1179 rewrote
+# the tenure membership test, and they take 402,592 off print against 13,561
+# off path: that test is asked by the mutation fast paths, and printing
+# appends to a buffer where selecting one field does not.
+#
+# #1143 is the one rise, and it splits the same way: 128,464 on print against
+# 186 on path, a cost paid per value built rather than per value read.
+#
+# The container that produced these deltas is one glibc revision behind the
+# runner. Under the pinned compiler it read print_small 79,090,274 against
+# this file's 79,090,683, a 409-instruction offset matching the one the
+# 2026-08-29 entry recorded. So the rows below are the runner's committed
+# values moved by the container's deltas, and CI is what confirms them.
+print_small 77933867
+print_big 789934094
+path_small 20153719
+path_big 208611129
