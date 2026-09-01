@@ -74,12 +74,23 @@ if [ -f "$dispatch" ] && [ -x "$loader" ]; then
     echo "::error::these rows were counted where glibc dispatched one way and"
     echo "::error::this host dispatches another. That is OTHER SILICON, not a"
     echo "::error::regression: the rows are not comparable and nothing in kq or"
-    echo "::error::kanso has to answer for them. Re-measure here, replace"
-    echo "::error::bench/dispatch.txt with the block printed below, and say in"
-    echo "::error::the pull request which host they moved to."
+    echo "::error::kanso has to answer for them."
     diff /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt || true
-    echo "--- this host's block, to copy into bench/dispatch.txt ---"
-    cat /tmp/kq_dispatch_now.txt
+    # The block is offered for pasting only where the rows belong. These rows
+    # are the runner's, and the reason this whole check exists is that a
+    # container once printed a diff and somebody pasted it: a gate that hands
+    # this box its own block back is holding that door open, because pasting
+    # it turns the gate green in the one place the numbers must never be
+    # measured.
+    if [ -n "$GITHUB_ACTIONS" ]; then
+      echo "--- this host's block, to copy into bench/dispatch.txt ---"
+      cat /tmp/kq_dispatch_now.txt
+    else
+      echo "The block itself is printed only in CI, because these rows belong"
+      echo "to the runner and its block is the only one that may be pasted"
+      echo "here. Re-measure on the new host and say in the pull request"
+      echo "which silicon the rows moved to."
+    fi
     exit 1
   fi
   echo "instructions vein: glibc dispatches as it did when these rows were counted"
