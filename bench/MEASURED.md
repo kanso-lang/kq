@@ -21,6 +21,7 @@ Work that is linear in the input lands near 10.
 | `beat_iters` | 131286 | 1312842 | 9.9x |
 | `evac_allocs` | 531 | 5067 | 9.5x |
 | `evac_bytes` | 395328 | 3945504 | 9.9x |
+| `survive_slots` | 3236 | 28724 | 8.8x |
 | `put_mut_fast` | 3896 | 38960 | 10.0x |
 | `put_mut_grow` | 4465 | 44650 | 10.0x |
 | `push_mut_fast` | 7438 | 74415 | 10.0x |
