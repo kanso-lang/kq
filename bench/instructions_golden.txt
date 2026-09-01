@@ -10,6 +10,37 @@
 # revision apart differ by more than most of what this vein catches.
 # measured-on glibc=2.39-0ubuntu8.8
 #
+# 2026-09-01, pin b32c5c77 -> 6727b5a2 (fifteen kanso merges). All four rows
+# rise, and THE COMPILER IS NOT WHY.
+#
+#     print_small   76,695,994 ->  76,742,853    +46,859  +0.061%
+#     print_big    777,577,892 -> 778,046,419   +468,527  +0.060%
+#     path_small    20,010,298 ->  20,029,238    +18,940  +0.095%
+#     path_big     207,264,436 -> 207,452,126   +187,690  +0.091%
+#
+# Three of the fifteen merges touch src/ or lib/ at all: kanso#1188 (the inline
+# name), #1197 (the at-risk memo) and #1200 (the survivorship counter). kq was
+# built and counted against each of the four compilers in a container, one path
+# and one toolchain throughout, and the four arms are the same to within
+# fourteen instructions on every row:
+#
+#     pin         print_small   print_big    path_small   path_big
+#     b32c5c77    76,742,444    778,046,228  20,028,811   207,451,713
+#     #1188       76,742,430    778,046,242  20,028,825   207,451,713
+#     #1197       76,742,430    778,046,242  20,028,825   207,451,713
+#     #1200       76,742,430    778,046,242  20,028,825   207,451,713
+#
+# So fifteen merges are worth fourteen instructions and the runner reports
+# forty-six thousand. The container reads 409 below the runner, which is the
+# same offset kq#83 recorded on 2026-08-31 — and 76,742,444 + 409 is 76,742,853,
+# the runner's number under the NEW pin. The runner under the OLD pin should
+# have read that too, and the row committed for it says 76,695,994.
+#
+# OPEN, and stated rather than guessed at: something about the runner moved
+# between kq#83's merge and today, and this vein cannot say what. It pins glibc
+# and not clang, where kanso's .text golden pins clang precisely because
+# codegen belongs to it. That is the first thing to check.
+#
 # Watched, not frozen. A rise is a regression to explain and a fall is a win to
 # bank; moving the pin moves these rows and that is the point of having them.
 # Say which way and why in the PR, then regenerate.
@@ -225,7 +256,7 @@
 # container's deltas. kanso#1186 had four rows where that arithmetic came out
 # fourteen instructions high, so CI confirming them is the point rather than
 # a formality.
-print_small 76695994
-print_big 777577892
-path_small 20010298
-path_big 207264436
+print_small 76742853
+print_big 778046419
+path_small 20029238
+path_big 207452126
