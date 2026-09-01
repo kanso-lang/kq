@@ -50,6 +50,8 @@ Work that is linear in the input lands near 10.
 | `held_peak_bytes` | 336956 | 3142508 | 9.3x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
+| `ten_blocks` | 0 | 0 | — |
+| `ten_frees` | 0 | 0 | — |
 | `sh_str` | 603056 | 6029632 | 9.9x |
 | `sh_rec` | 737520 | 7375200 | 10.0x |
 | `sh_buf` | 1097792 | 10906160 | 9.9x |
