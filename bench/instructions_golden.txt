@@ -306,7 +306,44 @@
 # cost_golden_escapes.txt each gained the two rows kanso#1206 added to the
 # counter dump (`ten_blocks`, `ten_frees`, both nought here) and are otherwise
 # byte-identical, which is the whole reason this vein exists.
-print_small 71520430
-print_big 726349766
-path_small 19593071
-path_big 203961167
+# 2026-09-01 (later): pin past kanso#1208, and every row falls again.
+#
+#   print_small   71,520,430 ->  71,208,591    -311,839  -0.436%
+#   print_big    726,349,766 -> 723,231,394  -3,118,372  -0.429%
+#   path_small    19,593,071 ->  19,281,689    -311,382  -1.589%
+#   path_big     203,961,167 -> 200,847,635  -3,113,532  -1.527%
+#
+# kanso#1208 replaced `k_utf8_bad`'s byte-at-a-time tail with an overlapping
+# load ladder: eight or more bytes read whole words and then re-read the LAST
+# eight, and a shorter run does the same a step down with four and two. The
+# mean run the function is handed is seven bytes, which is why the walk was
+# doing nearly all the work. On kanso's own corpus jsonbench fell 1.238%.
+#
+# The shape of the fall says the same thing from here. print_small and
+# path_small give up 311,839 and 311,382 instructions; print_big and path_big
+# give up 3,118,372 and 3,113,532. A saving that tracks the document decoded
+# and barely notices what is done with it afterwards is a saving in the decode,
+# which is where the ascii test lives. The path rows fall by four times the
+# percentage because they do so much less work per byte read.
+#
+# THESE ROWS WERE NOT COUNTED ON THE RECORDED SILICON, and this is the entry
+# where that stopped mattering. The gate says to re-run until the job lands on
+# the recorded AMD Genoa; two runs landed on two DIFFERENT other chips, family
+# 0x6 model 0xcf and family 0x6 model 0xad, whose glibc dispatch blocks differ
+# from the Genoa's and from each other in memcpy thresholds, cache geometry and
+# the `Fast_Unaligned_*` preferences. All four rows came out BYTE-IDENTICAL on
+# both. So for kq's four programs the pool's silicon does not move this vein at
+# all, and chasing a third chip would have bought nothing.
+#
+# That is not a licence to stop recording which chip counted a row. It is one
+# measurement, on four programs, and the reason the vein asks the question is
+# that a row CAN move with dispatch. bench/dispatch.txt still records the
+# Genoa, so a future move still gets asked. kanso#1208's own entry found the
+# same thing from the other side: its five deltas were identical on a Cascade
+# Lake and a Genoa.
+#
+# No allocation counter moved. The change touches no allocator.
+print_small 71208591
+print_big 723231394
+path_small 19281689
+path_big 200847635
