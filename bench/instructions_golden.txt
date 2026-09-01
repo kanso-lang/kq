@@ -37,9 +37,20 @@
 # have read that too, and the row committed for it says 76,695,994.
 #
 # OPEN, and stated rather than guessed at: something about the runner moved
-# between kq#83's merge and today, and this vein cannot say what. It pins glibc
-# and not clang, where kanso's .text golden pins clang precisely because
-# codegen belongs to it. That is the first thing to check.
+# between kq#83's merge at 17:41 on 2026-08-31 and 06:26 the next morning, and
+# this vein cannot say what, because it pins glibc and nothing else. Two
+# toolchains shape the binary it counts and neither is pinned here:
+#
+#   - clang compiles the emitted C. kanso's bench/text_golden.txt pins it,
+#     precisely because codegen belongs to it.
+#   - rustc builds the kanso that emits the C, and .github/workflows/ci.yml
+#     takes it from dtolnay/rust-toolchain@stable, which moves on its own.
+#     kanso's compile goldens pin rustc for the neighbouring reason.
+#
+# Either moving overnight looks exactly like this: the pinned compiler's source
+# unchanged, the container unmoved, the runner's count shifted. Reading both
+# versions out of the two job logs settles it in a minute, and adding whichever
+# moved to the measured-on line stops the next one being a mystery.
 #
 # Watched, not frozen. A rise is a regression to explain and a fall is a win to
 # bank; moving the pin moves these rows and that is the point of having them.
