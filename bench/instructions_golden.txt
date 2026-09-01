@@ -36,21 +36,26 @@
 # the runner's number under the NEW pin. The runner under the OLD pin should
 # have read that too, and the row committed for it says 76,695,994.
 #
-# OPEN, and stated rather than guessed at: something about the runner moved
-# between kq#83's merge at 17:41 on 2026-08-31 and 06:26 the next morning, and
-# this vein cannot say what, because it pins glibc and nothing else. Two
-# toolchains shape the binary it counts and neither is pinned here:
+# ANSWERED, an hour later, and the first guess was wrong. It was not a
+# toolchain. Both job logs print every version and they agree to the commit
+# hash: rustc 1.98.0 (88d9e12ae), LLVM 22.1.8, runner image ubuntu-24.04
+# 20260823.283.1, glibc 2.39-0ubuntu8.8, valgrind 3.22.0-0ubuntu3, gdb 15.1.
+# Nothing that compiles or runs this binary moved.
 #
-#   - clang compiles the emitted C. kanso's bench/text_golden.txt pins it,
-#     precisely because codegen belongs to it.
-#   - rustc builds the kanso that emits the C, and .github/workflows/ci.yml
-#     takes it from dtolnay/rust-toolchain@stable, which moves on its own.
-#     kanso's compile goldens pin rustc for the neighbouring reason.
+# One line differs. kq#83 ran in Azure region centralus and this one in eastus,
+# which is a different physical CPU — and glibc selects memcpy, memcmp, strlen
+# and their neighbours through ifunc, by CPU feature, at load time. Same libc,
+# different implementation, different instruction count for the same bytes
+# moved. That is why pinning the glibc REVISION does not pin this vein, and why
+# the shift is small (0.06% to 0.10%) and in the same direction on all four
+# rows.
 #
-# Either moving overnight looks exactly like this: the pinned compiler's source
-# unchanged, the container unmoved, the runner's count shifted. Reading both
-# versions out of the two job logs settles it in a minute, and adding whichever
-# moved to the measured-on line stops the next one being a mystery.
+# The inference is the ifunc dispatch; what is measured is that every printed
+# version matches and the region does not. Reading /proc/cpuinfo in the job
+# would confirm it and would give the measured-on line something to hold: this
+# vein wants the CPU model beside the glibc revision, so a run on other silicon
+# says "measured somewhere else" instead of "regressed". That is the fix, and
+# it is not in this commit.
 #
 # Watched, not frozen. A rise is a regression to explain and a fall is a win to
 # bank; moving the pin moves these rows and that is the point of having them.
