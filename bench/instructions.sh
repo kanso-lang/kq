@@ -66,8 +66,11 @@ fi
 #
 # The dispatch block is therefore read AFTER the rows, and only when a row
 # moved. A row that lands on its recorded value is right whatever counted it,
-# and needs no question asked. A row that moved has exactly one question worth
-# asking first, and it is this one.
+# and needs no question asked. A row that moved gets the question, and the
+# answer is printed BESIDE the failure rather than instead of it: the vein
+# fails on a moved row whatever counted it, and names the differing feature
+# lines when it can, so a reader knows in one screen whether to re-run for the
+# recorded CPU or start reading the diff.
 #
 # bench/dispatch.txt IS NOT IN THE TREE YET, and its absence is deliberate.
 # The file has to hold a CPU on which these rows are known to verify, and no
@@ -137,28 +140,37 @@ fi
 grep -v '^#' bench/instructions_golden.txt > work_want.txt
 if diff work_want.txt work.txt; then
   echo "instructions: every row is where it was"
-elif [ -s /tmp/kq_dispatch_now.txt ] && [ -s /tmp/kq_dispatch_want.txt ] \
-     && ! diff -q /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt >/dev/null
-then
-  # A row moved AND this is not the silicon the rows were counted on. The two
-  # are not comparable, so this run cannot say whether anything regressed —
-  # and calling it a regression is exactly the mistake kq#85 spent a PR
-  # undoing. The vein simply does not gate on this run, and says so.
-  echo "::warning::a row moved, and this is not the silicon these rows were"
-  echo "::warning::counted on, so THIS RUN DOES NOT GATE the instructions"
-  echo "::warning::vein. Nothing here says a regression happened or did not."
-  echo "::warning::Re-run until the job lands on the recorded CPU, or record"
-  echo "::warning::this one with a fresh sitting of all four rows."
-  echo "the CPU features that differ (recorded < , here > ):"
-  diff /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt || true
-  if [ -n "$GITHUB_ACTIONS" ]; then
-    echo "--- this host's block, should a fresh sitting record it ---"
-    cat /tmp/kq_dispatch_now.txt
-  fi
 else
-  echo "::error::the work kq does changed, on the silicon these rows were"
-  echo "::error::counted on. A rise is a regression to explain and a fall is"
-  echo "::error::a win to bank — say which in the PR and regenerate"
+  # A row moved. If this is not the silicon the rows were counted on, say so
+  # and name the lines — but BESIDE the failure, never instead of it.
+  #
+  # An earlier shape of this exited 0 here, and it was wrong twice over. Four
+  # CPUs turned up in four runs on 2026-09-01, so roughly three runs in four
+  # land off the recorded block and would have waved a real regression
+  # through. And kanso's ratchet keeps mutations whose whole job is to redden
+  # this gate through the kq specs row: on those runs they would have proved
+  # nothing, which is a BLIND row — the one failure that machinery exists to
+  # catch. A gate that manufactures them is worse than no gate.
+  #
+  # Deciding that silicon accounts for a move is a person's job in a pull
+  # request, with a re-run that lands on the recorded CPU as the evidence.
+  if [ -s /tmp/kq_dispatch_now.txt ] && [ -s /tmp/kq_dispatch_want.txt ] \
+     && ! diff -q /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt >/dev/null
+  then
+    echo "::error::and this is NOT the silicon these rows were counted on, so"
+    echo "::error::the dispatch below may account for some of the move. It"
+    echo "::error::does not excuse it: re-run until the job lands on the"
+    echo "::error::recorded CPU, and say in the PR which way it went."
+    echo "the CPU features that differ (recorded < , here > ):"
+    diff /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt || true
+    if [ -n "$GITHUB_ACTIONS" ]; then
+      echo "--- this host's block, should a fresh sitting record it ---"
+      cat /tmp/kq_dispatch_now.txt
+    fi
+  fi
+  echo "::error::the work kq does changed. A rise is a regression to explain"
+  echo "::error::and a fall is a win to bank — say which in the PR and"
+  echo "::error::regenerate"
   echo "::error::bench/instructions_golden.txt. This is the vein that would"
   echo "::error::have caught the two quadratics whose fix took the 1.9 MB"
   echo "::error::print from 147 ms to 39.8 ms while every allocator counter"
