@@ -288,7 +288,23 @@
 # container's deltas. kanso#1186 had four rows where that arithmetic came out
 # fourteen instructions high, so CI confirming them is the point rather than
 # a formality.
-print_small 76742853
-print_big 778046419
-path_small 20029238
-path_big 207452126
+#
+# 2026-09-01: pin past kanso#1206. Four merges, two of them substantial runtime
+# work, and every row falls: print_small -6.81%, print_big -6.64%, path_small
+# -2.18%, path_big -1.68% measured in one container against the old pin.
+#
+# kanso#1205 straight-lined the one-byte byte-builder append and marked `k_die`
+# noreturn, so a runtime entry that validates a tag stopped building a frame for
+# an error path it never takes. kanso#1206 stopped `k_ten_release` recomputing a
+# sixty-four-deep summary on every beat pop. Both are instructions the common
+# path paid for a rare one, which is why the print rows — where kq spends most
+# of its work — move four times what the path rows do.
+#
+# Not one allocation counter moved. cost_golden.txt, cost_golden_decode.txt and
+# cost_golden_escapes.txt each gained the two rows kanso#1206 added to the
+# counter dump (`ten_blocks`, `ten_frees`, both nought here) and are otherwise
+# byte-identical, which is the whole reason this vein exists.
+print_small 71520007
+print_big 726349575
+path_small 19592658
+path_big 203960754
