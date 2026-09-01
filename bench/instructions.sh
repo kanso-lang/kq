@@ -96,6 +96,16 @@ if [ -s /tmp/kq_dispatch_now.txt ]; then
   fam=$(sed -n 's/^x86.cpu_features.basic.family=//p' /tmp/kq_dispatch_now.txt)
   mod=$(sed -n 's/^x86.cpu_features.basic.model=//p' /tmp/kq_dispatch_now.txt)
   echo "instructions vein: this cpu is family $fam model $mod"
+  # While no block is recorded, CI prints the whole thing, because that is the
+  # only way one ever gets recorded: a block may be taken only from a run that
+  # BOTH names its cpu and matches every row, and a run that matches never
+  # reaches the mismatch path below. Printing 123 lines on every green run
+  # afterwards would be noise, so this stops as soon as the file exists.
+  if [ ! -f "$dispatch" ] && [ -n "$GITHUB_ACTIONS" ]; then
+    echo "--- no block recorded; if every row below matches, this is the one"
+    echo "--- to copy into $dispatch"
+    cat /tmp/kq_dispatch_now.txt
+  fi
 fi
 
 # The 1.9 MB fixture is ten flat copies of what the repo already carries, the
