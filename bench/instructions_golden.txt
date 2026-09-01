@@ -10,6 +10,13 @@
 # revision apart differ by more than most of what this vein catches.
 # measured-on glibc=2.39-0ubuntu8.8
 #
+# and bench/dispatch.txt, which is the other half of the host. glibc's ifunc
+# resolvers pick memcpy, memcmp and strlen by CPU feature at load time, so the
+# same libc on other silicon counts differently — 0.63% of spread from the
+# dispatch alone, measured. bench/instructions.sh refuses on a mismatch there
+# the way it refuses on a glibc mismatch here, and says "other silicon" rather
+# than letting a diff read as a regression.
+#
 # 2026-09-01, pin b32c5c77 -> 6727b5a2 (fifteen kanso merges). All four rows
 # rise, and THE COMPILER IS NOT WHY.
 #

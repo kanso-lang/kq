@@ -50,6 +50,41 @@ if [ "$want" != "$have" ]; then
   exit 1
 fi
 
+# glibc is not the whole host. Its ifunc resolvers pick memcpy, memcmp, strlen
+# and their neighbours by CPU feature at load time, so the same libc on other
+# silicon counts differently — measured at a 0.63% spread from the dispatch
+# alone, an order of magnitude more than most of what this vein catches. The
+# 2026-09-01 pin bump moved all four rows 0.06% to 0.10% with every printed
+# version identical and the compiler worth fourteen instructions; the two runs
+# sat in different Azure regions. bench/dispatch.txt carries that evidence and
+# the block itself.
+dispatch=bench/dispatch.txt
+loader=/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+if [ -f "$dispatch" ] && [ -x "$loader" ]; then
+  # cpuid[0x1] is leaf 1 EBX and its top byte is the initial APIC id, which
+  # is to say which core this process happened to start on. Six runs on one
+  # host gave three values for it and one value for every other line, so it
+  # is the only line excluded, and the exclusion is measured not assumed.
+  "$loader" --list-diagnostics 2>/dev/null \
+    | grep '^x86\.cpu_features' \
+    | grep -v 'features\[0x0\]\.cpuid\[0x1\]=' \
+    | sort > /tmp/kq_dispatch_now.txt
+  grep -v '^#' "$dispatch" > /tmp/kq_dispatch_want.txt
+  if ! diff -q /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt >/dev/null; then
+    echo "::error::these rows were counted where glibc dispatched one way and"
+    echo "::error::this host dispatches another. That is OTHER SILICON, not a"
+    echo "::error::regression: the rows are not comparable and nothing in kq or"
+    echo "::error::kanso has to answer for them. Re-measure here, replace"
+    echo "::error::bench/dispatch.txt with the block printed below, and say in"
+    echo "::error::the pull request which host they moved to."
+    diff /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt || true
+    echo "--- this host's block, to copy into bench/dispatch.txt ---"
+    cat /tmp/kq_dispatch_now.txt
+    exit 1
+  fi
+  echo "instructions vein: glibc dispatches as it did when these rows were counted"
+fi
+
 # The 1.9 MB fixture is ten flat copies of what the repo already carries, the
 # same one bench/kq_race.sh builds. It is the row the two quadratics lived in,
 # so a vein that skipped it would miss the thing it exists for.

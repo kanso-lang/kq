@@ -1,0 +1,149 @@
+# The CPU features glibc's ifunc resolvers read when they pick memcpy,
+# memcmp, strlen and their neighbours, as ld.so reports them. Sorted, so
+# a diff reads line by line.
+#
+# This exists because the vein beside it moved 0.06% to 0.10% on all four
+# rows between two runs whose every printed version — rustc, LLVM, runner
+# image, glibc, valgrind, gdb — agreed to the commit hash. The one thing
+# that differed was the Azure region, which is to say the silicon.
+#
+# The mechanism is measured, not inferred. Same kq binary, same libc, one
+# GLIBC_TUNABLES away, counted under callgrind on 2026-09-01:
+#
+#   default                       76,742,430   __memcpy_avx_unaligned_erms
+#   -AVX2_Usable                  76,746,433   __memcpy_avx_unaligned_erms
+#   -AVX_Fast_Unaligned_Load      76,488,416   __memcpy_sse2_unaligned_erms
+#   -ERMS                         76,262,756   __memcpy_avx_unaligned
+#
+# A 0.63% spread from the dispatch alone, which is an order of magnitude
+# more than most of what this vein exists to catch. Pinning the glibc
+# revision does not pin any of it: the libc is identical in every row.
+#
+# Regenerate only when the rows are re-measured on the new host, and say
+# in the PR which silicon they moved to.
+#
+# cpuid[0x1] is absent by design: its top byte is the initial APIC id and it
+# changed three times in six runs on one host. Every other line held.
+x86.cpu_features.basic.family=0x6
+x86.cpu_features.basic.kind=0x1
+x86.cpu_features.basic.max_cpuid=0xd
+x86.cpu_features.basic.model=0x55
+x86.cpu_features.basic.stepping=0x7
+x86.cpu_features.cachesize_non_temporal_divisor=0x2
+x86.cpu_features.data_cache_size=0x8000
+x86.cpu_features.features[0x0].active[0x0]=0x0
+x86.cpu_features.features[0x0].active[0x1]=0x0
+x86.cpu_features.features[0x0].active[0x2]=0x7ed83203
+x86.cpu_features.features[0x0].active[0x3]=0x17888110
+x86.cpu_features.features[0x0].cpuid[0x0]=0x50657
+x86.cpu_features.features[0x0].cpuid[0x2]=0xfffa3203
+x86.cpu_features.features[0x0].cpuid[0x3]=0x1f8bfbff
+x86.cpu_features.features[0x1].active[0x0]=0x0
+x86.cpu_features.features[0x1].active[0x1]=0xd18f0b39
+x86.cpu_features.features[0x1].active[0x2]=0x800
+x86.cpu_features.features[0x1].active[0x3]=0x0
+x86.cpu_features.features[0x1].cpuid[0x0]=0x0
+x86.cpu_features.features[0x1].cpuid[0x1]=0xd19f2ffb
+x86.cpu_features.features[0x1].cpuid[0x2]=0x804
+x86.cpu_features.features[0x1].cpuid[0x3]=0xac000400
+x86.cpu_features.features[0x2].active[0x0]=0x0
+x86.cpu_features.features[0x2].active[0x1]=0x0
+x86.cpu_features.features[0x2].active[0x2]=0x121
+x86.cpu_features.features[0x2].active[0x3]=0x8000000
+x86.cpu_features.features[0x2].cpuid[0x0]=0x0
+x86.cpu_features.features[0x2].cpuid[0x1]=0x0
+x86.cpu_features.features[0x2].cpuid[0x2]=0x121
+x86.cpu_features.features[0x2].cpuid[0x3]=0x2c100800
+x86.cpu_features.features[0x3].active[0x0]=0x7
+x86.cpu_features.features[0x3].active[0x1]=0x0
+x86.cpu_features.features[0x3].active[0x2]=0x0
+x86.cpu_features.features[0x3].active[0x3]=0x0
+x86.cpu_features.features[0x3].cpuid[0x0]=0xf
+x86.cpu_features.features[0x3].cpuid[0x1]=0x980
+x86.cpu_features.features[0x3].cpuid[0x2]=0x0
+x86.cpu_features.features[0x3].cpuid[0x3]=0x0
+x86.cpu_features.features[0x4].active[0x0]=0x0
+x86.cpu_features.features[0x4].active[0x1]=0x0
+x86.cpu_features.features[0x4].active[0x2]=0x0
+x86.cpu_features.features[0x4].active[0x3]=0x0
+x86.cpu_features.features[0x4].cpuid[0x0]=0x0
+x86.cpu_features.features[0x4].cpuid[0x1]=0x0
+x86.cpu_features.features[0x4].cpuid[0x2]=0x0
+x86.cpu_features.features[0x4].cpuid[0x3]=0x100
+x86.cpu_features.features[0x5].active[0x0]=0x0
+x86.cpu_features.features[0x5].active[0x1]=0x0
+x86.cpu_features.features[0x5].active[0x2]=0x0
+x86.cpu_features.features[0x5].active[0x3]=0x0
+x86.cpu_features.features[0x5].cpuid[0x0]=0x302e
+x86.cpu_features.features[0x5].cpuid[0x1]=0x100d000
+x86.cpu_features.features[0x5].cpuid[0x2]=0x0
+x86.cpu_features.features[0x5].cpuid[0x3]=0x0
+x86.cpu_features.features[0x6].active[0x0]=0x0
+x86.cpu_features.features[0x6].active[0x1]=0x0
+x86.cpu_features.features[0x6].active[0x2]=0x0
+x86.cpu_features.features[0x6].active[0x3]=0x0
+x86.cpu_features.features[0x6].cpuid[0x0]=0x0
+x86.cpu_features.features[0x6].cpuid[0x1]=0x0
+x86.cpu_features.features[0x6].cpuid[0x2]=0x0
+x86.cpu_features.features[0x6].cpuid[0x3]=0x0
+x86.cpu_features.features[0x7].active[0x0]=0x0
+x86.cpu_features.features[0x7].active[0x1]=0x0
+x86.cpu_features.features[0x7].active[0x2]=0x0
+x86.cpu_features.features[0x7].active[0x3]=0x0
+x86.cpu_features.features[0x7].cpuid[0x0]=0x0
+x86.cpu_features.features[0x7].cpuid[0x1]=0x0
+x86.cpu_features.features[0x7].cpuid[0x2]=0x0
+x86.cpu_features.features[0x7].cpuid[0x3]=0x0
+x86.cpu_features.features[0x8].active[0x0]=0x0
+x86.cpu_features.features[0x8].active[0x1]=0x0
+x86.cpu_features.features[0x8].active[0x2]=0x0
+x86.cpu_features.features[0x8].active[0x3]=0x0
+x86.cpu_features.features[0x8].cpuid[0x0]=0x0
+x86.cpu_features.features[0x8].cpuid[0x1]=0x0
+x86.cpu_features.features[0x8].cpuid[0x2]=0x0
+x86.cpu_features.features[0x8].cpuid[0x3]=0x0
+x86.cpu_features.features[0x9].active[0x0]=0x0
+x86.cpu_features.features[0x9].active[0x1]=0x0
+x86.cpu_features.features[0x9].active[0x2]=0x0
+x86.cpu_features.features[0x9].active[0x3]=0x0
+x86.cpu_features.features[0x9].cpuid[0x0]=0x0
+x86.cpu_features.features[0x9].cpuid[0x1]=0x0
+x86.cpu_features.features[0x9].cpuid[0x2]=0x0
+x86.cpu_features.features[0x9].cpuid[0x3]=0x0
+x86.cpu_features.isa_1=0xf
+x86.cpu_features.level1_dcache_assoc=0x8
+x86.cpu_features.level1_dcache_linesize=0x40
+x86.cpu_features.level1_dcache_size=0x8000
+x86.cpu_features.level1_icache_linesize=0x40
+x86.cpu_features.level1_icache_size=0x8000
+x86.cpu_features.level2_cache_assoc=0x10
+x86.cpu_features.level2_cache_linesize=0x40
+x86.cpu_features.level2_cache_size=0x100000
+x86.cpu_features.level3_cache_assoc=0xb
+x86.cpu_features.level3_cache_linesize=0x40
+x86.cpu_features.level3_cache_size=0x2100000
+x86.cpu_features.level4_cache_size=0xffffffffffffffff
+x86.cpu_features.non_temporal_threshold=0x1100000
+x86.cpu_features.preferred.AVX_Fast_Unaligned_Load=0x1
+x86.cpu_features.preferred.Avoid_Short_Distance_REP_MOVSB=0x0
+x86.cpu_features.preferred.Fast_Copy_Backward=0x0
+x86.cpu_features.preferred.Fast_Rep_String=0x1
+x86.cpu_features.preferred.Fast_Unaligned_Copy=0x1
+x86.cpu_features.preferred.Fast_Unaligned_Load=0x1
+x86.cpu_features.preferred.I586=0x1
+x86.cpu_features.preferred.I686=0x1
+x86.cpu_features.preferred.MathVec_Prefer_No_AVX512=0x0
+x86.cpu_features.preferred.Prefer_ERMS=0x0
+x86.cpu_features.preferred.Prefer_FSRM=0x0
+x86.cpu_features.preferred.Prefer_MAP_32BIT_EXEC=0x0
+x86.cpu_features.preferred.Prefer_No_AVX512=0x1
+x86.cpu_features.preferred.Prefer_No_VZEROUPPER=0x1
+x86.cpu_features.preferred.Prefer_PMINUB_for_stringop=0x1
+x86.cpu_features.preferred.Slow_BSF=0x0
+x86.cpu_features.preferred.Slow_SSE4_2=0x0
+x86.cpu_features.rep_movsb_stop_threshold=0x1100000
+x86.cpu_features.rep_movsb_threshold=0x2000
+x86.cpu_features.rep_stosb_threshold=0x800
+x86.cpu_features.shared_cache_size=0x2200000
+x86.cpu_features.xsave_state_full_size=0xac0
+x86.cpu_features.xsave_state_size=0x9c0
