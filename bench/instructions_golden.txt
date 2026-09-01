@@ -10,6 +10,22 @@
 # revision apart differ by more than most of what this vein catches.
 # measured-on glibc=2.39-0ubuntu8.8
 #
+# The glibc revision is only half the host. Its ifunc resolvers pick memcpy,
+# memcmp and strlen by CPU feature at load time, so the same libc on other
+# silicon counts differently — 0.63% of spread from the dispatch alone, and
+# 1.02% on print_small for a single switch that differs between a container and
+# a runner. That half CANNOT be pinned on this line, and the reason is
+# measured: three CI runs on 2026-09-01 landed on three different CPUs — an
+# AMD EPYC Zen 3 (family 0x19, model 0x1), an Intel Ice Lake-SP (0x6/0x6a),
+# against the Cascade Lake (0x6/0x55) of the container the first block was
+# prepared in. A line refusing every run but one would be red for a reason no
+# pull request causes.
+#
+# So bench/instructions.sh prints the CPU on every run and consults it only
+# when a row has actually moved: a row that landed on its recorded value is
+# right whatever counted it, and a row that moved is asked whether this is even
+# the same silicon before it is called a regression.
+#
 # 2026-09-01, pin b32c5c77 -> 6727b5a2 (fifteen kanso merges). All four rows
 # rise, and THE COMPILER IS NOT WHY.
 #
@@ -51,11 +67,11 @@
 # rows.
 #
 # The inference is the ifunc dispatch; what is measured is that every printed
-# version matches and the region does not. Reading /proc/cpuinfo in the job
-# would confirm it and would give the measured-on line something to hold: this
-# vein wants the CPU model beside the glibc revision, so a run on other silicon
-# says "measured somewhere else" instead of "regressed". That is the fix, and
-# it is not in this commit.
+# version matches and the region does not. Since written, the loader's own
+# feature block has been read in the job and confirms it, and the fix landed in
+# the shape described at the top of this file rather than as a measured-on
+# fact — because the pool turned out to hold at least three CPUs, and a fact
+# that names one of them refuses the other two.
 #
 # Watched, not frozen. A rise is a regression to explain and a fall is a win to
 # bank; moving the pin moves these rows and that is the point of having them.

@@ -50,6 +50,64 @@ if [ "$want" != "$have" ]; then
   exit 1
 fi
 
+# glibc is not the whole host. Its ifunc resolvers pick memcpy, memcmp,
+# strlen and their neighbours by CPU feature at load time, so the same libc on
+# other silicon counts differently — measured at a 0.63% spread from the
+# dispatch alone, and 1.02% on print_small for one switch that differs between
+# the container these were prepared in and a runner. bench/dispatch.txt carries
+# that evidence and the block itself.
+#
+# THE RUNNER POOL IS NOT ONE CPU. Three CI runs on 2026-09-01 landed on three
+# different ones: an AMD EPYC Zen 3 (family 0x19, model 0x1), an Intel Ice
+# Lake-SP (0x6/0x6a), and the container these were prepared in is a Cascade
+# Lake (0x6/0x55). So the first shape of this check — refuse wherever the block
+# differs — would have been red on most runs for a reason no pull request
+# causes, which is a gate nobody can act on.
+#
+# The dispatch block is therefore read AFTER the rows, and only when a row
+# moved. A row that lands on its recorded value is right whatever counted it,
+# and needs no question asked. A row that moved has exactly one question worth
+# asking first, and it is this one.
+#
+# bench/dispatch.txt IS NOT IN THE TREE YET, and its absence is deliberate.
+# The file has to hold a CPU on which these rows are known to verify, and no
+# run has both named its silicon and matched the golden — the naming only
+# starts here. A guessed block would be worse than none: it would let a real
+# regression on the true recorded CPU read as other silicon, which is the one
+# failure this whole check exists to prevent in the opposite direction. Absent,
+# the vein gates exactly as it always has. The block goes in from the first run
+# that prints its CPU and matches all four rows.
+dispatch=bench/dispatch.txt
+loader=/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+host_block() {
+  # cpuid[0x1] is leaf 1 EBX and its top byte is the initial APIC id, which
+  # is to say which core this process happened to start on. Six runs on one
+  # host gave three values for it and one value for every other line, so it
+  # is the only line excluded, and the exclusion is measured not assumed.
+  [ -x "$loader" ] || return 1
+  "$loader" --list-diagnostics 2>/dev/null \
+    | grep '^x86\.cpu_features' \
+    | grep -v 'features\[0x0\]\.cpuid\[0x1\]=' \
+    | sort
+}
+host_block > /tmp/kq_dispatch_now.txt || true
+[ -f "$dispatch" ] && grep -v '^#' "$dispatch" > /tmp/kq_dispatch_want.txt
+if [ -s /tmp/kq_dispatch_now.txt ]; then
+  fam=$(sed -n 's/^x86.cpu_features.basic.family=//p' /tmp/kq_dispatch_now.txt)
+  mod=$(sed -n 's/^x86.cpu_features.basic.model=//p' /tmp/kq_dispatch_now.txt)
+  echo "instructions vein: this cpu is family $fam model $mod"
+  # While no block is recorded, CI prints the whole thing, because that is the
+  # only way one ever gets recorded: a block may be taken only from a run that
+  # BOTH names its cpu and matches every row, and a run that matches never
+  # reaches the mismatch path below. Printing 123 lines on every green run
+  # afterwards would be noise, so this stops as soon as the file exists.
+  if [ ! -f "$dispatch" ] && [ -n "$GITHUB_ACTIONS" ]; then
+    echo "--- no block recorded; if every row below matches, this is the one"
+    echo "--- to copy into $dispatch"
+    cat /tmp/kq_dispatch_now.txt
+  fi
+fi
+
 # The 1.9 MB fixture is ten flat copies of what the repo already carries, the
 # same one bench/kq_race.sh builds. It is the row the two quadratics lived in,
 # so a vein that skipped it would miss the thing it exists for.
@@ -79,12 +137,31 @@ fi
 grep -v '^#' bench/instructions_golden.txt > work_want.txt
 if diff work_want.txt work.txt; then
   echo "instructions: every row is where it was"
+elif [ -s /tmp/kq_dispatch_now.txt ] && [ -s /tmp/kq_dispatch_want.txt ] \
+     && ! diff -q /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt >/dev/null
+then
+  # A row moved AND this is not the silicon the rows were counted on. The two
+  # are not comparable, so this run cannot say whether anything regressed —
+  # and calling it a regression is exactly the mistake kq#85 spent a PR
+  # undoing. The vein simply does not gate on this run, and says so.
+  echo "::warning::a row moved, and this is not the silicon these rows were"
+  echo "::warning::counted on, so THIS RUN DOES NOT GATE the instructions"
+  echo "::warning::vein. Nothing here says a regression happened or did not."
+  echo "::warning::Re-run until the job lands on the recorded CPU, or record"
+  echo "::warning::this one with a fresh sitting of all four rows."
+  echo "the CPU features that differ (recorded < , here > ):"
+  diff /tmp/kq_dispatch_want.txt /tmp/kq_dispatch_now.txt || true
+  if [ -n "$GITHUB_ACTIONS" ]; then
+    echo "--- this host's block, should a fresh sitting record it ---"
+    cat /tmp/kq_dispatch_now.txt
+  fi
 else
-  echo "::error::the work kq does changed. A rise is a regression to explain"
-  echo "::error::and a fall is a win to bank — say which in the PR and"
-  echo "::error::regenerate bench/instructions_golden.txt. This is the vein"
-  echo "::error::that would have caught the two quadratics whose fix took the"
-  echo "::error::1.9 MB print from 147 ms to 39.8 ms while every allocator"
-  echo "::error::counter in this repo held still."
+  echo "::error::the work kq does changed, on the silicon these rows were"
+  echo "::error::counted on. A rise is a regression to explain and a fall is"
+  echo "::error::a win to bank — say which in the PR and regenerate"
+  echo "::error::bench/instructions_golden.txt. This is the vein that would"
+  echo "::error::have caught the two quadratics whose fix took the 1.9 MB"
+  echo "::error::print from 147 ms to 39.8 ms while every allocator counter"
+  echo "::error::in this repo held still."
   exit 1
 fi
