@@ -291,7 +291,9 @@
 #
 # 2026-09-01: pin past kanso#1206. Four merges, two of them substantial runtime
 # work, and every row falls: print_small -6.81%, print_big -6.64%, path_small
-# -2.18%, path_big -1.68% measured in one container against the old pin.
+# -2.18%, path_big -1.68% measured in one container against the old pin; the
+# rows below are the runner's, counted on the recorded AMD Genoa, so the
+# dispatch question the vein asks on a moved row answered "same silicon".
 #
 # kanso#1205 straight-lined the one-byte byte-builder append and marked `k_die`
 # noreturn, so a runtime entry that validates a tag stopped building a frame for
@@ -304,7 +306,7 @@
 # cost_golden_escapes.txt each gained the two rows kanso#1206 added to the
 # counter dump (`ten_blocks`, `ten_frees`, both nought here) and are otherwise
 # byte-identical, which is the whole reason this vein exists.
-print_small 71520007
-print_big 726349575
-path_small 19592658
-path_big 203960754
+print_small 71520430
+print_big 726349766
+path_small 19593071
+path_big 203961167
