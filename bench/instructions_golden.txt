@@ -343,7 +343,36 @@
 # Lake and a Genoa.
 #
 # No allocation counter moved. The change touches no allocator.
-print_small 71208591
-print_big 723231394
-path_small 19281689
-path_big 200847635
+#
+# 2026-09-01 (last), pin 21d5c933 -> 1c58d5a0 (kanso#1209). All four rows fall.
+#
+#     print_small   71,208,591 ->  71,028,843   -179,748   -0.252%
+#     print_big    723,231,394 -> 721,239,636 -1,991,758   -0.275%
+#     path_small    19,281,689 ->  19,090,428   -191,261   -0.992%
+#     path_big     200,847,635 -> 198,948,286 -1,899,349   -0.945%
+#
+# The job did NOT land on the recorded silicon: it ran on an AMD EPYC Zen 3
+# (family 0x19, model 0x1) where the block records a Genoa (0x19/0x11). Rather
+# than re-run until the pool offered the right chip, the compiler's own effect
+# was measured a second time in a container — one path, one toolchain, the two
+# pins the only difference:
+#
+#     row           old pin       new pin       delta
+#     print_small   71,208,168    71,028,607    -179,561
+#     path_small    19,281,276    19,090,015    -191,261
+#
+# path_small's delta is the runner's to the digit. print_small's differs by
+# 187, and that is the dispatch rather than the compiler: the container reads
+# 423 below the runner on the old pin and 236 below on the new, and 423 - 236
+# is 187. So two chips agree on what this pin bump costs, and the row a
+# non-recorded CPU reported is the row to commit.
+#
+# Where it comes from: k_b_put_mut's initial pairs capacity goes from four
+# KValues to eight, which halves kq's map-growth arm (put_mut_grow 4,465 ->
+# 2,799). The other half of the merge — a tenure block handed to the depth
+# outside instead of freed — costs kq nothing, because kq never freed one:
+# ten_frees reads 0 on both sides.
+print_small 71028843
+print_big 721239636
+path_small 19090428
+path_big 198948286
