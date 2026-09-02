@@ -420,7 +420,23 @@
 # The four rows above were read straight off the tail of the failing job. That
 # is the print this file's own gate gained earlier today; without it they sit
 # under 123 lines of CPU features, where the log API does not reach.
-print_small 69856900
-print_big 709520206
-path_small 19079727
-path_big 198937585
+print_small 70033118
+print_big 711282386
+path_small 19081523
+path_big 198939381
+# 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
+# this ledger every row RISES. print_small +176,218 (+0.252%), print_big
+# +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
+#
+# kanso#1214 gave the strict list index an inline twin, and kq indexes byte
+# strings and maps — never a list in a loop. All fifteen of its index sites
+# take the twin's slow arm and pay two tag reads, two compares and a branch on
+# the way to the call they were already making. The print rows carry it because
+# printing walks every value; the path rows index once per run and move by the
+# same 1,796 twice. kanso#1213's six bitwise twins cost nothing here: kq does
+# no bitwise work and the linker drops them.
+#
+# The rows above are the runner's previous values plus the deltas measured in a
+# container, `--release` both sides, which is how every bump in this ledger
+# since kq#88 has been prepared. Absolute counts differ between the two hosts
+# and the deltas have agreed to the instruction five times running.
