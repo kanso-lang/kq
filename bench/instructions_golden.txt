@@ -396,7 +396,31 @@
 # allocation counter moves: all three cost goldens and the numbers stamp are
 # byte-identical, which is what removing a test rather than an allocation
 # looks like from an allocator counter's side.
-print_small 70689717
-print_big 717848376
-path_small 19086930
-path_big 198944788
+# 2026-09-02 (later): all four fall again, and the container agreed with the
+# runner to the INSTRUCTION on every one for the second time today.
+# kanso#1211 writes `k_check_rec` and `k_field` inline at every site, so a
+# record pattern test and a field read stop being calls.
+#
+#     row           delta          percent
+#     print_small     -832,817      -1.178%
+#     print_big     -8,328,170      -1.160%
+#     path_small        -7,203      -0.038%
+#     path_big          -7,203      -0.004%
+#
+# The print rows carry it because printing walks every value and every value
+# is a record; the path rows touch two. The container read 70,689,481 ->
+# 69,856,664, 717,847,946 -> 709,519,776, 19,086,517 -> 19,079,314 and
+# 198,944,375 -> 198,937,172 — the same four deltas the runner reports here,
+# on a different chip and a glibc revision apart.
+#
+# No allocation counter moves: all three cost goldens and the numbers stamp
+# are byte-identical, which is what removing a call rather than an allocation
+# looks like from an allocator counter's side.
+#
+# The four rows above were read straight off the tail of the failing job. That
+# is the print this file's own gate gained earlier today; without it they sit
+# under 123 lines of CPU features, where the log API does not reach.
+print_small 69856900
+print_big 709520206
+path_small 19079727
+path_big 198937585
