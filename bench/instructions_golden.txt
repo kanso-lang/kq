@@ -372,7 +372,31 @@
 # 2,799). The other half of the merge — a tenure block handed to the depth
 # outside instead of freed — costs kq nothing, because kq never freed one:
 # ten_frees reads 0 on both sides.
-print_small 71028843
-print_big 721239636
-path_small 19090428
-path_big 198948286
+# 2026-09-02: all four rows fall, and the container agrees with the runner to
+# the INSTRUCTION on every one of them. kanso#1210 writes the dispatcher
+# inline at each call site where the head is a value, so a fold whose callable
+# does not change tests it once outside the loop rather than once a lap.
+#
+#     row           delta         old pin        new pin
+#     print_small   -339,126      -0.477%
+#     print_big   -3,391,260      -0.470%
+#     path_small       -3,498      -0.018%
+#     path_big         -3,498      -0.002%
+#
+# The job again did NOT land on the recorded Genoa (0x19/0x11): it ran on
+# 0x6/0xad. So the compiler's effect was measured a second time in a
+# container, one path, one toolchain, the two pins the only difference —
+# 71,028,621 -> 70,689,495, 721,239,220 -> 717,847,960, 19,090,001 ->
+# 19,086,503 and 198,947,859 -> 198,944,361. Every delta matches the runner's
+# exactly: -339,126, -3,391,260, -3,498 and -3,498. Two chips, two glibc
+# revisions, four rows, zero disagreement about what this pin bump costs.
+#
+# The print rows carry it because printing walks every value through a fold
+# whose callable is loop-invariant; the path rows touch one twice. No
+# allocation counter moves: all three cost goldens and the numbers stamp are
+# byte-identical, which is what removing a test rather than an allocation
+# looks like from an allocator counter's side.
+print_small 70689717
+print_big 717848376
+path_small 19086930
+path_big 198944788
