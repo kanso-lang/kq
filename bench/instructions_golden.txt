@@ -420,10 +420,10 @@
 # The four rows above were read straight off the tail of the failing job. That
 # is the print this file's own gate gained earlier today; without it they sit
 # under 123 lines of CPU features, where the log API does not reach.
-print_small 70033118
-print_big 711282386
-path_small 19081523
-path_big 198939381
+print_small 60920985
+print_big 619701488
+path_small 17805415
+path_big 185867193
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
@@ -440,3 +440,21 @@ path_big 198939381
 # container, `--release` both sides, which is how every bump in this ledger
 # since kq#88 has been prepared. Absolute counts differ between the two hosts
 # and the deltas have agreed to the instruction five times running.
+#
+# 2026-09-02, kq#94 (pin past kanso#1221–#1224). THE CONTAINER-TO-RUNNER
+# OFFSET IS NOT ONE NUMBER PER ROW — it is one number per row per silicon,
+# and only two of the four rows are stable under it.
+#
+# The container measured 60,920,063 / 619,701,575 / 17,805,002 / 185,866,780
+# and the runner answered 60,920,985 / 619,701,488 / 17,805,415 / 185,867,193.
+# The two path rows landed on container+413 exactly, the offset used for them
+# eight times running. The two print rows did not: print_small came out +922
+# against a recorded 236, and print_big -87 against a recorded 430.
+#
+# The dispatch block this run printed is the AMD one — Prefer_No_VZEROUPPER
+# and Prefer_PMINUB_for_stringop both set — where the offsets were derived
+# against a Cascade Lake container. The block above already says the pool is
+# not one CPU and that the print rows carry the larger share of the string
+# routines glibc dispatches by feature; this is that, measured. A predicted
+# print row is a guess whose error is the size of the thing it is checking,
+# so predict the path rows and read the print rows off CI.
