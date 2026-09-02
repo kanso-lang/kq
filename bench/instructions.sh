@@ -168,6 +168,16 @@ else
       cat /tmp/kq_dispatch_now.txt
     fi
   fi
+  # The rows again, AFTER the dispatch block, because that block is 123 lines
+  # and the diff above it is what a reader actually needs. kanso's twin of
+  # this gate learned the same thing about its own eighty-line profile: a
+  # diagnostic the log API will not hand back is one nobody can fetch, and
+  # the tail is the only part it reliably hands back. A session bumping the
+  # pin from a container cannot measure these rows itself — that is the whole
+  # point of the measured-on refusal above — so this print is how the numbers
+  # travel from the runner into the golden.
+  echo "=== every row as measured here, to copy into the golden"
+  cat work.txt
   echo "::error::the work kq does changed. A rise is a regression to explain"
   echo "::error::and a fall is a win to bank — say which in the PR and"
   echo "::error::regenerate"
