@@ -420,10 +420,10 @@
 # The four rows above were read straight off the tail of the failing job. That
 # is the print this file's own gate gained earlier today; without it they sit
 # under 123 lines of CPU features, where the log API does not reach.
-print_small 60920985
-print_big 619701488
-path_small 17805415
-path_big 185867193
+print_small 55441582
+print_big 564907981
+path_small 17781185
+path_big 185848094
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
@@ -480,7 +480,3 @@ path_big 185867193
 # That is the whole reason this file exists, restated by a third bump: a
 # session that reads only the allocator counters concludes the compiler bump
 # cost kq nothing and is wrong by nine per cent.
-print_small 55441582
-print_big 564907981
-path_small 17781185
-path_big 185848094
