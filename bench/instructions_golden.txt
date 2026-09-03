@@ -467,9 +467,13 @@ path_big 185848094
 #   path_small   17,805,415 -> 17,781,185   -0.1360%
 #   path_big    185,867,193 -> 185,848,094  -0.0102%
 #
-# Counted on family 0x19 model 0x11 (AMD Zen 4), which is a chip these rows
-# have landed on before, and the fall is two orders of magnitude past the
-# spread any dispatch difference can account for. It is the compiler:
+# Counted twice, on family 0x19 model 0x11 (Zen 4) and then on family 0x19
+# model 0x1 (Zen 3), and the two chips produced all four rows IDENTICALLY —
+# 55,441,582 and 564,907,981 and 17,781,185 and 185,848,094 on both. The
+# ledger has been carrying the print rows as the silicon-sensitive ones since
+# kq#94; between these two AMD models they are not sensitive at all. The fall
+# is also two orders of magnitude past the spread any dispatch difference can
+# account for. It is the compiler:
 # kanso#1226 and kanso#1227 took escapebench -22.68% and -9.23% between them,
 # both by removing work from the beat rewind, and kq's print path is what
 # exercises that here.
