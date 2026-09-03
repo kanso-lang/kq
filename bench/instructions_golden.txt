@@ -420,10 +420,10 @@
 # The four rows above were read straight off the tail of the failing job. That
 # is the print this file's own gate gained earlier today; without it they sit
 # under 123 lines of CPU features, where the log API does not reach.
-print_small 55441582
-print_big 564907981
-path_small 17781185
-path_big 185848094
+print_small 53874531
+print_big 548840063
+path_small 16214073
+path_big 169780115
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
@@ -484,3 +484,31 @@ path_big 185848094
 # That is the whole reason this file exists, restated by a third bump: a
 # session that reads only the allocator counters concludes the compiler bump
 # cost kq nothing and is wrong by nine per cent.
+# 2026-09-03, pin 1ed50efc -> c8442597 (kanso#1228, #1229 and #1230). All four
+# rows fall, and this time the two path rows fall hardest:
+#
+#   print_small  55,441,582 -> 53,874,531   -2.8264%
+#   print_big   564,907,981 -> 548,840,063  -2.8443%
+#   path_small   17,781,185 -> 16,214,073   -8.8133%
+#   path_big    185,848,094 -> 169,780,115  -8.6455%
+#
+# kanso#1230 is the whole of it: the json library's number scan and its float
+# test were two walks over the same bytes and are one now, and a group
+# dispatching on a byte read out of a byte string switches on the raw value
+# instead of rebuilding a boxed value to take apart again. jsonbench retires
+# 17.14% fewer instructions there.
+#
+# THE FALL IS THE DECODE, AND THE ROWS SAY SO IN ABSOLUTE TERMS. print_small
+# falls 1,567,051 where path_small falls 1,567,112 — 61 apart. print_big falls
+# 16,067,918 where path_big falls 16,067,979 — 61 apart again, on a fall of
+# sixteen million. Both commands decode the same document and then do
+# different things with it, so a saving in the shared prefix lands on both
+# rows equally and a saving anywhere else could not. The percentages differ
+# only because the path rows are the smaller denominators. Nothing had to be
+# argued to establish that: the four numbers say it.
+#
+# EVERY ALLOCATION COUNTER HELD STILL, for the fourth bump running. All three
+# cost goldens and bench/numbers_stamp.txt are byte-identical, and the scale
+# gate and the published-numbers gate both passed before this vein spoke. A
+# decoder that reads each number's bytes once instead of twice performs the
+# same allocations doing it.
