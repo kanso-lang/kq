@@ -420,10 +420,10 @@
 # The four rows above were read straight off the tail of the failing job. That
 # is the print this file's own gate gained earlier today; without it they sit
 # under 123 lines of CPU features, where the log API does not reach.
-print_small 60920985
-print_big 619701488
-path_small 17805415
-path_big 185867193
+print_small 55441582
+print_big 564907981
+path_small 17781185
+path_big 185848094
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
@@ -458,3 +458,29 @@ path_big 185867193
 # routines glibc dispatches by feature; this is that, measured. A predicted
 # print row is a guess whose error is the size of the thing it is checking,
 # so predict the path rows and read the print rows off CI.
+#
+# 2026-09-03, pin 7bf68cdc -> 1ed50efc (three kanso merges). All four rows
+# fall, and the two print rows fall by nine per cent:
+#
+#   print_small  60,920,985 -> 55,441,582   -8.9942%
+#   print_big   619,701,488 -> 564,907,981  -8.8419%
+#   path_small   17,805,415 -> 17,781,185   -0.1360%
+#   path_big    185,867,193 -> 185,848,094  -0.0102%
+#
+# Counted twice, on family 0x19 model 0x11 (Zen 4) and then on family 0x19
+# model 0x1 (Zen 3), and the two chips produced all four rows IDENTICALLY —
+# 55,441,582 and 564,907,981 and 17,781,185 and 185,848,094 on both. The
+# ledger has been carrying the print rows as the silicon-sensitive ones since
+# kq#94; between these two AMD models they are not sensitive at all. The fall
+# is also two orders of magnitude past the spread any dispatch difference can
+# account for. It is the compiler:
+# kanso#1226 and kanso#1227 took escapebench -22.68% and -9.23% between them,
+# both by removing work from the beat rewind, and kq's print path is what
+# exercises that here.
+#
+# EVERY ALLOCATION COUNTER HELD STILL. All three cost goldens and
+# bench/numbers_stamp.txt are byte-identical across this bump, and the scale
+# gate and the published-numbers gate both passed before this vein spoke.
+# That is the whole reason this file exists, restated by a third bump: a
+# session that reads only the allocator counters concludes the compiler bump
+# cost kq nothing and is wrong by nine per cent.
