@@ -23,6 +23,31 @@ set -e
 KANSO=${KANSO:-kanso}
 STORED=${KQ_STORED:-gate}
 
+# jq is this suite's ORACLE, the way the interpreter is kanso's. Without it the
+# fixture goldens still run, and they only say kq agrees with what kq printed
+# when the golden was written; the claim on the README — byte-identical to
+# `jq -S` — is the half that needs jq present to mean anything.
+#
+# That half used to be `if command -v jq`, and on a box without jq every case
+# printed `ok:` and the suite ended "all green" having compared nothing against
+# the oracle. A green suite that proves nothing is worse than a red one,
+# because it stops anybody looking. kanso's ratchet ran this very suite on a
+# box with no jq until 2026-09-03.
+#
+# So the absence is refused, and KQ_JQ=optional is the way to say you meant it
+# — which then reports the count rather than claiming the comparison ran.
+JQ=${KQ_JQ:-require}
+compared=0
+cases=0
+if ! command -v jq >/dev/null && [ "$JQ" = require ]; then
+  echo "jq is not installed, and it is this suite's oracle: the fixture"
+  echo "goldens compare kq against kq, and only jq -S can say whether the"
+  echo "README's byte-identity claim still holds. Install jq, or run with"
+  echo "KQ_JQ=optional to say you accept a suite that does not check it."
+  exit 1
+fi
+
+
 echo "== unit tests =="
 "$KANSO" test query
 
@@ -31,6 +56,7 @@ echo "== build =="
 
 run_case() {
   query=$1; fixture=$2; name=$3
+  cases=$((cases + 1))
   actual=$(./kq "$query" "fixtures/$fixture.json")
   expected=$(cat "fixtures/expected/$name.out")
   if [ "$actual" != "$expected" ]; then
@@ -41,6 +67,7 @@ run_case() {
     if [ "$actual" != "$theirs" ]; then
       echo "JQ DIVERGENCE: $name ($query on $fixture)"; exit 1
     fi
+    compared=$((compared + 1))
   fi
   echo "ok: $name"
 }
@@ -57,7 +84,8 @@ run_case '.empty_obj'           edge     edge_empty
 run_case '.'                    nested   nested_identity
 run_case '.[0].k0_30'           nested   nested_path
 
-echo "kq specs: all green"
+# What actually ran, rather than a word that covers either case.
+echo "kq specs: $cases fixture goldens, $compared of them compared against jq -S"
 
 echo "== cost goldens (allocator counters, deterministic, diffed) =="
 check_costs() {
