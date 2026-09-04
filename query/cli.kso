@@ -41,4 +41,20 @@ usage = print "usage: kq <path> [file.json]   e.g. kq .users[3].name data.json"
 
 fn with_query argv
   source = if (length argv > 1) (os/read_file argv[2]) io/stdin
-  source . apply argv[1]
+  source . (t -> queried t argv[1])
+
+# A path the user typed may not name a file, so absence arrives as data and is
+# matched here rather than insisted on with `read_file!`. That is Clay's
+# ruling of 2026-09-03 in the case it was made for: "if you know it's possible
+# for them to not be there, you wouldn't use an exception, you'd just return a
+# file_not_found type."
+#
+# The arm writes and exits rather than raising. An `err` at kq's endpoint
+# renders as `error[endpoint]: unhandled err reached the executor: [...]`,
+# which is a diagnostic about kq rather than a sentence for the person who
+# typed the name.
+fn queried (file_not_found f) _
+  io/write_err "kq: no such file: {f}\n" . (_ -> os/exit 1)
+
+fn queried text query
+  apply text query
