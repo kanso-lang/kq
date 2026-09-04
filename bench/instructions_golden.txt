@@ -420,10 +420,10 @@
 # The four rows above were read straight off the tail of the failing job. That
 # is the print this file's own gate gained earlier today; without it they sit
 # under 123 lines of CPU features, where the log API does not reach.
-print_small 53874531
-print_big 548840063
-path_small 16214073
-path_big 169780115
+print_small 53875620
+print_big 548837805
+path_small 16215723
+path_big 169781716
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
@@ -512,3 +512,23 @@ path_big 169780115
 # gate and the published-numbers gate both passed before this vein spoke. A
 # decoder that reads each number's bytes once instead of twice performs the
 # same allocations doing it.
+# 2026-09-04, pin c8442597 -> 3b9df304 (kanso#1237 and #1238). Three rows rise,
+# one falls, and every move is under three thousandths of a per cent:
+#
+#   print_small  53,874,531 -> 53,875,620   +0.0020%
+#   print_big   548,840,063 -> 548,837,805  -0.0004%
+#   path_small   16,214,073 -> 16,215,723   +0.0102%
+#   path_big    169,780,115 -> 169,781,716  +0.0009%
+#
+# kanso#1238 is the io half of the exceptional-vs-data gavel: `os/read_file`
+# answers `text | file_not_found` where it used to raise, and this pin puts the
+# bang on kq's eight harness reads and an arm on the CLI's one. That is one
+# extra dispatch on the read, once per program, and it is what the small rows
+# see. print_big falling while print_small rises on the same command is the
+# same libc-allocator noise the header records above: the sign of a move this
+# size is not attributable and nothing here claims it is.
+#
+# The allocation counters moved for the first time in five bumps, identically
+# on all three queries: allocs +3, alloc_bytes +96, evac_allocs +3, evac_bytes
+# +96, carry_dedup +1. One shape across `.`, `.[0].k0_30` and `.[0].name` is
+# the read wrapper's dispatch, once per program rather than per element.
