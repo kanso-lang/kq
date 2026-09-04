@@ -27,7 +27,7 @@ exceptions = "bench/scale_exceptions.txt"
 
 pub play = gated
 
-gated = os/read_file fixture . spread
+gated = os/read_file! fixture . spread
 
 # Ten copies of the fixture's elements in one flat array — the same shape at
 # ten times the length, which is what makes the ratio mean something. A nested
@@ -74,7 +74,7 @@ fn numeric? v
   length v > 0 and list/all? (text/chars v) digit?
 
 fn read_limits small big
-  os/read_file exceptions . (text -> judged small big (limits_of text))
+  os/read_file! exceptions . (text -> judged small big (limits_of text))
 
 fn limits_of text
   lines = list/select (text/split text "\n") body?
