@@ -11,16 +11,16 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 91593 | 915553 | 9.9x |
-| `alloc_bytes` | 5661104 | 56532484 | 9.9x |
+| `allocs` | 91596 | 915556 | 9.9x |
+| `alloc_bytes` | 5661200 | 56532580 | 9.9x |
 | `arena_blocks` | 3 | 23 | 7.6x |
 | `arena_peak_bytes` | 3145728 | 24955664 | 7.9x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 16 | 16 | 1.0x |
 | `beat_iters` | 131286 | 1312842 | 9.9x |
-| `evac_allocs` | 531 | 5067 | 9.5x |
-| `evac_bytes` | 395328 | 3945504 | 9.9x |
+| `evac_allocs` | 534 | 5070 | 9.4x |
+| `evac_bytes` | 395424 | 3945600 | 9.9x |
 | `survive_slots` | 3236 | 28724 | 8.8x |
 | `put_mut_fast` | 7791 | 77910 | 10.0x |
 | `put_mut_grow` | 570 | 5700 | 10.0x |
@@ -39,7 +39,7 @@ Work that is linear in the input lands near 10.
 | `append_fast` | 242226 | 2422260 | 10.0x |
 | `append_grow` | 2568 | 25680 | 10.0x |
 | `utf8_zerocopy` | 1933 | 19330 | 10.0x |
-| `carry_dedup` | 69 | 717 | 10.3x |
+| `carry_dedup` | 70 | 718 | 10.2x |
 | `bytes_malloc` | 616 | 6160 | 10.0x |
 | `bytes_freed` | 616 | 6160 | 10.0x |
 | `perm_live_bytes` | 0 | 0 | — |
