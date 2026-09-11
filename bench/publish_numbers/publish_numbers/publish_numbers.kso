@@ -36,7 +36,7 @@ closed = "<!-- measured:end -->"
 
 pub play = spread
 
-spread = os/read_file fixture . widened
+spread = os/read_file! fixture . widened
 
 fn widened text
   body = text/trim text
@@ -97,7 +97,7 @@ fn written small big
 # here: the counters a runner reproduces exactly, then the race the workflow
 # just ran.
 fn spliced rows
-  os/read_file readme . (text -> counted text rows) . (_ -> timed)
+  os/read_file! readme . (text -> counted text rows) . (_ -> timed)
 
 fn counted text rows
   os/write_file readme (rewritten text rows)
@@ -117,10 +117,10 @@ fn reading false
   print "no race this run — the wall-clock table is a hand sitting"
 
 fn reading true
-  os/read_file raced . laps
+  os/read_file! raced . laps
 
 fn laps text
-  os/read_file readme . (page -> raced_into page text)
+  os/read_file! readme . (page -> raced_into page text)
 
 fn raced_into page text
   os/write_file readme (with_race page (race_rows text))

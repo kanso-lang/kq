@@ -69,10 +69,10 @@ the 188 KB fixture — work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 91593 | 915553 | 9.9x |
-| `alloc_bytes` | 5661104 | 56532484 | 9.9x |
+| `allocs` | 91596 | 915556 | 9.9x |
+| `alloc_bytes` | 5661200 | 56532580 | 9.9x |
 | `arena_peak_bytes` | 3145728 | 24955664 | 7.9x |
-| `carry_dedup` | 69 | 717 | 10.3x |
+| `carry_dedup` | 70 | 718 | 10.2x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
 

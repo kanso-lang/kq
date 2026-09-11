@@ -26,10 +26,10 @@ golden = "bench/cost_golden.txt"
 
 pub play = compared
 
-compared = os/read_file stamp . (was -> against was)
+compared = os/read_file! stamp . (was -> against was)
 
 fn against was
-  os/read_file golden . (now -> judged (text/trim was) (text/trim now))
+  os/read_file! golden . (now -> judged (text/trim was) (text/trim now))
 
 fn judged was now
   told (was == now) was now
