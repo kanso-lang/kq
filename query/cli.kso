@@ -35,13 +35,13 @@ fn stream_list xs
   io/write "[\n" . (_ -> stream_elems xs 1)
 
 fn stream_one xs i
-  io/write (elem_chunk xs[i] (sep i)) . (_ -> stream_elems xs (i + 1))
+  io/write (elem_chunk xs[i]! (sep i)) . (_ -> stream_elems xs (i + 1))
 
 usage = print "usage: kq <path> [file.json]   e.g. kq .users[3].name data.json"
 
 fn with_query argv
-  source = if (length argv > 1) (os/read_file argv[2]) io/stdin
-  source . (t -> queried t argv[1])
+  source = if (length argv > 1) (os/read_file argv[2]!) io/stdin
+  source . (t -> queried t argv[1]!)
 
 # A path the user typed may not name a file, so absence arrives as data and is
 # matched here rather than insisted on with `read_file!`. That is Clay's
