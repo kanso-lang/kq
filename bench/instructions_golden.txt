@@ -8,7 +8,7 @@
 # that nothing enforced: kanso pasted a container's numbers over its runner's
 # on 2026-08-23 on the strength of a diff, and two ubuntu 24.04 boxes one glibc
 # revision apart differ by more than most of what this vein catches.
-# measured-on glibc=2.39-0ubuntu8.8
+# measured-on glibc=2.39-0ubuntu8.9
 #
 # The glibc revision is only half the host. Its ifunc resolvers pick memcpy,
 # memcmp and strlen by CPU feature at load time, so the same libc on other
@@ -431,10 +431,48 @@
 # test for a none before the arm that used to answer first, and every one of
 # them sits on a per-byte or per-step path. Measured on CI.
 #
-print_small 53910008
-print_big 549181604
-path_small 16224325
-path_big 169865567
+# 2026-09-12, pin 3b9df304 -> 08dc714d (about 130 kanso merges, most of them
+# runtime work). EVERY ROW FALLS 20% TO 33%, the largest move this vein has
+# ever recorded:
+#
+#   print_small  53,910,008 ->  36,939,986  -16,970,022  -31.4784%
+#   print_big   549,181,604 -> 367,451,586 -181,730,018  -33.0911%
+#   path_small   16,224,325 ->  12,956,348   -3,267,977  -20.1425%
+#   path_big    169,865,567 -> 130,675,651  -39,189,916  -23.0711%
+#
+# THE RUNNER IMAGE ALSO MOVED, glibc 2.39-0ubuntu8.8 -> 8.9, so the measured-on
+# line above changed with these rows. That is a confound and it is named rather
+# than waved past: the header says two ubuntu boxes one glibc revision apart
+# differ by more than most of what this vein catches, and it is right.
+#
+# What settles it is that the same tree was counted on two hosts that differ in
+# BOTH variables -- a container on glibc 8.7 and a Cascade Lake (0x6/0x55),
+# against this runner on glibc 8.9 and a Zen 3 (0x19/0x1):
+#
+#   print_small  36,939,919  vs  36,939,986     +67  +0.00018%
+#   print_big   367,452,103  vs 367,451,586    -517  -0.00014%
+#   path_small   12,956,565  vs  12,956,348    -217  -0.00167%
+#   path_big    130,675,868  vs 130,675,651    -217  -0.00017%
+#
+# Two glibcs and two CPUs agree to under two thousandths of a per cent. The
+# host confound is real and it is four orders of magnitude smaller than the
+# fall, so the fall is the compiler's. Nothing here rests on the two sittings
+# being comparable in principle; it rests on them having been taken.
+#
+# The allocation counters moved in the same bump and the three cost goldens
+# carry the reading: allocs -21.1%, beat_iters -90.5%, evac_bytes -98.3%, with
+# held_peak_bytes +189.8% and utf8_bytes +33.6%. Those two rises are the same
+# change as the falls -- kanso#1295 freezes every constant on native, so a
+# constant is held once instead of remade and evacuated.
+#
+# The README's wall-clock table is NOT re-sat. It is a dated sitting on a quiet
+# box and this is a shared runner; bench/numbers_stamp.txt is re-stamped so the
+# gate records which sitting the table belongs to. The table now describes a
+# compiler 130 merges old and owes a release sitting.
+print_small 36939986
+print_big 367451586
+path_small 12956348
+path_big 130675651
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
