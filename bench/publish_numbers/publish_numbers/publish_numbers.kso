@@ -36,24 +36,24 @@ closed = "<!-- measured:end -->"
 
 pub play = spread
 
-spread = os/read_file! fixture . widened
+spread = os/read_file! fixture .> widened
 
 fn widened text
   body = text/trim text
   inner = text/slice body 2 (length body - 1)
-  os/write_file grown (ten_times inner) . (_ -> gathered)
+  os/write_file grown (ten_times inner) .> (_ -> gathered)
 
 fn ten_times inner
   five = "{inner},{inner},{inner},{inner},{inner}"
   "[{five},{five}]"
 
-gathered = counted fixture . (small -> against small)
+gathered = counted fixture .> (small -> against small)
 
 fn against small
-  counted grown . (big -> written small big)
+  counted grown .> (big -> written small big)
 
 fn counted path
-  os/run "env" ["KANSO_COUNTERS=1" "./kq" "." path] . (r -> pairs_of r.stderr)
+  os/run "env" ["KANSO_COUNTERS=1" "./kq" "." path] .> (r -> pairs_of r.stderr)
 
 fn pairs_of text
   lines = list/select (text/split text "\n") counter?
@@ -91,13 +91,13 @@ fn found_value pair
 fn written small big
   rows = list/to_list (list/map small (p -> row_for p big))
   body = "{header}{text/join rows "\n"}\n{footer}"
-  os/write_file out body . (_ -> spliced (ratio_rows small big))
+  os/write_file out body .> (_ -> spliced (ratio_rows small big))
 
 # The README is what a reader lands on, so every row it carries is written
 # here: the counters a runner reproduces exactly, then the race the workflow
 # just ran.
 fn spliced rows
-  os/read_file! readme . (text -> counted text rows) . (_ -> timed)
+  os/read_file! readme .> (text -> counted text rows) .> (_ -> timed)
 
 fn counted text rows
   os/write_file readme (rewritten text rows)
@@ -111,16 +111,16 @@ fn rewritten text rows
 # shared runner is a different machine every run and interleaving cannot
 # cancel that. So there is normally no race file, and asking is how one finds
 # out — a read that fails answers an err, which no arm here could catch.
-timed = os/exists raced . reading
+timed = os/exists raced .> reading
 
 fn reading false
   print "no race this run — the wall-clock table is a hand sitting"
 
 fn reading true
-  os/read_file! raced . laps
+  os/read_file! raced .> laps
 
 fn laps text
-  os/read_file! readme . (page -> raced_into page text)
+  os/read_file! readme .> (page -> raced_into page text)
 
 fn raced_into page text
   os/write_file readme (with_race page (race_rows text))

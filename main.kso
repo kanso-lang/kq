@@ -1,4 +1,4 @@
 import "./query"
 import "std/os"
 
-os/args . dispatch
+os/args .> dispatch

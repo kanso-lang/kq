@@ -47,6 +47,9 @@ fn steps_index_close cs 93 p q acc
   n = text/to_int (text/utf8 (text/slice cs p (q - 1)))
   scan_steps cs (q + 1) (push acc (n + 1))
 
+fn steps_index_close _ none p _ _
+  err (parse_failure p "bad path: expected `]`")
+
 fn steps_index_close _ _ p _ _
   err (parse_failure p "bad path: expected `]`")
 
@@ -63,8 +66,11 @@ fn steps_key_checked cs q acc key
 fn walk doc path
   walk_at doc path 1
 
+fn walk_at none _ _
+  none
+
 fn walk_at doc path i
   if (i > length path) doc (walk_step doc path i)
 
 fn walk_step doc path i
-  walk_at doc[path[i]] path (i + 1)
+  walk_at doc[path[i]!] path (i + 1)
