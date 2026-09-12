@@ -11,17 +11,17 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 91596 | 915556 | 9.9x |
-| `alloc_bytes` | 5661200 | 56532580 | 9.9x |
-| `arena_blocks` | 3 | 23 | 7.6x |
-| `arena_peak_bytes` | 3145728 | 24955664 | 7.9x |
+| `allocs` | 72314 | 722754 | 9.9x |
+| `alloc_bytes` | 5251978 | 52440792 | 9.9x |
+| `arena_blocks` | 3 | 22 | 7.3x |
+| `arena_peak_bytes` | 3145728 | 23907088 | 7.5x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
-| `perm_allocs` | 16 | 16 | 1.0x |
-| `beat_iters` | 131286 | 1312842 | 9.9x |
-| `evac_allocs` | 534 | 5070 | 9.4x |
-| `evac_bytes` | 395424 | 3945600 | 9.9x |
-| `survive_slots` | 3236 | 28724 | 8.8x |
+| `perm_allocs` | 18 | 18 | 1.0x |
+| `beat_iters` | 12423 | 124216 | 9.9x |
+| `evac_allocs` | 37 | 61 | 1.6x |
+| `evac_bytes` | 6768 | 21072 | 3.1x |
+| `survive_slots` | 3080 | 28728 | 9.3x |
 | `put_mut_fast` | 7791 | 77910 | 10.0x |
 | `put_mut_grow` | 570 | 5700 | 10.0x |
 | `push_mut_fast` | 7438 | 74415 | 10.0x |
@@ -34,20 +34,21 @@ Work that is linear in the input lands near 10.
 | `thunk_live_exit` | 0 | 0 | — |
 | `el_parses` | 0 | 0 | — |
 | `ryu_renders` | 0 | 0 | — |
-| `utf8_bytes` | 562350 | 5623518 | 10.0x |
+| `utf8_bytes` | 751048 | 7510489 | 10.0x |
 | `find2_calls` | 20950 | 209500 | 10.0x |
 | `append_fast` | 242226 | 2422260 | 10.0x |
 | `append_grow` | 2568 | 25680 | 10.0x |
+| `append_rendered` | 0 | 0 | — |
 | `utf8_zerocopy` | 1933 | 19330 | 10.0x |
 | `carry_dedup` | 70 | 718 | 10.2x |
-| `bytes_malloc` | 616 | 6160 | 10.0x |
-| `bytes_freed` | 616 | 6160 | 10.0x |
+| `bytes_malloc` | 596 | 5960 | 10.0x |
+| `bytes_freed` | 596 | 5960 | 10.0x |
 | `perm_live_bytes` | 0 | 0 | — |
 | `perm_peak_bytes` | 0 | 0 | — |
 | `str_scans` | 4217 | 42170 | 10.0x |
 | `str_scan_bytes` | 30961 | 309610 | 10.0x |
 | `buf_reuse` | 569 | 5699 | 10.0x |
-| `held_peak_bytes` | 336956 | 3142508 | 9.3x |
+| `held_peak_bytes` | 976416 | 4587388 | 4.6x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
 | `ten_blocks` | 0 | 0 | — |
@@ -56,7 +57,7 @@ Work that is linear in the input lands near 10.
 | `sh_rec` | 737520 | 7375200 | 10.0x |
 | `sh_buf` | 1077744 | 10707120 | 9.9x |
 | `sh_map` | 0 | 0 | — |
-| `sh_bytes` | 591600 | 5915568 | 9.9x |
+| `sh_bytes` | 549048 | 5490048 | 9.9x |
 
 The 2.1 MB fixture is ten flat copies of bench/large.json's elements, built
 at measurement time, so every row reproduces from what the repo carries.
