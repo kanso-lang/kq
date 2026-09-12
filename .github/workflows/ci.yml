@@ -34,8 +34,16 @@ jobs:
       # The vein the allocator counters cannot reach. Both quadratics behind
       # the 147 ms row allocated nothing new, so every gate above this line
       # stayed green across a 3.7x change in the published number.
+      # apt-get update first. Without it the runner image's cached index names
+      # a libc6-dbg that the pool has already superseded, and the install dies
+      # on `404 Not Found ... libc6-dbg_2.39-0ubuntu8.8_amd64.deb` before
+      # valgrind is unpacked. Twice in a row on 2026-09-12, while every step
+      # above it stayed green -- so the instruction vein went unmeasured and
+      # the job read as a kq failure.
       - name: valgrind (callgrind counts, it does not sample)
-        run: sudo apt-get install -y valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
       - name: how much work kq does
         run: sh bench/instructions.sh
 
