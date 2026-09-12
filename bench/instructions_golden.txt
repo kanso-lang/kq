@@ -469,10 +469,37 @@
 # box and this is a shared runner; bench/numbers_stamp.txt is re-stamped so the
 # gate records which sitting the table belongs to. The table now describes a
 # compiler 130 merges old and owes a release sitting.
-print_small 36939986
-print_big 367451586
-path_small 12956348
-path_big 130675651
+# 2026-09-12 (round two, same day): main merged in, and all four rows fall by
+# TWELVE OR THIRTEEN instructions. The pin does not move and the compiler does
+# not either; what changed is that this branch had forked before kq#99 and its
+# query/cli.kso still carried the pre-#99 bang. The merge takes main's arm.
+#
+#   print_small  36,939,986 ->  36,939,974   -12
+#   print_big   367,451,586 -> 367,451,574   -12
+#   path_small   12,956,348 ->  12,956,335   -13
+#   path_big    130,675,651 -> 130,675,638   -13
+#
+# Under the OLD compiler kq#99 measured the same swap at +1,089 / -2,258 /
+# +1,650 / +1,601 -- a hundredfold larger and mixed in sign. kanso#1295's
+# constant freeze is the difference: the read wrapper's extra dispatch no
+# longer allocates, so what is left is a dozen instructions of shape rather
+# than a thousand of allocator work. The three cost goldens agree from the
+# other side -- they came back byte-identical across the merge.
+#
+# A NOTE ON PREDICTION, because this file exists to make numbers honest. The
+# same delta was measured on the container first (-12/-12/-13/-13, glibc 8.7,
+# Cascade Lake) and the pull request said explicitly NOT to project CI's rows
+# from it, on the grounds that the container-to-runner offset had measured
+# +67/-517/-217/-217 -- larger than the effect. That caution was aimed at the
+# wrong risk. Both CI sittings are runner sittings, so the host offset appears
+# in each and cancels in the difference; the container's delta transferred
+# exactly, to the instruction, on all four rows. The rule this supports is
+# narrower than the one stated: a host offset spoils an ABSOLUTE row and
+# leaves a DIFFERENCE measured twice on the same host alone.
+print_small 36939974
+print_big 367451574
+path_small 12956335
+path_big 130675638
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
