@@ -39,6 +39,27 @@ fi
 have="glibc=${glibc:-unknown}"
 want=$(sed -n 's/^# measured-on //p' bench/instructions_golden.txt)
 echo "instructions vein: measured-on $want; here $have"
+
+# Two hosts can fail that check and they do not deserve the same answer, which
+# this refusal did not distinguish until the runner image moved out from under
+# it on 2026-09-12.
+#
+# A CONTAINER may not measure. Its numbers going into the golden over the
+# runner's is the exact accident the refusal was written after, so it prints
+# nothing and there is nothing to paste.
+#
+# CI may measure, because CI's sitting is the only one that may ever be
+# recorded. It measures, prints, and STILL FAILS: nothing is compared.
+#
+# Without that second case the instruction above — "let CI measure it and copy
+# the rows out of the job log" — is unfollowable the moment CI itself is the
+# mismatching host. The runner went glibc 2.39-0ubuntu8.8 -> 8.9 and the gate
+# refused on the only box allowed to answer it, telling a reader to go and
+# read rows that were never produced. kanso hit this on 2026-09-03 when the
+# runner's rustc moved under all three of its compile veins, and the shape
+# here is its scripts/gates/host_gate.sh, which draws the line the same way and
+# for the same reason.
+cannot_compare=
 if [ "$want" != "$have" ]; then
   echo "::error::these rows were measured on $want and this host is $have,"
   echo "::error::so the two cannot be compared. Do not regenerate"
@@ -47,7 +68,14 @@ if [ "$want" != "$have" ]; then
   echo "::error::itself moved, every row moves with it and none has"
   echo "::error::regressed: regenerate all four in one go, update the"
   echo "::error::measured-on line, and say so in the pull request."
-  exit 1
+  if [ -z "$GITHUB_ACTIONS" ]; then
+    exit 1
+  fi
+  echo "::error::Measuring anyway, because this is CI and CI's sitting is the"
+  echo "::error::only one that may ever be recorded. The rows below are this"
+  echo "::error::runner's, on a host the golden does not name. NOTHING IS"
+  echo "::error::COMPARED and this gate still fails."
+  cannot_compare=1
 fi
 
 # glibc is not the whole host. Its ifunc resolvers pick memcpy, memcmp,
@@ -130,6 +158,17 @@ for row in ".:bench/large.json:print_small" \
     >/dev/null 2>/tmp/ir.$name
   printf '%s %s\n' "$name" "$(grep -o 'I   refs:.*' /tmp/ir.$name | tr -dc 0-9)"
 done > work.txt
+
+if [ -n "$cannot_compare" ]; then
+  echo "=== every row as measured on $have, to copy into the golden"
+  cat work.txt
+  echo "::error::These four rows are this runner's and the golden's are"
+  echo "::error::$want's. They are not a diff and no row here has been"
+  echo "::error::compared to anything. If the runner image moved, every row"
+  echo "::error::moved with it and none has regressed: take all four in one"
+  echo "::error::go, update the measured-on line, and say so in the PR."
+  exit 1
+fi
 
 if [ ! -f bench/instructions_golden.txt ]; then
   echo "no golden yet — these are the numbers to commit:"
