@@ -52,7 +52,13 @@ echo "== unit tests =="
 "$KANSO" test query
 
 echo "== build =="
-"$KANSO" build "$(pwd)" --release >/dev/null
+# `--counters` because the cost-goldens step below reads the allocator
+# counters out of THIS binary at run time, and since kanso#1396 a binary built
+# without them says so and prints nothing rather than printing a block that is
+# mostly right. The bytes kq writes are identical either way -- the gates only
+# count -- so the fixture goldens above and the jq comparison are unaffected,
+# and the wall-clock table was never taken from here.
+"$KANSO" build "$(pwd)" --release --counters >/dev/null
 
 run_case() {
   query=$1; fixture=$2; name=$3
