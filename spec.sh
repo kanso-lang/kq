@@ -93,6 +93,45 @@ run_case '.[0].k0_30'           nested   nested_path
 # What actually ran, rather than a word that covers either case.
 echo "kq specs: $cases fixture goldens, $compared of them compared against jq -S"
 
+echo "== the instruction golden's rows are rows =="
+# bench/instructions.sh splits its golden into prose and rows, and everything
+# it does afterwards — the diff that decides whether kq's work changed — rests
+# on that split being right. On 2026-09-14 it was not: a blank line separating
+# two history notes survived the reader, work_want.txt came out one line longer
+# than the measurement, and the gate reported "the work kq does changed" with
+# all four rows byte-identical. The gate cannot catch this itself; by the time
+# it speaks it has already spent a minute under callgrind and is comparing the
+# wrong thing.
+#
+# So the split is checked here, where it costs nothing, and it is checked
+# against the reader THE GATE ACTUALLY USES: golden_rows is lifted out of
+# bench/instructions.sh by text and run. A copy of the expression would go
+# green the moment the gate's own diverged, which is exactly when this needs
+# to speak.
+rows=$(sed -n '/^golden_rows() {$/,/^}$/p' bench/instructions.sh)
+if [ -z "$rows" ]; then
+  echo "bench/instructions.sh has no golden_rows() to lift. If the reader was"
+  echo "renamed, rename it here too — this check must read the real one."
+  exit 1
+fi
+eval "$rows"
+bad=$(golden_rows | grep -vcE '^[a-z0-9_]+ [0-9]+$' || true)
+count=$(golden_rows | wc -l | tr -d ' ')
+if [ "$bad" != 0 ]; then
+  echo "bench/instructions_golden.txt: $bad line(s) the gate will read as a row"
+  echo "are not one. A row is a name and a count; prose is a '#' line. A blank"
+  echo "line between two notes is the way this last happened."
+  golden_rows | grep -nE -v '^[a-z0-9_]+ [0-9]+$'
+  exit 1
+fi
+if [ "$count" != 4 ]; then
+  echo "bench/instructions_golden.txt holds $count rows and the gate measures"
+  echo "four (print_small, print_big, path_small, path_big). The diff would"
+  echo "fail whatever the binary does."
+  exit 1
+fi
+echo "ok: four rows, each a name and a count"
+
 echo "== cost goldens (allocator counters, deterministic, diffed) =="
 check_costs() {
   query=$1; golden=$2; fixture=$3

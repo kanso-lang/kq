@@ -583,10 +583,6 @@
 # linear, and the published-numbers gate. No allocation counter moved across
 # the 25 merges.
 #
-print_small 35472506
-print_big 352078885
-path_small 12568927
-path_big 126170824
 # 2026-09-02: pin past kanso#1213 and kanso#1214, and for the first time in
 # this ledger every row RISES. print_small +176,218 (+0.252%), print_big
 # +1,762,180 (+0.248%), path_small and path_big +1,796 apiece.
@@ -695,3 +691,44 @@ path_big 126170824
 # on all three queries: allocs +3, alloc_bytes +96, evac_allocs +3, evac_bytes
 # +96, carry_dedup +1. One shape across `.`, `.[0].k0_30` and `.[0].name` is
 # the read wrapper's dispatch, once per program rather than per element.
+#
+# 2026-09-14 (kq#105): the pin walks 22 kanso commits, 7b9844fe -> 39442a53,
+# and ALL FOUR ROWS FALL, hard:
+#
+#   print_small  35,472,506 ->  33,502,329   -1,970,177   -5.5541%
+#   print_big   352,078,885 -> 332,154,383  -19,924,502   -5.6591%
+#   path_small   12,568,927 ->  11,113,897   -1,455,030  -11.5764%
+#   path_big    126,170,824 -> 111,429,085  -14,741,739  -11.6840%
+#
+# THE PULL REQUEST PREDICTED NO MOVEMENT AND WAS WRONG. Its body said six of
+# the seven merges in the range were compile-side and that kq links the
+# runtime rather than the front end, so the rows should hold. The second half
+# of that sentence is right and is exactly why they moved: the range is not
+# mostly compile-side. It holds six runtime changes --
+#
+#   kanso#1396  the runtime's twenty-seven counter sites leave a shipped binary
+#   kanso#1397  a bytes value's storage regime rides in bit 0 of its capacity
+#   kanso#1398  a byte index hands the dispatch a raw byte, not a box
+#   kanso#1400  emit_at's general merge records a set
+#   kanso#1401  the byte append's fit test moves in front of the header load
+#   kanso#1405  the digit test asked in place
+#
+# -- and every kq program links all six. The prediction was made by reading
+# the merge titles rather than the diffs, and the titles of a compile-cost
+# change and a runtime change look alike from the outside.
+#
+# The two path rows fall twice as far as the two print rows. Both pairs share
+# the same runtime; what differs is the share of their work that is the byte
+# index and the append, which is where four of the six changes landed. A path
+# query is mostly indexing.
+#
+# The allocation counters did NOT move: all three cost goldens compare
+# byte-identically, the scale gate reports every counter linear, and
+# publish_numbers rewrites MEASURED.md and README.md to what they already
+# said. So this is a 5.6-11.7% fall that no allocator counter can see, which
+# is the second time this vein has been the only one to speak and the reason
+# CLAUDE.md names it as the one to remember.
+print_small 33502329
+print_big 332154383
+path_small 11113897
+path_big 111429085
