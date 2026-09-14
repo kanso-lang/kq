@@ -691,7 +691,7 @@
 # on all three queries: allocs +3, alloc_bytes +96, evac_allocs +3, evac_bytes
 # +96, carry_dedup +1. One shape across `.`, `.[0].k0_30` and `.[0].name` is
 # the read wrapper's dispatch, once per program rather than per element.
-
+#
 # 2026-09-14 (kq#105): the pin walks 22 kanso commits, 7b9844fe -> 39442a53,
 # and ALL FOUR ROWS FALL, hard:
 #
