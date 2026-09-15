@@ -3,7 +3,9 @@ import "std/os"
 import "std/text"
 
 fn apply text query
-  render_result (walk (decode text) (parse_path query))
+  doc = decode text
+  path = parse_path query
+  render_result (walk doc path)
 
 fn elem_chunk v lead
   text/utf8 (pretty_onto (text/append (text/bytes lead) "  ") v 1)
