@@ -61,17 +61,18 @@ fn pairs_of text
 
 fn counter? line
   parts = text/split line "="
-  length parts == 2 and numeric? parts[2]!
+  length parts == 2 and numeric? parts[2]
 
 fn pair_of line
   parts = text/split line "="
-  [parts[1]! (text/to_int parts[2]!)]
+  return ["" 0] if length parts < 2
+  [parts[1] (text/to_int parts[2])]
 
 fn name_of p
-  p[1]!
+  p[1]
 
 fn value_of p
-  p[2]!
+  p[2]
 
 fn digit? c
   c >= "0" and c <= "9"
@@ -104,8 +105,10 @@ fn counted text rows
 
 fn rewritten text rows
   halves = text/split text opened
-  tail = text/split halves[2]! closed
-  "{halves[1]!}{banner}{text/join rows "\n"}\n\n{closed}{tail[2]!}"
+  return text if length halves < 2
+  tail = text/split halves[2] closed
+  return text if length tail < 2
+  "{halves[1]}{banner}{text/join rows "\n"}\n\n{closed}{tail[2]}"
 
 # The wall-clock table is a dated sitting on a quiet box, moved by hand: a
 # shared runner is a different machine every run and interleaving cannot
@@ -132,11 +135,13 @@ fn race_rows text
 
 fn lap_row line
   parts = text/split line "\t"
-  "| {parts[1]!} | {parts[2]!} ms | {parts[3]!} ms | {faster parts} |"
+  return "| {line} | | | |" if length parts < 3
+  "| {parts[1]} | {parts[2]} ms | {parts[3]} ms | {faster parts} |"
 
 fn faster parts
-  k = text/to_float parts[2]!
-  j = text/to_float parts[3]!
+  return "" if length parts < 3
+  k = text/to_float parts[2]
+  j = text/to_float parts[3]
   ahead (j / k) (k < j)
 
 fn ahead r true
@@ -163,8 +168,10 @@ fn widened s false
 
 fn with_race page rows
   halves = text/split page race_opened
-  tail = text/split halves[2]! race_closed
-  "{halves[1]!}{race_banner}{rows}\n\n{race_closed}{tail[2]!}"
+  return page if length halves < 2
+  tail = text/split halves[2] race_closed
+  return page if length tail < 2
+  "{halves[1]}{race_banner}{rows}\n\n{race_closed}{tail[2]}"
 
 race_banner = """
   <!-- raced:begin — every pull request races the two binaries; edit
