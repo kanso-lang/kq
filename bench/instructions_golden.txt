@@ -742,7 +742,34 @@
 # one. kanso's part-3 branch exempts the err as-pattern from that rule; the
 # pin bump that follows its merge takes these rows back. Measured on the
 # runner the golden names.
-print_small 35572681
-print_big 357236412
-path_small 13166671
-path_big 131988105
+# 2026-09-16, pin 39442a53 -> 0c3f6dfd (kanso's explicit box, landed whole as
+# the fold). All four rows FALL, and two things are in the fall at once:
+#
+#     print_small   35,572,681 ->  33,246,196   -2,326,485   -6.54%
+#     print_big    357,236,412 -> 329,473,379  -27,763,033   -7.77%
+#     path_small    13,166,671 ->  10,514,893   -2,651,778  -20.14%
+#     path_big     131,988,105 -> 105,299,058  -26,689,047  -20.22%
+#
+# The first is the err as-pattern exemption the entry above predicted. Against
+# the rows measured BEFORE the decoder's arms went in, the fall carries past
+# where it started:
+#
+#     print_small   33,502,329 ->  33,246,196     -256,133   -0.76%
+#     print_big    332,154,383 -> 329,473,379   -2,681,004   -0.81%
+#     path_small    11,113,897 ->  10,514,893     -599,004   -5.39%
+#     path_big     111,429,085 -> 105,299,058   -6,130,027   -5.50%
+#
+# So the exemption gives the arms' rise back in full and the fold's own work
+# takes a further 0.8% off the print rows and 5.4% off the path rows. The
+# allocation counters agree about the direction and not about the size: they
+# fall 29%, 42% and 18%, where these rows fall 6.5% to 20%. Allocation is a
+# part of the work rather than a proxy for it.
+#
+# The path rows fall three times as far as the print rows, which is where the
+# index sits. `]!` is gone from every read in this repo and eleven bounds are
+# spelled instead, so a proven index emits no check; a path query is mostly
+# indexing and a print is mostly rendering.
+print_small 33246196
+print_big 329473379
+path_small 10514893
+path_big 105299058
