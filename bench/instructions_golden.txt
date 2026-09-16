@@ -728,7 +728,21 @@
 # said. So this is a 5.6-11.7% fall that no allocator counter can see, which
 # is the second time this vein has been the only one to speak and the reason
 # CLAUDE.md names it as the one to remember.
-print_small 33502329
-print_big 332154383
-path_small 11113897
-path_big 111429085
+# 2026-09-16, the decoder's err arms under the pin at 39442a53. All four rows
+# rise, and the arms are not why:
+#
+#     print_small   33,502,329 ->  35,572,681   +2,070,352   +6.18%
+#     print_big    332,154,383 -> 357,236,412  +25,082,029   +7.55%
+#     path_small    11,113,897 ->  13,166,671   +2,052,774  +18.47%
+#     path_big     111,429,085 -> 131,988,105  +20,559,020  +18.45%
+#
+# The arms sit at the slots the two-word record convention carries, and the
+# pinned compiler passes a slot boxed whenever any arm at it names the whole
+# value, so every scanner answer is built into a record and read back out of
+# one. kanso's part-3 branch exempts the err as-pattern from that rule; the
+# pin bump that follows its merge takes these rows back. Measured on the
+# runner the golden names.
+print_small 35572681
+print_big 357236412
+path_small 13166671
+path_big 131988105
