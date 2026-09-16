@@ -11,16 +11,16 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 72314 | 722754 | 9.9x |
-| `alloc_bytes` | 5251978 | 52440792 | 9.9x |
-| `arena_blocks` | 3 | 22 | 7.3x |
-| `arena_peak_bytes` | 3145728 | 23907088 | 7.5x |
+| `allocs` | 98769 | 987295 | 9.9x |
+| `alloc_bytes` | 6945098 | 69371416 | 9.9x |
+| `arena_blocks` | 4 | 39 | 9.7x |
+| `arena_peak_bytes` | 4194304 | 41732880 | 9.9x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
-| `beat_iters` | 12423 | 124216 | 9.9x |
-| `evac_allocs` | 37 | 61 | 1.6x |
-| `evac_bytes` | 6768 | 21072 | 3.1x |
+| `beat_iters` | 12423 | 124220 | 9.9x |
+| `evac_allocs` | 37 | 85 | 2.2x |
+| `evac_bytes` | 6768 | 49104 | 7.2x |
 | `survive_slots` | 3080 | 28728 | 9.3x |
 | `put_mut_fast` | 7791 | 77910 | 10.0x |
 | `put_mut_grow` | 570 | 5700 | 10.0x |
@@ -48,13 +48,13 @@ Work that is linear in the input lands near 10.
 | `str_scans` | 4217 | 42170 | 10.0x |
 | `str_scan_bytes` | 30961 | 309610 | 10.0x |
 | `buf_reuse` | 569 | 5699 | 10.0x |
-| `held_peak_bytes` | 976416 | 4587388 | 4.6x |
+| `held_peak_bytes` | 976416 | 3746170 | 3.8x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
 | `ten_blocks` | 0 | 0 | — |
 | `ten_frees` | 0 | 0 | — |
 | `sh_str` | 603056 | 6029632 | 9.9x |
-| `sh_rec` | 737520 | 7375200 | 10.0x |
+| `sh_rec` | 2430640 | 24305824 | 9.9x |
 | `sh_buf` | 1077744 | 10707120 | 9.9x |
 | `sh_map` | 0 | 0 | — |
 | `sh_bytes` | 549048 | 5490048 | 9.9x |
