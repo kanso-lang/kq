@@ -77,10 +77,14 @@ jobs:
       # the 2.1 MB fixture, which the scale gate writes. The counters are
       # exact on any machine; the wall-clock table stays what this file
       # always said it was, a dated sitting on a quiet box moved by hand.
+      # Hence `--counters` on the build. Since kanso#1396 a binary built
+      # without them refuses to report rather than printing a block whose
+      # inlined-path rows read zero, so publish_numbers would have written a
+      # table with no counters in it.
       - name: build kq and the scaled fixture
         run: |
           export KANSO=/tmp/kanso/target/release/kanso
-          "$KANSO" build "$(pwd)" --release
+          "$KANSO" build "$(pwd)" --release --counters
           "$KANSO" run bench/scale_gate
       - name: regenerate bench/MEASURED.md
         run: |

@@ -11,8 +11,8 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 72314 | 722754 | 9.9x |
-| `alloc_bytes` | 5251978 | 52440792 | 9.9x |
+| `allocs` | 70022 | 699853 | 9.9x |
+| `alloc_bytes` | 5220090 | 52221768 | 10.0x |
 | `arena_blocks` | 3 | 22 | 7.3x |
 | `arena_peak_bytes` | 3145728 | 23907088 | 7.5x |
 | `cohort_frees` | 0 | 0 | — |
@@ -24,8 +24,8 @@ Work that is linear in the input lands near 10.
 | `survive_slots` | 3080 | 28728 | 9.3x |
 | `put_mut_fast` | 7791 | 77910 | 10.0x |
 | `put_mut_grow` | 570 | 5700 | 10.0x |
-| `push_mut_fast` | 7438 | 74415 | 10.0x |
-| `push_mut_slow` | 2294 | 22905 | 9.9x |
+| `push_mut_fast` | 8836 | 88385 | 10.0x |
+| `push_mut_slow` | 896 | 8935 | 9.9x |
 | `thunk_allocs` | 0 | 0 | — |
 | `thunk_forces` | 0 | 0 | — |
 | `thunk_evals` | 0 | 0 | — |
@@ -47,7 +47,7 @@ Work that is linear in the input lands near 10.
 | `perm_peak_bytes` | 0 | 0 | — |
 | `str_scans` | 4217 | 42170 | 10.0x |
 | `str_scan_bytes` | 30961 | 309610 | 10.0x |
-| `buf_reuse` | 569 | 5699 | 10.0x |
+| `buf_reuse` | 1463 | 14630 | 10.0x |
 | `held_peak_bytes` | 976416 | 4587388 | 4.6x |
 | `view_allocs` | 2761 | 27610 | 10.0x |
 | `view_frees` | 0 | 0 | — |
@@ -55,7 +55,7 @@ Work that is linear in the input lands near 10.
 | `ten_frees` | 0 | 0 | — |
 | `sh_str` | 603056 | 6029632 | 9.9x |
 | `sh_rec` | 737520 | 7375200 | 10.0x |
-| `sh_buf` | 1077744 | 10707120 | 9.9x |
+| `sh_buf` | 1045856 | 10488096 | 10.0x |
 | `sh_map` | 0 | 0 | — |
 | `sh_bytes` | 549048 | 5490048 | 9.9x |
 

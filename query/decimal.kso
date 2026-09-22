@@ -14,11 +14,12 @@ import "std/text"
 # to scientific and the literal is reassembled like any marked one
 pub fn canonical lit
   bs = text/bytes lit
-  if (marker_at bs 1 > length lit and settled? bs) lit (canon_signed lit bs[1]!)
+  return lit if length bs < 1
+  if (marker_at bs 1 > length lit and settled? bs) lit (canon_signed lit bs[1])
 
 fn settled? bs
-  start = if (bs[1]! == 45) 2 1
-  fractional = bs[start]! == 48 and bs[start + 1] == 46
+  start = if (bs[1] == 45) 2 1
+  fractional = bs[start] == 48 and bs[start + 1] == 46
   if fractional (frac_zeros bs (start + 2) 0 < 6) true
 
 fn frac_zeros bs p seen
@@ -53,7 +54,8 @@ fn expo_after body split
 
 fn expo_signed etext
   bs = text/bytes etext
-  expo_lead etext bs[1]!
+  return 0 if length bs < 1
+  expo_lead etext bs[1]
 
 fn expo_lead etext 43
   text/to_int (text/slice etext 2 (length etext))
@@ -94,7 +96,7 @@ fn strip_zeros raw
 
 # leading zeros, stopping one short of the end so zero keeps its digit
 fn zero_run bs p last
-  if (p < last and bs[p]! == 48) (zero_run bs (p + 1) last) (p - 1)
+  if (p < last and bs[p] == 48) (zero_run bs (p + 1) last) (p - 1)
 
 fn canon_route d e a
   if (e <= 0 and 0 - 7 < a) (canon_plain d e) (canon_sci d a)

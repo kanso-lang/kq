@@ -73,4 +73,4 @@ fn walk_at doc path i
   if (i > length path) doc (walk_step doc path i)
 
 fn walk_step doc path i
-  walk_at doc[path[i]!] path (i + 1)
+  walk_at doc[path[i]] path (i + 1)

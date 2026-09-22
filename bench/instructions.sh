@@ -176,7 +176,23 @@ if [ ! -f bench/instructions_golden.txt ]; then
   exit 1
 fi
 
-grep -v '^#' bench/instructions_golden.txt > work_want.txt
+# A row in the golden is a name and a count. Everything else in the file is
+# prose, and prose is a `#` line OR a BLANK one — which this reader did not
+# know until 2026-09-14. kq#105 wrote a history note separated from the one
+# above it by an empty line instead of a bare `#`, `grep -v` kept it, and
+# work_want.txt came out five lines against work.txt's four. The gate failed
+# with all four rows byte-identical to what this runner had just measured,
+# under a message reading "the work kq does changed" — which was false, and
+# cost a round to disbelieve. A gate that can say that about an unchanged
+# binary is worse than the typo it caught.
+#
+# The blank is dropped rather than forbidden: a separator between two notes is
+# ordinary, and a vein whose header cannot hold one is a trap laid for the next
+# person to write in it.
+golden_rows() {
+  grep -v '^#' bench/instructions_golden.txt | grep -v '^[[:space:]]*$'
+}
+golden_rows > work_want.txt
 if diff work_want.txt work.txt; then
   echo "instructions: every row is where it was"
 else

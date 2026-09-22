@@ -55,17 +55,18 @@ fn pairs_of text
 
 fn counter? line
   parts = text/split line "="
-  length parts == 2 and numeric? parts[2]!
+  length parts == 2 and numeric? parts[2]
 
 fn pair_of line
   parts = text/split line "="
-  [parts[1]! (text/to_int parts[2]!)]
+  return ["" 0] if length parts < 2
+  [parts[1] (text/to_int parts[2])]
 
 fn name_of p
-  p[1]!
+  p[1]
 
 fn value_of p
-  p[2]!
+  p[2]
 
 fn digit? c
   c >= "0" and c <= "9"
@@ -86,7 +87,8 @@ fn body? line
 
 fn limit_of line
   parts = text/split (text/trim line) " "
-  [parts[1]! (text/to_int parts[2]!)]
+  return ["" 0] if length parts < 2
+  [parts[1] (text/to_int parts[2])]
 
 fn judged small big limits
   bad = list/to_list (list/select small (p -> over? p big limits))
