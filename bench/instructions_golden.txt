@@ -769,7 +769,15 @@
 # index sits. `]!` is gone from every read in this repo and eleven bounds are
 # spelled instead, so a proven index emits no check; a path query is mostly
 # indexing and a print is mostly rendering.
-print_small 33246196
-print_big 329473379
-path_small 10514893
-path_big 105299058
+#
+# 2026-09-25, the pin moves from kanso#1520 to kanso#1649, 768 commits, read
+# by CI at c1f4d867: print_small 33,246,196 -> 26,173,881 (-21.3%), print_big
+# 329,473,379 -> 257,491,540 (-21.8%), path_small 10,514,893 -> 9,857,578
+# (-6.3%), path_big 105,299,058 -> 98,803,837 (-6.2%). The print rows carry
+# most of the window's run-program work, the float writer and the builders
+# that grow in place among it; the path rows are mostly indexing, which the
+# window touched less. The allocation counters fall 26% on the same fixture.
+print_small 26173881
+print_big 257491540
+path_small 9857578
+path_big 98803837
