@@ -797,9 +797,8 @@
 # 248,866,666 -> 242,654,834 (-2.50%), path_small 9,649,688 -> 9,590,126
 # (-0.62%), path_big 94,589,789 -> 94,041,712 (-0.58%). The window carried
 # guards that branch on their comparisons, a list buffer's capacity doubled
-# with its regime in bit 0, and a beat top that is never NULL. Every inlined
-# push lost a negate and a conditional move, and the print rows push the most.
-# No allocation counter moved.
+# with its regime in bit 0, and a beat top that is never NULL; which of the
+# three the fall belongs to was not isolated here. No allocation counter moved.
 print_small 25140465
 print_big 242654834
 path_small 9590126
