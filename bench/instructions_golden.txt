@@ -791,7 +791,7 @@
 # 94,589,789. Every row falls by a few thousand instructions or less; the
 # window's runtime wins sit in json encoding, which kq's printer does not use,
 # and no allocation counter moved.
-print_small 25761699
-print_big 248866666
-path_small 9649688
-path_big 94589789
+print_small 25140465
+print_big 242654834
+path_small 9590126
+path_big 94041712
