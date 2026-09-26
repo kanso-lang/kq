@@ -777,7 +777,14 @@
 # most of the window's run-program work, the float writer and the builders
 # that grow in place among it; the path rows are mostly indexing, which the
 # window touched less. The allocation counters fall 26% on the same fixture.
-print_small 26173881
-print_big 257491540
-path_small 9857578
-path_big 98803837
+#
+# 2026-09-26, the pin moves from kanso#1649 to kanso#1656, read by CI at
+# eff4c45d: print_small 26,173,881 -> 25,762,177 (-1.57%), print_big
+# 257,491,540 -> 248,871,195 (-3.35%), path_small 9,857,578 -> 9,649,807
+# (-2.11%), path_big 98,803,837 -> 94,589,908 (-4.26%). The window carried the
+# short-token cache, typed map keys and the proven-tag assume; the allocation
+# counters fall a fifth on the same fixture.
+print_small 25762177
+print_big 248871195
+path_small 9649807
+path_big 94589908
