@@ -784,7 +784,14 @@
 # (-2.11%), path_big 98,803,837 -> 94,589,908 (-4.26%). The window carried the
 # short-token cache, typed map keys and the proven-tag assume; the allocation
 # counters fall a fifth on the same fixture.
-print_small 25762177
-print_big 248871195
-path_small 9649807
-path_big 94589908
+#
+# 2026-09-26, the pin moves from kanso#1656 to kanso#1659, read by CI at
+# 2489296d: print_small 25,762,177 -> 25,761,699, print_big 248,871,195 ->
+# 248,866,666, path_small 9,649,807 -> 9,649,688, path_big 94,589,908 ->
+# 94,589,789. Every row falls by a few thousand instructions or less; the
+# window's runtime wins sit in json encoding, which kq's printer does not use,
+# and no allocation counter moved.
+print_small 25761699
+print_big 248866666
+path_small 9649688
+path_big 94589789
