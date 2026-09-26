@@ -799,6 +799,15 @@
 # guards that branch on their comparisons, a list buffer's capacity doubled
 # with its regime in bit 0, and a beat top that is never NULL; which of the
 # three the fall belongs to was not isolated here. No allocation counter moved.
+#
+# 2026-09-26, the pin moves from kanso#1667 to kanso#1670, read by CI at
+# cbd28734: print_small 25,140,465 -> 24,976,070 (-0.65%), print_big
+# 242,654,834 -> 240,878,231 (-0.73%), path_small 9,590,126 -> 9,396,896
+# (-2.01%), path_big 94,041,712 -> 91,974,882 (-2.20%). The window carried a
+# carried record asked about failure once, an index that assumes its length is
+# not negative and asks its bounds in two branches, a span asked in two
+# unsigned compares, a room test split in two, and an empty run that hands the
+# builder back; which of them the fall belongs to was not isolated here.
 print_small 24976070
 print_big 240878231
 path_small 9396896
