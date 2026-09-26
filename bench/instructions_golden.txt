@@ -791,6 +791,14 @@
 # 94,589,789. Every row falls by a few thousand instructions or less; the
 # window's runtime wins sit in json encoding, which kq's printer does not use,
 # and no allocation counter moved.
+#
+# 2026-09-26, the pin moves from kanso#1659 to kanso#1667, read by CI at
+# f12c819e: print_small 25,761,699 -> 25,140,465 (-2.41%), print_big
+# 248,866,666 -> 242,654,834 (-2.50%), path_small 9,649,688 -> 9,590,126
+# (-0.62%), path_big 94,589,789 -> 94,041,712 (-0.58%). The window carried
+# guards that branch on their comparisons, a list buffer's capacity doubled
+# with its regime in bit 0, and a beat top that is never NULL; which of the
+# three the fall belongs to was not isolated here. No allocation counter moved.
 print_small 25140465
 print_big 242654834
 path_small 9590126
