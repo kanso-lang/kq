@@ -808,7 +808,15 @@
 # not negative and asks its bounds in two branches, a span asked in two
 # unsigned compares, a room test split in two, and an empty run that hands the
 # builder back; which of them the fall belongs to was not isolated here.
-print_small 24976070
-print_big 240878231
-path_small 9396896
-path_big 91974882
+#
+# 2026-09-26, the pin moves from kanso#1670 to kanso#1679, read by CI at
+# 2ae77eba: print_small 24,976,070 -> 24,867,609 (-0.43%), print_big
+# 240,878,231 -> 240,326,995 (-0.23%), path_small 9,396,896 -> 9,343,104
+# (-0.57%), path_big 91,974,882 -> 91,974,434 (-0.0005%). The window carried
+# utf-8 continuations counted in a register, a slice's character starts
+# counted by multiply, and up to eight digits of a number read as one word;
+# which of them the fall belongs to was not isolated here.
+print_small 24867609
+print_big 240326995
+path_small 9343104
+path_big 91974434
