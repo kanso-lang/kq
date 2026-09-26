@@ -799,7 +799,7 @@
 # guards that branch on their comparisons, a list buffer's capacity doubled
 # with its regime in bit 0, and a beat top that is never NULL; which of the
 # three the fall belongs to was not isolated here. No allocation counter moved.
-print_small 25140465
-print_big 242654834
-path_small 9590126
-path_big 94041712
+print_small 24976070
+print_big 240878231
+path_small 9396896
+path_big 91974882
