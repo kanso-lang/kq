@@ -11,16 +11,16 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 41549 | 415132 | 9.9x |
-| `alloc_bytes` | 4436074 | 44379160 | 10.0x |
+| `allocs` | 44310 | 442742 | 9.9x |
+| `alloc_bytes` | 4123098 | 41249400 | 10.0x |
 | `arena_blocks` | 2 | 18 | 9.0x |
 | `arena_peak_bytes` | 2097152 | 19712784 | 9.3x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
-| `beat_iters` | 12423 | 124216 | 9.9x |
-| `evac_allocs` | 37 | 61 | 1.6x |
-| `evac_bytes` | 6768 | 31552 | 4.6x |
+| `beat_iters` | 12423 | 124215 | 9.9x |
+| `evac_allocs` | 37 | 55 | 1.4x |
+| `evac_bytes` | 6768 | 18768 | 2.7x |
 | `survive_slots` | 3080 | 28728 | 9.3x |
 | `put_mut_fast` | 8361 | 83610 | 10.0x |
 | `put_mut_grow` | 0 | 0 | — |
@@ -44,7 +44,7 @@ Work that is linear in the input lands near 10.
 | `utf8_zerocopy` | 1933 | 19330 | 10.0x |
 | `carry_dedup` | 70 | 718 | 10.2x |
 | `bytes_malloc` | 596 | 5960 | 10.0x |
-| `bytes_freed` | 596 | 5960 | 10.0x |
+| `bytes_freed` | 596 | 5896 | 9.8x |
 | `perm_live_bytes` | 58392 | 58392 | 1.0x |
 | `perm_peak_bytes` | 58392 | 58392 | 1.0x |
 | `str_scans` | 2376 | 23760 | 10.0x |
@@ -52,15 +52,15 @@ Work that is linear in the input lands near 10.
 | `seek_resumes` | 0 | 0 | — |
 | `seek_steps` | 0 | 0 | — |
 | `buf_reuse` | 0 | 0 | — |
-| `held_peak_bytes` | 656500 | 1505012 | 2.2x |
+| `held_peak_bytes` | 656500 | 2040722 | 3.1x |
 | `view_allocs` | 0 | 0 | — |
 | `view_frees` | 0 | 0 | — |
 | `ten_blocks` | 0 | 0 | — |
 | `ten_frees` | 0 | 0 | — |
 | `ten_handups` | 0 | 0 | — |
 | `sh_str` | 278480 | 2783872 | 9.9x |
-| `sh_rec` | 737520 | 7375200 | 10.0x |
-| `sh_buf` | 978096 | 9808048 | 10.0x |
+| `sh_rec` | 202416 | 2024160 | 10.0x |
+| `sh_buf` | 1156048 | 11587568 | 10.0x |
 | `sh_map` | 0 | 0 | — |
 | `sh_bytes` | 549048 | 5490048 | 9.9x |
 
