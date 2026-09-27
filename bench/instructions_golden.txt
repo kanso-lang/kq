@@ -816,7 +816,15 @@
 # utf-8 continuations counted in a register, a slice's character starts
 # counted by multiply, and up to eight digits of a number read as one word;
 # which of them the fall belongs to was not isolated here.
-print_small 24867609
-print_big 240326995
-path_small 9343104
-path_big 91974434
+#
+# 2026-09-27, the pin moves from kanso#1682 to kanso#1683 and the JSON writer
+# and pretty printer index `keys m` and `values m` in place of an entry record
+# per pair, read by CI at 8bd4d740: print_small 24,867,609 -> 24,769,343
+# (-0.40%), print_big 240,326,995 -> 239,028,831 (-0.54%), path_small
+# 9,343,104 -> 9,342,330 (-774), path_big 91,974,434 -> 91,973,660 (-774).
+# With the compiler held at kanso#1683, the writer change alone read -0.27%
+# and -0.43% on the print rows and -515 on each path row, on the container.
+print_small 24769343
+print_big 239028831
+path_small 9342330
+path_big 91973660
