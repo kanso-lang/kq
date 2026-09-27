@@ -12,8 +12,8 @@ fn indent_onto acc 0
 fn indent_onto acc n
   indent_onto (text/append acc "  ") (n - 1)
 
-fn pair_row acc e depth
-  pretty_entry (text/append acc ",\n") e depth
+fn pair_row acc k v depth
+  pretty_entry (text/append acc ",\n") k v depth
 
 fn pretty v depth
   text/utf8 (pretty_onto (text/bytes "") v depth)
@@ -22,7 +22,7 @@ fn pretty_elems acc xs i depth
   return acc if i < 1 or length xs < i
   pretty_elems (elem_row acc xs[i] depth) xs (i + 1) depth
 
-fn pretty_entry acc (entry k v) depth
+fn pretty_entry acc k v depth
   opened = text/append (indent_onto acc (depth + 1)) 34
   keyed = text/append (escape_onto opened k) "\": "
   pretty_onto keyed v (depth + 1)
@@ -35,10 +35,11 @@ fn pretty_list acc xs depth
   text/append (indent_onto rest depth) 93
 
 fn pretty_map acc m depth
-  es = entries m
-  return acc if length es < 1
-  first = pretty_entry (text/append acc "\{\n") es[1] depth
-  rest = text/append (pretty_pairs first es 2 depth) "\n"
+  ks = keys m
+  vs = values m
+  return acc if length ks < 1 or length vs < 1
+  first = pretty_entry (text/append acc "\{\n") ks[1] vs[1] depth
+  rest = text/append (pretty_pairs first ks vs 2 depth) "\n"
   text/append (indent_onto rest depth) 125
 
 fn pretty_onto acc true _
@@ -69,6 +70,6 @@ fn pretty_onto acc xs:[]some depth
 fn pretty_onto acc m:map[string some] depth
   if (length m == 0) (text/append acc "\{}") (pretty_map acc m depth)
 
-fn pretty_pairs acc es i depth
-  return acc if i < 1 or length es < i
-  pretty_pairs (pair_row acc es[i] depth) es (i + 1) depth
+fn pretty_pairs acc ks vs i depth
+  return acc if i < 1 or length ks < i or length vs < i
+  pretty_pairs (pair_row acc ks[i] vs[i] depth) ks vs (i + 1) depth
