@@ -37,10 +37,13 @@ fn encode_list acc xs
   opened = encode_onto (text/append acc 91) xs[1]
   text/append (encode_items opened xs 2) 93
 
-fn encode_map acc es
-  return acc if length es < 1
-  opened = entry_onto (text/append acc 123) es[1]
-  text/append (encode_pairs opened es 2) 125
+# A map is written from its two columns: `keys m` and `values m` are in the
+# order `entries m` gives, so position i of each is one pair, and the walk
+# indexes both rather than building and taking apart a record per pair.
+fn encode_map acc ks vs
+  return text/append acc "\{}" if length ks == 0 or length vs == 0
+  opened = entry_onto (text/append acc 123) ks[1] vs[1]
+  text/append (encode_pairs opened ks vs 2) 125
 
 fn encode_onto acc true
   text/append acc "true"
@@ -68,14 +71,13 @@ fn encode_onto acc xs:[]some
   if (length xs == 0) (text/append acc "[]") (encode_list acc xs)
 
 fn encode_onto acc m:map[string some]
-  es = entries m
-  if (length es == 0) (text/append acc "\{}") (encode_map acc es)
+  encode_map acc (keys m) (values m)
 
-fn encode_pairs acc es i
-  return acc if i < 1 or length es < i
-  encode_pairs (pair_onto acc es[i]) es (i + 1)
+fn encode_pairs acc ks vs i
+  return acc if i < 1 or length ks < i or length vs < i
+  encode_pairs (pair_onto acc ks[i] vs[i]) ks vs (i + 1)
 
-fn entry_onto acc (entry k v)
+fn entry_onto acc k v
   keyed = encode_onto acc k
   encode_onto (text/append keyed 58) v
 
@@ -110,5 +112,5 @@ fn must (err reason)
 fn must v
   v
 
-fn pair_onto acc e
-  entry_onto (text/append acc 44) e
+fn pair_onto acc k v
+  entry_onto (text/append acc 44) k v
