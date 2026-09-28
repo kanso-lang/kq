@@ -836,11 +836,12 @@
 # it, and the writer skips the scan for a clean one: print_small 24,664,557 ->
 # 24,651,254 (-0.05%), print_big 237,980,985 -> 236,284,837 (-0.71%). The path
 # rows rise: path_small 9,341,767 -> 9,515,314 (+173,547) and path_big
-# 91,973,097 -> 92,145,357 (+172,260). They write one field and pay for the
-# flag's byte walk on every token the decoder shares. The rise is the same on
-# both documents, and 2,433 slots fill on each, which is the rise in
-# perm_live_bytes; that is about 71 instructions a slot. The walk being all of
-# it is not isolated here. Read by CI on kq#123.
+# 91,973,097 -> 92,145,357 (+172,260). They write one field, so the skip
+# saves them little, and the rise is the same on both documents: 2,433
+# slots fill on each, which is the rise in perm_live_bytes, about 71
+# instructions a slot. The flag's byte walk is about 17 of those, measured
+# when kanso replaced it with one word; the rest arrived with the pin and was
+# not taken apart. Read by CI on kq#123.
 print_small 24651254
 print_big 236284837
 path_small 9515314
