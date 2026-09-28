@@ -859,7 +859,15 @@
 # (-126,744). The path rows barely move: path_small 9,443,999 -> 9,443,828
 # (-171), path_big 92,086,245 -> 92,086,076 (-169). The fall arrived with the
 # pin and was not taken apart. Read by CI on kq#125.
-print_small 24566777
-print_big 236095229
-path_small 9443828
-path_big 92086076
+#
+# 2026-09-28, the pin moves to kanso#1705: six fixes from generated programs,
+# and a release link that runs LLVM 19's pipeline without dead-argument
+# elimination. The print rows fall, print_small 24,566,777 -> 24,566,238
+# (-539) and print_big 236,095,229 -> 236,089,419 (-5,810); the path rows
+# rise by 14 each, path_small 9,443,828 -> 9,443,842 and path_big 92,086,076
+# -> 92,086,090. The moves arrived with the pin and were not taken apart. Read
+# by CI on kq#126.
+print_small 24566238
+print_big 236089419
+path_small 9443842
+path_big 92086090
