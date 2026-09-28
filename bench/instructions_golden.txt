@@ -867,7 +867,7 @@
 # rise by 14 each, path_small 9,443,828 -> 9,443,842 and path_big 92,086,076
 # -> 92,086,090. The moves arrived with the pin and were not taken apart. Read
 # by CI on kq#126.
-print_small 24566574
-print_big 236093248
-path_small 9443843
-path_big 92086091
+print_small 24565916
+print_big 236086423
+path_small 9443836
+path_big 92086084
