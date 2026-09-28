@@ -824,7 +824,7 @@
 # 9,343,104 -> 9,342,330 (-774), path_big 91,974,434 -> 91,973,660 (-774).
 # With the compiler held at kanso#1683, the writer change alone read -0.27%
 # and -0.43% on the print rows and -515 on each path row, on the container.
-print_small 24769343
-print_big 239028831
-path_small 9342330
-path_big 91973660
+print_small 24664557
+print_big 237980985
+path_small 9341767
+path_big 91973097
