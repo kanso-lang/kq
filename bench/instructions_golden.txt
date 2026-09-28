@@ -851,7 +851,15 @@
 # their kq#123 rise. That is more than the 17 instructions a fill the walk
 # was measured at, times 2,433 fills; the rest arrived with the pin and was
 # not taken apart. Read by CI on kq#124.
-print_small 24579631
-print_big 236221973
-path_small 9443999
-path_big 92086245
+#
+# 2026-09-28, the pin moves to kanso#1703, which carried five fixes for
+# places where kanso's engines disagreed, among them a list rendered in one
+# pass into one buffer. The print rows fall: print_small
+# 24,579,631 -> 24,566,777 (-12,854), print_big 236,221,973 -> 236,095,229
+# (-126,744). The path rows barely move: path_small 9,443,999 -> 9,443,828
+# (-171), path_big 92,086,245 -> 92,086,076 (-169). The fall arrived with the
+# pin and was not taken apart. Read by CI on kq#125.
+print_small 24566777
+print_big 236095229
+path_small 9443828
+path_big 92086076
