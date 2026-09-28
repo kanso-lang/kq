@@ -842,7 +842,16 @@
 # instructions a slot. The flag's byte walk is about 17 of those, measured
 # when kanso replaced it with one word; the rest arrived with the pin and was
 # not taken apart. Read by CI on kq#123.
-print_small 24651254
-print_big 236284837
-path_small 9515314
-path_big 92145357
+#
+# 2026-09-28, the pin moves to kanso#1692, which computes that flag from one
+# eight-byte word instead of walking the token's bytes: print_small
+# 24,651,254 -> 24,579,631 (-71,623), print_big 236,284,837 -> 236,221,973
+# (-62,864), path_small 9,515,314 -> 9,443,999 (-71,315), path_big
+# 92,145,357 -> 92,086,245 (-59,112). The path rows give back 41% and 34% of
+# their kq#123 rise. That is more than the 17 instructions a fill the walk
+# was measured at, times 2,433 fills; the rest arrived with the pin and was
+# not taken apart. Read by CI on kq#124.
+print_small 24579631
+print_big 236221973
+path_small 9443999
+path_big 92086245
