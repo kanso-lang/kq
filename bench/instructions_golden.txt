@@ -830,7 +830,18 @@
 # path does: print_small 24,769,343 -> 24,664,557 (-0.42%), print_big
 # 239,028,831 -> 237,980,985 (-0.44%), path_small 9,342,330 -> 9,341,767
 # (-563), path_big 91,973,660 -> 91,973,097 (-563). Read by CI on kq#121.
-print_small 24664557
-print_big 237980985
-path_small 9341767
-path_big 91973097
+#
+# 2026-09-28, the pin moves to kanso#1690, where a shared token of four to
+# seven bytes records when it is first made whether JSON escapes anything in
+# it, and the writer skips the scan for a clean one: print_small 24,664,557 ->
+# 24,651,254 (-0.05%), print_big 237,980,985 -> 236,284,837 (-0.71%). The path
+# rows rise: path_small 9,341,767 -> 9,515,314 (+173,547) and path_big
+# 91,973,097 -> 92,145,357 (+172,260). They write one field and pay for the
+# flag's byte walk on every token the decoder shares. The rise is the same on
+# both documents, and 2,433 slots fill on each, which is the rise in
+# perm_live_bytes; that is about 71 instructions a slot. The walk being all of
+# it is not isolated here. Read by CI on kq#123.
+print_small 24651254
+print_big 236284837
+path_small 9515314
+path_big 92145357
