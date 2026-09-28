@@ -36,7 +36,7 @@ Work that is linear in the input lands near 10.
 | `ryu_renders` | 0 | 0 | — |
 | `ryu_short` | 0 | 0 | — |
 | `utf8_bytes` | 713253 | 6999474 | 9.8x |
-| `find2_calls` | 20950 | 209500 | 10.0x |
+| `find2_calls` | 12648 | 126480 | 10.0x |
 | `number_spans` | 0 | 0 | — |
 | `append_fast` | 243999 | 2439990 | 10.0x |
 | `append_grow` | 795 | 7950 | 10.0x |
@@ -45,8 +45,8 @@ Work that is linear in the input lands near 10.
 | `carry_dedup` | 70 | 718 | 10.2x |
 | `bytes_malloc` | 596 | 5960 | 10.0x |
 | `bytes_freed` | 596 | 5896 | 9.8x |
-| `perm_live_bytes` | 58392 | 58392 | 1.0x |
-| `perm_peak_bytes` | 58392 | 58392 | 1.0x |
+| `perm_live_bytes` | 60825 | 60825 | 1.0x |
+| `perm_peak_bytes` | 60825 | 60825 | 1.0x |
 | `str_scans` | 2376 | 23760 | 10.0x |
 | `str_scan_bytes` | 19110 | 191100 | 10.0x |
 | `seek_resumes` | 0 | 0 | — |
