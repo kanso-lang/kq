@@ -824,6 +824,12 @@
 # 9,343,104 -> 9,342,330 (-774), path_big 91,974,434 -> 91,973,660 (-774).
 # With the compiler held at kanso#1683, the writer change alone read -0.27%
 # and -0.43% on the print rows and -515 on each path row, on the container.
+#
+# 2026-09-28, the pin moves to kanso#1688, which builds a map's keys and
+# values in one call when a call asks for both, as the JSON writer's map
+# path does: print_small 24,769,343 -> 24,664,557 (-0.42%), print_big
+# 239,028,831 -> 237,980,985 (-0.44%), path_small 9,342,330 -> 9,341,767
+# (-563), path_big 91,973,660 -> 91,973,097 (-563). Read by CI on kq#121.
 print_small 24664557
 print_big 237980985
 path_small 9341767
