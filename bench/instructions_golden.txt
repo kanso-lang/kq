@@ -867,7 +867,15 @@
 # rise by 14 each, path_small 9,443,828 -> 9,443,842 and path_big 92,086,076
 # -> 92,086,090. The moves arrived with the pin and were not taken apart. Read
 # by CI on kq#126.
-print_small 24692985
-print_big 237211949
-path_small 9570891
-path_big 93210280
+#
+# 2026-09-29, the pin moves to kanso#1718, past kanso#1717 and kanso#1721:
+# a partial holds its err, widens its group's parameters, and runs when a
+# partial over it is full. Every row rises: print_small 24,692,985 ->
+# 24,694,542 (+1,557), print_big 237,211,949 -> 237,226,629 (+14,680),
+# path_small 9,570,891 -> 9,570,929 (+38), path_big 93,210,280 -> 93,210,318
+# (+38). The rise arrived with the pin and was not taken apart. Read by CI on
+# kq#138.
+print_small 24694542
+print_big 237226629
+path_small 9570929
+path_big 93210318
