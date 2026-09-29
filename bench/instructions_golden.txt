@@ -875,7 +875,7 @@
 # path_small 9,570,891 -> 9,570,929 (+38), path_big 93,210,280 -> 93,210,318
 # (+38). The rise arrived with the pin and was not taken apart. Read by CI on
 # kq#138.
-print_small 24694542
-print_big 237226629
-path_small 9570929
-path_big 93210318
+print_small 24694285
+print_big 237223264
+path_small 9570889
+path_big 93210278
