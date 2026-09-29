@@ -875,7 +875,15 @@
 # path_small 9,570,891 -> 9,570,929 (+38), path_big 93,210,280 -> 93,210,318
 # (+38). The rise arrived with the pin and was not taken apart. Read by CI on
 # kq#138.
-print_small 24694285
-print_big 237223264
+#
+# 2026-09-29, the pin moves to kanso#1732, past kanso#1733, #1734 and #1735:
+# a string builder may be seeded with a value that is not a string, and the
+# browser engine copies a shared seed once, leaves a lazy binding unrun and
+# gives a merged err no birth site. The print rows move by a few
+# instructions: print_small 24,694,285 -> 24,694,278 (-7), print_big
+# 237,223,264 -> 237,223,285 (+21). The path rows hold. The moves arrived with
+# the pin and were not taken apart. Read by CI on kq#143.
+print_small 24694278
+print_big 237223285
 path_small 9570889
 path_big 93210278
