@@ -883,7 +883,7 @@
 # instructions: print_small 24,694,285 -> 24,694,278 (-7), print_big
 # 237,223,264 -> 237,223,285 (+21). The path rows hold. The moves arrived with
 # the pin and were not taken apart. Read by CI on kq#143.
-print_small 24694278
-print_big 237223285
-path_small 9570889
-path_big 93210278
+print_small 24693760
+print_big 237218511
+path_small 9570875
+path_big 93210264
