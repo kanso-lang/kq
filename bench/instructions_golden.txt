@@ -883,7 +883,12 @@
 # instructions: print_small 24,694,285 -> 24,694,278 (-7), print_big
 # 237,223,264 -> 237,223,285 (+21). The path rows hold. The moves arrived with
 # the pin and were not taken apart. Read by CI on kq#143.
-print_small 24694579
-print_big 237226533
-path_small 9570896
-path_big 93210285
+# 2026-10-01, kanso#1764 (pin e126252e) declares a packed record's spill
+# helpers cold, which moves the blocks that call them off the hot path. Every
+# row falls: print_small 24,694,579 -> 24,682,905 (-11,674), print_big
+# 237,226,533 -> 237,111,368 (-115,165), path_small 9,570,896 -> 9,559,717
+# (-11,179), path_big 93,210,285 -> 93,100,144 (-110,141). Read by CI on kq#157.
+print_small 24682905
+print_big 237111368
+path_small 9559717
+path_big 93100144
