@@ -888,7 +888,7 @@
 # row falls: print_small 24,694,579 -> 24,682,905 (-11,674), print_big
 # 237,226,533 -> 237,111,368 (-115,165), path_small 9,570,896 -> 9,559,717
 # (-11,179), path_big 93,210,285 -> 93,100,144 (-110,141). Read by CI on kq#157.
-print_small 24682905
-print_big 237111368
-path_small 9559717
-path_big 93100144
+print_small 24683395
+print_big 237115876
+path_small 9559773
+path_big 93100200
