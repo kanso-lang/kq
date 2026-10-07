@@ -896,7 +896,14 @@
 # 14.0% with the same change; kanso lowered its welfare floor by that cost
 # under the rule for building the specified language. The rise arrived with
 # the pin and was not taken apart. Read by CI on kq#160.
-print_small 26722129
-print_big 258635151
-path_small 10639918
-path_big 104691065
+#
+# 2026-10-07, pin a9f7b932 (kanso#1779 to #1782): a word twin starts its
+# general body over when a sum overflows before it has written anything.
+# print_small 26,722,129 -> 26,561,494 (-0.60%), print_big 258,635,151 ->
+# 256,813,043 (-0.70%), path_small 10,639,918 -> 10,519,075 (-1.14%),
+# path_big 104,691,065 -> 103,270,238 (-1.36%). Read by CI on kq#161, the
+# same four rows on two runners, one of them the recorded silicon.
+print_small 26561494
+print_big 256813043
+path_small 10519075
+path_big 103270238
