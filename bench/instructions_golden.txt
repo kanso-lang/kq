@@ -888,7 +888,15 @@
 # row falls: print_small 24,694,579 -> 24,682,905 (-11,674), print_big
 # 237,226,533 -> 237,111,368 (-115,165), path_small 9,570,896 -> 9,559,717
 # (-11,179), path_big 93,210,285 -> 93,100,144 (-110,141). Read by CI on kq#157.
-print_small 24683395
-print_big 237115876
-path_small 9559773
-path_big 93100200
+# 2026-10-06, the pin moves to kanso#1778: under the 2026-10-07 gavel an int
+# arithmetic result past int64 becomes a bignum where it trapped. Every row
+# rises: print_small 24,683,395 -> 26,722,129 (+8.3%), print_big 237,115,876
+# -> 258,635,151 (+9.1%), path_small 9,559,773 -> 10,639,918 (+11.3%),
+# path_big 93,100,200 -> 104,691,065 (+12.4%). kanso's own run program rose
+# 14.0% with the same change; kanso lowered its welfare floor by that cost
+# under the rule for building the specified language. The rise arrived with
+# the pin and was not taken apart. Read by CI on kq#160.
+print_small 26722129
+print_big 258635151
+path_small 10639918
+path_big 104691065
