@@ -911,7 +911,14 @@
 # print_small's rise is k_str_chars_scan, 197,728 -> 210,012 over the same
 # 2,376 calls, every one on a string under 64 bytes, which the block never
 # reads. Read by CI on kq#168.
-print_small 26573302
-print_big 256931995
-path_small 10519216
-path_big 103270379
+#
+# 2026-10-07, pin a3c4024e (kanso#1791): a string under 64 bytes counts its
+# characters without the vector block, and the decoder's unescaped strings
+# carry their count from the scan that found them. print_small 26,573,302 ->
+# 26,566,022 (-7,280), print_big 256,931,995 -> 256,858,684 (-73,311),
+# path_small and path_big -108 each. The print rows land below where kanso#1790
+# left them and above the pin before it. Read by CI on kq#169.
+print_small 26566022
+print_big 256858684
+path_small 10519108
+path_big 103270271
