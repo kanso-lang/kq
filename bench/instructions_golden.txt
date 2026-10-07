@@ -903,7 +903,15 @@
 # 256,813,043 (-0.70%), path_small 10,639,918 -> 10,519,075 (-1.14%),
 # path_big 104,691,065 -> 103,270,238 (-1.36%). Read by CI on kq#161, the
 # same four rows on two runners, one of them the recorded silicon.
-print_small 26561494
-print_big 256813043
-path_small 10519075
-path_big 103270238
+#
+# 2026-10-07, pin d7fcdeb1 (kanso#1790): the character count gained a
+# sixteen-byte vector block. print_small 26,561,494 -> 26,573,302 (+0.044%),
+# print_big 256,813,043 -> 256,931,995 (+0.046%), path_small and path_big +141
+# each. Measured in a container with kq built by both compilers: all of
+# print_small's rise is k_str_chars_scan, 197,728 -> 210,012 over the same
+# 2,376 calls, every one on a string under 64 bytes, which the block never
+# reads. Read by CI on kq#168.
+print_small 26573302
+print_big 256931995
+path_small 10519216
+path_big 103270379
