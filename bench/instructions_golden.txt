@@ -918,7 +918,15 @@
 # 26,566,022 (-7,280), print_big 256,931,995 -> 256,858,684 (-73,311),
 # path_small and path_big -108 each. The print rows land below where kanso#1790
 # left them and above the pin before it. Read by CI on kq#169.
-print_small 26566022
-print_big 256858684
-path_small 10519108
-path_big 103270271
+#
+# 2026-10-09, pin daa60f90 (kanso#1814): native builds emit only the groups
+# their entry reaches, and a record goes by value only when every arm of its
+# group answers it. print_small 26,566,022 -> 26,566,036 (+14), print_big
+# 256,858,684 -> 256,858,089 (-595), path_small and path_big -16 each.
+# Projected rather than read: kq was built by both compilers in an Intel
+# container, each row's difference was added to the recorded one, and CI's
+# first run landed on a CPU these rows were not counted on.
+print_small 26566036
+print_big 256858089
+path_small 10519092
+path_big 103270255
