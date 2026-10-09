@@ -928,7 +928,14 @@
 # entry this replaces projected +14, -595, -16 and -16 from an Intel container.
 # Three Milan runners before this one read the same four rows, and the gate,
 # finding the mismatch on a cpu it has no record of, blamed the cpu.
-print_small 26508722
-print_big 256284823
-path_small 10518494
-path_big 103269657
+#
+# 2026-10-09, pin b15f01f1 (kanso#1817): a bignum multiplies with its shorter
+# operand outside. print_small 26,508,722 -> 26,507,672 (-1,050), print_big
+# 256,284,823 -> 256,275,100 (-9,723), path_small and path_big -14 each. The
+# fall arrived with the pin and its mechanism was not looked for. Read by CI on
+# kq#183 twice, on family 0x6 model 0xad and on family 0x19 model 0x11, and the
+# two runs agree on all four rows.
+print_small 26507672
+print_big 256275100
+path_small 10518480
+path_big 103269643
