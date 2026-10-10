@@ -935,7 +935,7 @@
 # fall arrived with the pin and its mechanism was not looked for. Read by CI on
 # kq#183 twice, on family 0x6 model 0xad and on family 0x19 model 0x11, and the
 # two runs agree on all four rows.
-print_small 26507497
-print_big 256273308
-path_small 10518509
-path_big 103269672
+print_small 26507654
+print_big 256274664
+path_small 10518503
+path_big 103269666
