@@ -935,7 +935,16 @@
 # fall arrived with the pin and its mechanism was not looked for. Read by CI on
 # kq#183 twice, on family 0x6 model 0xad and on family 0x19 model 0x11, and the
 # two runs agree on all four rows.
-print_small 26507654
-print_big 256274664
-path_small 10518503
-path_big 103269666
+#
+# 2026-10-11, pin 66bbf7d2 (kanso#1824 to kanso#1840): the five port fixes, an
+# oversize block freed when its reuse misses, and a record reused in place only
+# above its loop's mark. print_small 26,507,654 -> 26,295,012 (-212,642),
+# print_big 256,274,664 -> 251,179,446 (-5,095,218, -1.99%), path_small
+# 10,518,503 -> 10,517,004 (-1,499), path_big 103,269,666 -> 103,270,793
+# (+1,127). Read by CI on kq#188 twice, on family 0x19 model 0x1 and on family
+# 0x19 model 0x11, and the two runs agree on all four rows. The falls arrived
+# with the pin and their mechanism was not looked for.
+print_small 26295012
+print_big 251179446
+path_small 10517004
+path_big 103270793
