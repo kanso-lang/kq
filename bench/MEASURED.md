@@ -11,17 +11,17 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 41549 | 415132 | 9.9x |
-| `alloc_bytes` | 4123098 | 41249400 | 10.0x |
+| `allocs` | 41543 | 415126 | 9.9x |
+| `alloc_bytes` | 4122954 | 41249256 | 10.0x |
 | `arena_blocks` | 2 | 18 | 9.0x |
 | `arena_peak_bytes` | 2097152 | 19712784 | 9.3x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
 | `beat_iters` | 12423 | 124215 | 9.9x |
-| `evac_allocs` | 37 | 55 | 1.4x |
-| `evac_bytes` | 6768 | 18768 | 2.7x |
-| `survive_slots` | 3080 | 28728 | 9.3x |
+| `evac_allocs` | 27 | 45 | 1.6x |
+| `evac_bytes` | 6544 | 20048 | 3.0x |
+| `survive_slots` | 164 | 1604 | 9.7x |
 | `put_mut_fast` | 8361 | 83610 | 10.0x |
 | `put_mut_grow` | 0 | 0 | — |
 | `push_mut_fast` | 9728 | 97314 | 10.0x |
@@ -42,7 +42,7 @@ Work that is linear in the input lands near 10.
 | `append_grow` | 795 | 7950 | 10.0x |
 | `append_rendered` | 0 | 0 | — |
 | `utf8_zerocopy` | 1933 | 19330 | 10.0x |
-| `carry_dedup` | 70 | 718 | 10.2x |
+| `carry_dedup` | 2 | 2 | 1.0x |
 | `bytes_malloc` | 596 | 5960 | 10.0x |
 | `bytes_freed` | 596 | 5896 | 9.8x |
 | `perm_live_bytes` | 60825 | 60825 | 1.0x |
@@ -58,11 +58,13 @@ Work that is linear in the input lands near 10.
 | `ten_blocks` | 0 | 0 | — |
 | `ten_frees` | 0 | 0 | — |
 | `ten_handups` | 0 | 0 | — |
+| `chain_finds` | 0 | 12364 | — |
 | `sh_str` | 278480 | 2783872 | 9.9x |
 | `sh_rec` | 202416 | 2024160 | 10.0x |
 | `sh_buf` | 1156048 | 11587568 | 10.0x |
 | `sh_map` | 0 | 0 | — |
 | `sh_bytes` | 549048 | 5490048 | 9.9x |
+| `spare_peak_bytes` | 0 | 1048576 | — |
 
 The 2.1 MB fixture is ten flat copies of bench/large.json's elements, built
 at measurement time, so every row reproduces from what the repo carries.
