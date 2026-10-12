@@ -1,9 +1,8 @@
 import "std/text"
 
 test_path_trail =
-  path = parse_path ".users[3].name"
-  trail = encode path
-  trail == "[\"users\",4,\"name\"]"
+  trail = (path -> encode path == "[\"users\",4,\"name\"]")
+  parse_path ".users[3].name" .> trail
 
 test_encode_shorthands =
   raw = text/utf8 [120 8 121 12 122]
@@ -32,19 +31,15 @@ fn same? (err _) _
 fn same? got want
   got == want
 
-test_pretty_list =
-  doc = must (decode "[1,2]")
-  pretty doc 0 == "[\n  1,\n  2\n]"
+test_pretty_list = decode "[1,2]" .> (doc -> pretty doc 0 == "[\n  1,\n  2\n]")
 
 test_pretty_map =
-  doc = must (decode "\{\"b\":2,\"a\":1}")
-  rendered = pretty doc 0
-  rendered == "\{\n  \"a\": 1,\n  \"b\": 2\n}"
+  sorted = (doc -> pretty doc 0 == "\{\n  \"a\": 1,\n  \"b\": 2\n}")
+  decode "\{\"b\":2,\"a\":1}" .> sorted
 
 test_pretty_scalar = pretty 42 0 == "42"
 
 test_walk =
-  doc = must (decode "\{\"a\":[\{\"b\":7}]}")
-  path = parse_path ".a[0].b"
-  found = walk doc path
-  encode found == "7"
+  found = (doc path -> encode (walk doc path) == "7")
+  on = (doc -> parse_path ".a[0].b" .> (path -> found doc path))
+  decode "\{\"a\":[\{\"b\":7}]}" .> on
