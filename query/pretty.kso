@@ -15,7 +15,7 @@ fn indent_onto acc n
 fn pair_row acc k v depth
   pretty_entry (text/append acc ",\n") k v depth
 
-fn pretty v depth
+pub fn pretty v depth
   text/utf8 (pretty_onto (text/bytes "") v depth)
 
 fn pretty_elems acc xs i depth
