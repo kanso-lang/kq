@@ -19,7 +19,7 @@ fn key_end_at _ none p
 fn key_end_at cs _ p
   key_end cs (p + 1)
 
-fn parse_path query
+pub fn parse_path query
   scan_steps (text/bytes query) 1 []
 
 fn scan_steps cs p acc
@@ -63,7 +63,7 @@ fn steps_key_checked cs q acc ""
 fn steps_key_checked cs q acc key
   scan_steps cs q (push acc key)
 
-fn walk doc path
+pub fn walk doc path
   walk_at doc path 1
 
 fn walk_at none _ _
