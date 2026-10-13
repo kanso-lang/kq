@@ -209,7 +209,7 @@ held = ["view_allocs" "view_frees"]
 
 fn watched? pair
   named = name_of pair
-  list/any? (text/concat watched held) (n -> n == named)
+  list/any? (list/concat watched held) (n -> n == named)
 
 header = """
   # measured
