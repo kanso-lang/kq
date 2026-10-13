@@ -1,9 +1,8 @@
 import "std/text"
 
 test_path_trail =
-  path = parse_path ".users[3].name"
-  trail = encode path
-  trail == "[\"users\",4,\"name\"]"
+  trail = (path -> encode path == "[\"users\",4,\"name\"]")
+  parse_path ".users[3].name" .> trail
 
 test_encode_shorthands =
   raw = text/utf8 [120 8 121 12 122]
@@ -26,33 +25,21 @@ test_decode_surrogate_pair = decodes? "\"\\ud83c\\udf8c\"" "🎌"
 fn decodes? text want
   same? (decode text) want
 
-# A fixture that fails to decode is a broken test, and the run says so at the
-# decode rather than at a comparison further on.
-fn fixture (err reason)
-  err "a fixture did not decode: {reason}"
-
-fn fixture v
-  v
-
 fn same? (err _) _
   false
 
 fn same? got want
   got == want
 
-test_pretty_list =
-  doc = fixture (decode "[1,2]")
-  pretty doc 0 == "[\n  1,\n  2\n]"
+test_pretty_list = decode "[1,2]" .> (doc -> pretty doc 0 == "[\n  1,\n  2\n]")
 
 test_pretty_map =
-  doc = fixture (decode "\{\"b\":2,\"a\":1}")
-  rendered = pretty doc 0
-  rendered == "\{\n  \"a\": 1,\n  \"b\": 2\n}"
+  sorted = (doc -> pretty doc 0 == "\{\n  \"a\": 1,\n  \"b\": 2\n}")
+  decode "\{\"b\":2,\"a\":1}" .> sorted
 
 test_pretty_scalar = pretty 42 0 == "42"
 
 test_walk =
-  doc = fixture (decode "\{\"a\":[\{\"b\":7}]}")
-  path = parse_path ".a[0].b"
-  found = walk doc path
-  encode found == "7"
+  found = (doc path -> encode (walk doc path) == "7")
+  on = (doc -> parse_path ".a[0].b" .> (path -> found doc path))
+  decode "\{\"a\":[\{\"b\":7}]}" .> on
