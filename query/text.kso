@@ -166,10 +166,10 @@ fn unicode_at cs p acc code
     str_surrogate cs p acc code
 
 fn string_at cs 34 start p
-  parsed (p + 1) (string_ok p (text/utf8 (text/slice cs start (p - 1))))
+  parsed (p + 1) (string_ok p (text/utf8 (run_of cs start p)))
 
 fn string_at cs 92 start p
-  str_chars cs p (text/append (text/bytes "") (text/slice cs start (p - 1)))
+  str_chars cs p (text/append (text/bytes "") (run_of cs start p))
 
 fn string_at _ none _ p
   fail p "unterminated string"
@@ -191,3 +191,15 @@ fn u_bytes acc b
   lo = hex_code (b % 16)
   hi = hex_code (b / 16)
   text/append (text/append (text/append acc "\\u00") hi) lo
+
+# the bytes from start up to, not including, p
+fn run_of cs start p
+  scanned (text/slice cs start (p - 1))
+
+# A run's ends come from a scan of the same bytes, so its slice never leaves
+# them; none would be the empty run (kanso#1890).
+fn scanned none
+  text/bytes ""
+
+fn scanned r
+  r
