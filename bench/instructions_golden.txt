@@ -975,7 +975,16 @@
 # 112,647,747 (+7.8%). The allocator counters rose with this change
 # (allocs 41,543 -> 56,119 on the whole document); kanso#1960 records it. Read
 # by CI on kq#193 on family 0x19 model 0x1.
-print_small 26394808
-print_big 252249059
-path_small 11422865
-path_big 112647747
+# 2026-10-14, pin 59235966 (kanso#1972): a group of effect lines runs the
+# work-ahead pool at its first idle point. None of kq's programs sleep, so no
+# pooled work runs here. print_small 26,394,808 -> 26,395,347 (+539),
+# print_big 252,249,059 -> 252,254,708 (+5,649), path_small 11,422,865 ->
+# 11,422,886 (+21), path_big 112,647,747 -> 112,647,768 (+21). Read by CI on
+# kq#198 three times: twice on Intel parts and once on the recorded Genoa, all
+# three reading the same four rows. kanso's own benchmarks rose by small
+# amounts with the same change; nothing here isolates where the difference
+# comes from.
+print_small 26395347
+print_big 252254708
+path_small 11422886
+path_big 112647768
