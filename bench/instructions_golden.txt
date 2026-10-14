@@ -948,9 +948,25 @@
 # sixteen pull requests. print_small 26,294,199 -> 27,793,923 (+5.7%),
 # print_big 251,453,299 -> 266,465,532 (+6.0%), path_small 10,517,079 ->
 # 11,935,079 (+13.5%), path_big 103,552,898 -> 117,739,503 (+13.7%), read by
-# CI on kq#190 on family 0x19 model 0x11. The rise arrived with the pin;
-# which of the sixteen carries it is not isolated yet.
-print_small 27793923
-print_big 266465532
-path_small 11935079
-path_big 117739503
+# CI on kq#190 on family 0x19 model 0x11. The runner builds with clang 18,
+# and the rise is clang 18's alone: under clang 19 the same pin moves
+# print_small +1.5% and path_small +0.07%. A bisect of the carrier under clang
+# 18 puts it in its first step, kanso#1898 with #1896, which links clang 18's
+# LTO through the pipeline without `deadargelim` that clang 19 already used,
+# because 18's `deadargelim` aborted on kq once closure tail calls became
+# `musttail`. Applying only that change to kanso 38fd2e60, the tree before the
+# carrier, reads print_small 27,704,820 and path_small 11,933,888 against
+# 26,297,450 and 10,519,854 without it, all four read here under clang 18.
+# The new pin reads 27,793,443 and 11,934,905 here, so the pipeline accounts
+# for all but 88,623 of print_small's rise and all but 1,017 of path_small's.
+# 2026-10-14, same pin, built with clang 19 (kq#191). The spec job now
+# selects clang 19 as kanso's cost-goldens job does. print_small 27,793,923 ->
+# 25,716,192 (-7.5%), print_big 266,465,532 -> 245,768,599 (-7.8%),
+# path_small 11,935,079 -> 10,603,649 (-11.2%), path_big 117,739,503 ->
+# 104,470,133 (-11.3%), read by CI on kq#191 on family 0x19 model 0x11, the
+# cpu that read the rows above. The compiler is unchanged; every row moves
+# with the clang that links kq, and none is a kanso change.
+print_small 25716192
+print_big 245768599
+path_small 10603649
+path_big 104470133
