@@ -959,7 +959,14 @@
 # 26,297,450 and 10,519,854 without it, all four read here under clang 18.
 # The new pin reads 27,793,443 and 11,934,905 here, so the pipeline accounts
 # for all but 88,623 of print_small's rise and all but 1,017 of path_small's.
-print_small 27793923
-print_big 266465532
-path_small 11935079
-path_big 117739503
+# 2026-10-14, same pin, built with clang 19 (kq#191). The spec job now
+# selects clang 19 as kanso's cost-goldens job does. print_small 27,793,923 ->
+# 25,716,192 (-7.5%), print_big 266,465,532 -> 245,768,599 (-7.8%),
+# path_small 11,935,079 -> 10,603,649 (-11.2%), path_big 117,739,503 ->
+# 104,470,133 (-11.3%), read by CI on kq#191 on family 0x19 model 0x11, the
+# cpu that read the rows above. The compiler is unchanged; every row moves
+# with the clang that links kq, and none is a kanso change.
+print_small 25716192
+print_big 245768599
+path_small 10603649
+path_big 104470133
