@@ -984,7 +984,14 @@
 # three reading the same four rows. kanso's own benchmarks rose by small
 # amounts with the same change; nothing here isolates where the difference
 # comes from.
-print_small 26395347
-print_big 252254708
-path_small 11422886
-path_big 112647768
+# 2026-10-14, pin 548b3778 (kanso#1978, kanso#1981): the work-ahead pool
+# reaches calls on a function's locals, builtin reads and lambdas that park
+# first. kq never sleeps, so nothing is pooled; the runtime carries the
+# pool's queue and its drain. print_small 26,395,347 -> 26,395,670 (+323),
+# print_big 252,254,708 -> 252,257,609 (+2,901), path_small 11,422,886 ->
+# 11,422,900 (+14), path_big 112,647,768 -> 112,647,782 (+14). Read by CI on
+# kq#199.
+print_small 26395670
+print_big 252257609
+path_small 11422900
+path_big 112647782
