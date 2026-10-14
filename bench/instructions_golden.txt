@@ -966,7 +966,16 @@
 # 104,470,133 (-11.3%), read by CI on kq#191 on family 0x19 model 0x11, the
 # cpu that read the rows above. The compiler is unchanged; every row moves
 # with the clang that links kq, and none is a kanso change.
-print_small 25716192
-print_big 245768599
-path_small 10603649
-path_big 104470133
+# 2026-10-14, pin 01161dbc (kanso#1958): a slice past the end answers none.
+# kq's decoder hands each scanned slice to a function with a none arm before
+# decoding it, so the fused doors that read a range in place no longer fire
+# and each string and number is copied out first. print_small 25,716,192 ->
+# 26,394,808 (+2.6%), print_big 245,768,599 -> 252,249,059 (+2.6%),
+# path_small 10,603,649 -> 11,422,865 (+7.7%), path_big 104,470,133 ->
+# 112,647,747 (+7.8%). The allocator counters rose with this change
+# (allocs 41,543 -> 56,119 on the whole document); kanso#1960 records it. Read
+# by CI on kq#193 on family 0x19 model 0x1.
+print_small 26394808
+print_big 252249059
+path_small 11422865
+path_big 112647747

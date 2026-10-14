@@ -26,7 +26,7 @@ fn frac_zeros bs p seen
   if (bs[p] == 48 and seen < 6) (frac_zeros bs (p + 1) (seen + 1)) seen
 
 fn canon_signed lit 45
-  "-{canon_body (text/slice lit 2 (length lit))}"
+  "-{canon_body (within (text/slice lit 2 (length lit)))}"
 
 fn canon_signed lit _
   canon_body lit
@@ -34,7 +34,7 @@ fn canon_signed lit _
 fn canon_body body
   bs = text/bytes body
   split = marker_at bs 1
-  mantissa = text/slice body 1 (split - 1)
+  mantissa = within (text/slice body 1 (split - 1))
   canon_parts mantissa (expo_after body split)
 
 # the marker position, or one past the end when the literal has no exponent
@@ -49,7 +49,7 @@ fn marker_next bs p _
   marker_at bs (p + 1)
 
 fn expo_after body split
-  etext = text/slice body (split + 1) (length body)
+  etext = within (text/slice body (split + 1) (length body))
   if (split > length body) 0 (expo_signed etext)
 
 fn expo_signed etext
@@ -58,17 +58,17 @@ fn expo_signed etext
   expo_lead etext bs[1]
 
 fn expo_lead etext 43
-  text/to_int (text/slice etext 2 (length etext))
+  text/to_int (within (text/slice etext 2 (length etext)))
 
 fn expo_lead etext 45
-  0 - text/to_int (text/slice etext 2 (length etext))
+  0 - text/to_int (within (text/slice etext 2 (length etext)))
 
 fn expo_lead etext _
   text/to_int etext
 
 fn canon_parts mantissa expo
   dot = dot_at (text/bytes mantissa) 1
-  whole = text/slice mantissa 1 (dot - 1)
+  whole = within (text/slice mantissa 1 (dot - 1))
   frac = frac_after mantissa dot
   canon_scaled "{whole}{frac}" (expo - length frac)
 
@@ -83,7 +83,7 @@ fn dot_next bs p _
   dot_at bs (p + 1)
 
 fn frac_after mantissa dot
-  tail = text/slice mantissa (dot + 1) (length mantissa)
+  tail = within (text/slice mantissa (dot + 1) (length mantissa))
   if (dot > length mantissa) "" tail
 
 fn canon_scaled raw e
@@ -92,7 +92,7 @@ fn canon_scaled raw e
 
 fn strip_zeros raw
   run = zero_run (text/bytes raw) 1 (length raw)
-  if (run == 0) raw (text/slice raw (run + 1) (length raw))
+  if (run == 0) raw (within (text/slice raw (run + 1) (length raw)))
 
 # leading zeros, stopping one short of the end so zero keeps its digit
 fn zero_run bs p last
@@ -109,7 +109,10 @@ fn canon_plain d e
   if (n > 0 - e) (canon_split d (n + e)) (canon_small d (0 - e - n))
 
 fn canon_split d cut
-  "{text/slice d 1 cut}.{text/slice d (cut + 1) (length d)}"
+  "{within (text/slice d 1 cut)}.{split_tail d cut}"
+
+fn split_tail d cut
+  within (text/slice d (cut + 1) (length d))
 
 fn canon_small d pad
   "0.{zeros pad}{d}"
@@ -120,13 +123,25 @@ fn zeros 0
   ""
 
 fn zeros n
-  text/slice zero_pool 1 n
+  within (text/slice zero_pool 1 n)
 
 fn canon_sci d a
   "{sci_head d}E{sci_expo a}"
 
 fn sci_head d
-  if (length d == 1) d "{text/slice d 1 1}.{text/slice d 2 (length d)}"
+  if (length d == 1) d "{within (text/slice d 1 1)}.{sci_tail d}"
+
+fn sci_tail d
+  within (text/slice d 2 (length d))
 
 fn sci_expo a
   if (a < 0) "-{0 - a}" "+{a}"
+
+# A slice whose range leaves its text answers none (kanso#1890). Every range in
+# this file is measured from the text it slices, so none never arrives; this
+# names the empty run a range that did leave would have meant.
+fn within none
+  ""
+
+fn within s
+  s
