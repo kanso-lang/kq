@@ -29,6 +29,21 @@ jobs:
           cargo build --release
       - name: jq (the oracle)
         run: sudo apt-get install -y jq
+      # kanso's cost goldens build with clang 19, and so does kq. The image's
+      # clang is 18, whose release link of kq differs from 19's: since
+      # kanso#1898 it links without `deadargelim`, which on 18 costs path_small
+      # 13% that 19 does not pay. Rows counted under 18 described a build
+      # kanso does not measure.
+      - name: clang 19, as kanso's measured binaries are built
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends clang-19 lld-19 lld
+          sudo ln -sf /usr/bin/clang-19 /usr/local/bin/clang
+          sudo ln -sf /usr/bin/ld.lld-19 /usr/local/bin/ld.lld
+          clang --version | head -1 | grep -q 'clang version 19' || {
+            echo "::error::clang 19 is installed but not selected: $(clang --version | head -1)"
+            exit 1
+          }
       - name: specs (unit + fixture goldens + jq byte-identity)
         run: KANSO=/tmp/kanso/target/release/kanso sh spec.sh
       # The vein the allocator counters cannot reach. Both quadratics behind
