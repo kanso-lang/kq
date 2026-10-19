@@ -11,10 +11,10 @@ Work that is linear in the input lands near 10.
 
 | counter | 188 KB | 2.1 MB | ratio |
 |---|---:|---:|---|
-| `allocs` | 56119 | 560877 | 9.9x |
-| `alloc_bytes` | 4592602 | 45945448 | 10.0x |
-| `arena_blocks` | 3 | 22 | 7.3x |
-| `arena_peak_bytes` | 3145728 | 23907088 | 7.5x |
+| `allocs` | 45644 | 456127 | 9.9x |
+| `alloc_bytes` | 4257402 | 42593448 | 10.0x |
+| `arena_blocks` | 2 | 19 | 9.5x |
+| `arena_peak_bytes` | 2097152 | 20761360 | 9.8x |
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
@@ -58,12 +58,12 @@ Work that is linear in the input lands near 10.
 | `ten_blocks` | 0 | 0 | — |
 | `ten_frees` | 0 | 0 | — |
 | `ten_handups` | 0 | 0 | — |
-| `chain_finds` | 0 | 12589 | — |
+| `chain_finds` | 0 | 12482 | — |
 | `sh_str` | 281168 | 2810752 | 9.9x |
 | `sh_rec` | 202416 | 2024160 | 10.0x |
 | `sh_buf` | 1156048 | 11587568 | 10.0x |
 | `sh_map` | 0 | 0 | — |
-| `sh_bytes` | 901680 | 9016152 | 9.9x |
+| `sh_bytes` | 650280 | 6502152 | 9.9x |
 | `spare_peak_bytes` | 0 | 0 | — |
 
 The 2.1 MB fixture is ten flat copies of bench/large.json's elements, built
