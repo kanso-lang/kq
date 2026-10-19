@@ -991,7 +991,13 @@
 # print_big 252,254,708 -> 252,257,609 (+2,901), path_small 11,422,886 ->
 # 11,422,900 (+14), path_big 112,647,768 -> 112,647,782 (+14). Read by CI on
 # kq#199.
-print_small 26395670
-print_big 252257609
-path_small 11422900
-path_big 112647782
+# 2026-10-19, pin 5238bbf0 (kanso#1994): the string scanner takes spans from
+# text/span_to, and a span handed straight to the group that slices it is
+# never built, so strings reach the fused doors again. All four rows fall:
+# print_small 26,395,670 -> 26,313,533 (-82,137), print_big 252,257,609 ->
+# 252,024,957 (-232,652), path_small 11,422,900 -> 11,134,237 (-288,663),
+# path_big 112,647,782 -> 109,668,750 (-2,979,032). Read by CI on kq#200.
+print_small 26313533
+print_big 252024957
+path_small 11134237
+path_big 109668750
