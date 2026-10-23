@@ -997,7 +997,7 @@
 # print_small 26,395,670 -> 26,313,533 (-82,137), print_big 252,257,609 ->
 # 252,024,957 (-232,652), path_small 11,422,900 -> 11,134,237 (-288,663),
 # path_big 112,647,782 -> 109,668,750 (-2,979,032). Read by CI on kq#200.
-print_small 26313533
-print_big 252024957
-path_small 11134237
-path_big 109668750
+print_small 25771734
+print_big 246353036
+path_small 10594488
+path_big 103898295
