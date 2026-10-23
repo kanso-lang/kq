@@ -18,9 +18,9 @@ Work that is linear in the input lands near 10.
 | `cohort_frees` | 0 | 0 | — |
 | `cohort_kept` | 0 | 0 | — |
 | `perm_allocs` | 18 | 18 | 1.0x |
-| `beat_iters` | 12423 | 124215 | 9.9x |
-| `evac_allocs` | 27 | 45 | 1.6x |
-| `evac_bytes` | 6544 | 23776 | 3.6x |
+| `beat_iters` | 12422 | 124214 | 9.9x |
+| `evac_allocs` | 16 | 34 | 2.1x |
+| `evac_bytes` | 6192 | 23424 | 3.7x |
 | `survive_slots` | 164 | 1604 | 9.7x |
 | `put_mut_fast` | 8361 | 83610 | 10.0x |
 | `put_mut_grow` | 0 | 0 | — |
@@ -42,7 +42,7 @@ Work that is linear in the input lands near 10.
 | `append_grow` | 795 | 7950 | 10.0x |
 | `append_rendered` | 0 | 0 | — |
 | `utf8_zerocopy` | 1732 | 17320 | 10.0x |
-| `carry_dedup` | 2 | 2 | 1.0x |
+| `carry_dedup` | 0 | 0 | — |
 | `bytes_malloc` | 596 | 5960 | 10.0x |
 | `bytes_freed` | 596 | 5792 | 9.7x |
 | `perm_live_bytes` | 63750 | 63750 | 1.0x |
@@ -58,7 +58,7 @@ Work that is linear in the input lands near 10.
 | `ten_blocks` | 0 | 0 | — |
 | `ten_frees` | 0 | 0 | — |
 | `ten_handups` | 0 | 0 | — |
-| `chain_finds` | 0 | 12482 | — |
+| `chain_finds` | 0 | 12505 | — |
 | `sh_str` | 281168 | 2810752 | 9.9x |
 | `sh_rec` | 202416 | 2024160 | 10.0x |
 | `sh_buf` | 1156048 | 11587568 | 10.0x |
