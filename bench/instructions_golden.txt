@@ -997,7 +997,16 @@
 # print_small 26,395,670 -> 26,313,533 (-82,137), print_big 252,257,609 ->
 # 252,024,957 (-232,652), path_small 11,422,900 -> 11,134,237 (-288,663),
 # path_big 112,647,782 -> 109,668,750 (-2,979,032). Read by CI on kq#200.
-print_small 25682695
-print_big 245462300
-path_small 10571981
-path_big 103677919
+# 2026-10-23, pin 15d6b27f (kanso#2058, #2061, #2060, #2063): escape blocks
+# answered from one mask, literal constants as their values, a repaired node
+# kept through a lap rewind and a scalar pop, a template joined onto a record
+# field in place. Every row rises a little: print_small 25,682,695 ->
+# 25,683,719 (+1,024), print_big 245,462,300 -> 245,474,569 (+12,269,
+# +0.005%), path_small 10,571,981 -> 10,571,984 (+3), path_big 103,677,919 ->
+# 103,677,922 (+3). That is the size of what kanso#2060's guards cost kanso's
+# run program (+0.004%); nothing here isolates which change moved these.
+# Read by CI on kq#203.
+print_small 25683719
+print_big 245474569
+path_small 10571984
+path_big 103677922
