@@ -1013,7 +1013,7 @@
 # 245,474,621 (+52), path_small 10,571,984 -> 10,571,991 (+7), path_big
 # 103,677,922 -> 103,677,929 (+7). Nothing here isolates which change moved
 # them. Read by CI on kq#204.
-print_small 25683047
-print_big 245467184
-path_small 10572005
-path_big 103677943
+print_small 25774281
+print_big 246375541
+path_small 10663669
+path_big 104590641
