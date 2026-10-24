@@ -1006,7 +1006,14 @@
 # 103,677,922 (+3). That is the size of what kanso#2060's guards cost kanso's
 # run program (+0.004%); nothing here isolates which change moved these.
 # Read by CI on kq#203.
-print_small 25683719
-print_big 245474569
-path_small 10571984
-path_big 103677922
+# 2026-10-24, pin 2d539393 (kanso#2064, #2067, #2065, #2068, #2069): the
+# browser rows in executed instructions, one WASI host, the tab's compile cut
+# and a short float walked down by its zeros. Every row rises by under 0.001%:
+# print_small 25,683,719 -> 25,683,783 (+64), print_big 245,474,569 ->
+# 245,474,621 (+52), path_small 10,571,984 -> 10,571,991 (+7), path_big
+# 103,677,922 -> 103,677,929 (+7). Nothing here isolates which change moved
+# them. Read by CI on kq#204.
+print_small 25683783
+print_big 245474621
+path_small 10571991
+path_big 103677929
