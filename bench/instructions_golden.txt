@@ -1023,7 +1023,15 @@
 # 24,648,174 (-47,604). Reverting the map's longer side run or the if-arm
 # change instead moves it by +14, and kq pads nothing. A fast path for two
 # strings follows in kanso.
-print_small 25406391
-print_big 242697139
-path_small 10612949
-path_big 104097858
+# 2026-10-25, pin 07335552 (kanso#2115, #2116): two map keys of one kind
+# compare without unwrapping, so kq's string keys no longer pass the int test
+# kanso#2112 put in front of them, and a view search asks an int key's kind
+# once. Every row falls: print_small 25,406,391 -> 25,330,485 (-75,906),
+# print_big 242,697,139 -> 241,937,841 (-759,298), path_small 10,612,949 ->
+# 10,612,299 (-650), path_big 104,097,858 -> 104,097,208 (-650). print_small
+# now sits 16,455 below the pin before kanso#2112. Read by CI on kq#211 on
+# the recorded silicon.
+print_small 25330485
+print_big 241937841
+path_small 10612299
+path_big 104097208
