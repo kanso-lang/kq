@@ -1031,7 +1031,14 @@
 # 10,612,299 (-650), path_big 104,097,858 -> 104,097,208 (-650). print_small
 # now sits 16,455 below the pin before kanso#2112. Read by CI on kq#211 on
 # the recorded silicon.
-print_small 25330485
-print_big 241937841
-path_small 10612299
-path_big 104097208
+# 2026-10-25, pin 405c2ae0 (kanso#2117, #2119): an in-place delete, a strict
+# read in a condition counted as no holder, and a persistent delete that
+# searches. kq deletes nothing and its rows barely move: print_small
+# 25,330,485 -> 25,329,520 (-965), print_big 241,937,841 -> 241,927,827
+# (-10,014), path_small 10,612,299 -> 10,612,306 (+7), path_big 104,097,208
+# -> 104,097,215 (+7). Nothing here isolates which change moved them. Read by
+# CI on kq#212.
+print_small 25329520
+print_big 241927827
+path_small 10612306
+path_big 104097215
