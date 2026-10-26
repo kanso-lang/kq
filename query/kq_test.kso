@@ -20,16 +20,10 @@ test_decimal_wide = canonical "99999999999999999999" == "99999999999999999999"
 
 test_decode_surrogate_pair = decodes? "\"\\ud83c\\udf8c\"" "🎌"
 
-# `decode` answers an err for bad input and `==` wants a value, so a test
-# dispatches on what it decoded before comparing it.
+# A document that does not decode is a failure, which `==` hands on, so the
+# test fails with it.
 fn decodes? text want
-  same? (decode text) want
-
-fn same? (err _) _
-  false
-
-fn same? got want
-  got == want
+  decode text == want
 
 test_pretty_list = decode "[1,2]" .> (doc -> pretty doc 0 == "[\n  1,\n  2\n]")
 

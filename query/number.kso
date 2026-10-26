@@ -25,9 +25,6 @@ fn number_char? c
 fn number_end cs p
   if (number_char? cs[p]) (number_end cs (p + 1)) p
 
-fn number_ok p (err _)
-  fail p "invalid number"
-
 fn number_ok _ n
   n
 

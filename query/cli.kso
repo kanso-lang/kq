@@ -11,9 +11,6 @@ fn elem_chunk v lead
 pub fn dispatch argv
   if (length argv == 0) usage (with_query argv)
 
-fn render_result (err reason)
-  err reason
-
 # the whole document never becomes one string: each top-level element is
 # rendered, written, and dead before the next is built
 fn render_result xs:[]some
@@ -60,17 +57,6 @@ fn queried (file_not_found f) _
 
 fn queried text query
   apply text query
-
-# the document and the path can each fail to read; the first failure goes to
-# render_result as it is, and the walk runs on two values
-fn walked e@(err _) (err _)
-  e
-
-fn walked e@(err _) _
-  e
-
-fn walked _ e@(err _)
-  e
 
 fn walked doc path
   walk doc path
