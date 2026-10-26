@@ -37,6 +37,9 @@ fn spread text
   inner = text/slice body 2 (length body - 1)
   os/write_file grown (ten_times inner) .> (_ -> measured)
 
+fn ten_times none
+  err "the fixture is not a JSON array"
+
 fn ten_times inner
   five = "{inner},{inner},{inner},{inner},{inner}"
   "[{five},{five}]"
