@@ -44,14 +44,20 @@ fn steps_index cs p q acc
 
 # jq paths are 0-indexed; kanso lists are 1-indexed
 fn steps_index_close cs 93 p q acc
-  n = text/to_int (text/utf8 (scanned (text/slice cs p (q - 1))))
-  scan_steps cs (q + 1) (push acc (n + 1))
+  n = text/to_int (scanned (text/slice cs p (q - 1)))
+  indexed cs p q acc n
 
 fn steps_index_close _ none p _ _
   err (parse_failure p "bad path: expected `]`")
 
 fn steps_index_close _ _ p _ _
   err (parse_failure p "bad path: expected `]`")
+
+fn indexed _ p _ _ none
+  err (parse_failure p "bad path: an index is a whole number")
+
+fn indexed cs _ q acc n
+  scan_steps cs (q + 1) (push acc (n + 1))
 
 fn steps_key cs p q acc
   key = text/utf8 (scanned (text/slice cs p (q - 1)))

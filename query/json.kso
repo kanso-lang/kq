@@ -1,8 +1,5 @@
 import "std/text"
 
-type defect
-  reason
-
 pub type decimal
   literal
 
@@ -81,36 +78,12 @@ fn entry_onto acc k v
   keyed = encode_onto acc k
   encode_onto (text/append keyed 58) v
 
-pub fn failure_position (err (parse_failure p _))
-  p
-
-pub fn failure_position _
-  0
-
-pub fn failure_reason (err (parse_failure _ reason))
-  reason
-
-pub fn failure_reason _
-  ""
-
 fn finish _ none
   err (parse_failure 0 "unexpected end of input")
 
 fn finish cs (parsed p v)
   p2 = skip_ws cs p
   if (p2 > length cs) v (fail p2 "unexpected trailing characters")
-
-# A failure inside the value is handed on as it is. The arm is written down
-# because the checker asks for it: an err is a value, and a group with no arm
-# for one where one can arrive does not compile.
-fn finish _ e@(err _)
-  e
-
-fn must (err reason)
-  err (defect "{reason}")
-
-fn must v
-  v
 
 fn pair_onto acc k v
   entry_onto (text/append acc 44) k v

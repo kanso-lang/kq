@@ -58,13 +58,21 @@ fn expo_signed etext
   expo_lead etext bs[1]
 
 fn expo_lead etext 43
-  text/to_int (within (text/slice etext 2 (length etext)))
+  exponent_of (text/to_int (within (text/slice etext 2 (length etext))))
 
 fn expo_lead etext 45
-  0 - text/to_int (within (text/slice etext 2 (length etext)))
+  0 - exponent_of (text/to_int (within (text/slice etext 2 (length etext))))
 
 fn expo_lead etext _
-  text/to_int etext
+  exponent_of (text/to_int etext)
+
+# The scanner read these digits as a number before they got here, so `to_int`
+# never answers none; the arm says what one would mean.
+fn exponent_of none
+  0
+
+fn exponent_of n
+  n
 
 fn canon_parts mantissa expo
   dot = dot_at (text/bytes mantissa) 1
