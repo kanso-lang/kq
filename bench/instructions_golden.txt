@@ -1050,7 +1050,13 @@
 # 81361880 reads +153,112 and +136,139 over that. kq main does not compile
 # under #2169, so the second step's compiler and kq halves cannot be told
 # apart here.
-print_small 25549866
-print_big 243982901
-path_small 10807653
-path_big 105900657
+# 2026-10-26, pin 5d826310 (kanso#2176, #2170, and kq's own none arms for
+# #2088): every row falls a little. print_small 25,549,866 -> 25,549,442
+# (-424), print_big 243,982,901 -> 243,979,179 (-3,722), path_small
+# 10,807,653 -> 10,807,625 (-28), path_big 105,900,657 -> 105,900,629 (-28).
+# Read by CI on kq#217 on family 0x19 model 0x1, a host the last pin's rows
+# matched to the instruction. Nothing here isolates which change moved them.
+print_small 25549442
+print_big 243979179
+path_small 10807625
+path_big 105900629
