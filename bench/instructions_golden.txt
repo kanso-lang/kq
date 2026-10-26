@@ -1038,7 +1038,19 @@
 # (-10,014), path_small 10,612,299 -> 10,612,306 (+7), path_big 104,097,208
 # -> 104,097,215 (+7). Nothing here isolates which change moved them. Read by
 # CI on kq#212.
-print_small 25329520
-print_big 241927827
-path_small 10612306
-path_big 104097215
+# 2026-10-26, pin 81361880 (kanso#2149 to #2169, and kq's own changes for
+# the err born boxed): every row rises. print_small 25,329,520 -> 25,549,866
+# (+220,346, +0.87%), print_big 241,927,827 -> 243,982,901 (+2,055,074),
+# path_small 10,612,306 -> 10,807,653 (+195,347, +1.84%), path_big
+# 104,097,215 -> 105,900,657 (+1,803,442). Read by CI on kq#216 on two hosts
+# other than the recorded one (family 0x19 model 0x1, family 0x1a model 0x2),
+# which read the same four rows to the instruction. Split on a container:
+# kq main under kanso 446c466f, the merge before #2169, reads print_small
+# +63,044 and path_small +55,659 over the old pin; this branch under
+# 81361880 reads +153,112 and +136,139 over that. kq main does not compile
+# under #2169, so the second step's compiler and kq halves cannot be told
+# apart here.
+print_small 25549866
+print_big 243982901
+path_small 10807653
+path_big 105900657
