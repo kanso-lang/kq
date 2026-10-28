@@ -1056,7 +1056,21 @@
 # 10,807,653 -> 10,807,625 (-28), path_big 105,900,657 -> 105,900,629 (-28).
 # Read by CI on kq#217 on family 0x19 model 0x1, a host the last pin's rows
 # matched to the instruction. Nothing here isolates which change moved them.
-print_small 25549442
-print_big 243979179
-path_small 10807625
-path_big 105900629
+# 2026-10-28, pin 6ed3d415 (kanso#2187, net/dial and net/read_bytes): every
+# row rises a little. print_small 25,549,442 -> 25,551,453 (+2,011), print_big
+# 243,979,179 -> 243,991,793 (+12,614), path_small 10,807,625 -> 10,808,345
+# (+720), path_big 105,900,629 -> 105,901,350 (+721). Read by CI on kq#220 on
+# family 0x19 model 0x1, a host the last pin's rows matched to the
+# instruction. Split on a container, kq built by kanso 7425ff7b and by this
+# pin under setarch -R: a one-line `print` program rises by 712, all of it in
+# ld.so (symbol-name compares and relocation for the three libc functions the
+# runtime now imports: getaddrinfo, freeaddrinfo and connect), which is the
+# path rows' rise. print_big's further rise is memcmp under
+# k_map_sort_build: the same 56,000 calls cost 3,626 more, because the binary
+# grew and the heap moved, and memcmp's path depends on where its operands
+# sit. k_all_ascii stopped being inlined into k_exec, which moved 1.48M
+# instructions between the two and added 9.
+print_small 25551453
+print_big 243991793
+path_small 10808345
+path_big 105901350
