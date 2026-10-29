@@ -1070,7 +1070,16 @@
 # grew and the heap moved, and memcmp's path depends on where its operands
 # sit. k_all_ascii stopped being inlined into k_exec, which moved 1.48M
 # instructions between the two and added 9.
-print_small 25551453
-print_big 243991793
-path_small 10808345
-path_big 105901350
+# 2026-10-29, pin 9c4cc379 (kanso#2190 to #2195: derivations, std/hmac and
+# std/base64, the deep error box, and the waiting accept): the print rows fall
+# and the path rows rise. print_small 25,551,453 -> 25,550,198 (-1,255),
+# print_big 243,991,793 -> 243,979,845 (-11,948), path_small 10,808,345 ->
+# 10,808,359 (+14), path_big 105,901,350 -> 105,901,364 (+14). Read by CI on
+# kq#221 twice on family 0x19 model 0x1, the host that read the last three
+# pins' rows, and the two runs agree on all four rows. The runtime gained
+# k_accept_waiting, so the binary's layout moved; nothing here isolates which
+# change moved which row.
+print_small 25550198
+print_big 243979845
+path_small 10808359
+path_big 105901364
