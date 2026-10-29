@@ -1079,7 +1079,16 @@
 # pins' rows, and the two runs agree on all four rows. The runtime gained
 # k_accept_waiting, so the binary's layout moved; nothing here isolates which
 # change moved which row.
-print_small 25550198
-print_big 243979845
-path_small 10808359
-path_big 105901364
+# 2026-10-29, pin be41f421 (kanso#2211 to #2244: path_to, play files, the
+# reader that lets other fibers run, the first-hour messages, and the regexp
+# class pass): print_small 25,550,198 -> 25,549,698 (-500), print_big
+# 243,979,845 -> 243,983,633 (+3,788), path_small 10,808,359 -> 10,807,312
+# (-1,047), path_big 105,901,364 -> 105,900,317 (-1,047). Read by CI on kq#223
+# twice, on family 0x1a model 0x2 and on family 0x19 model 0x1, and the two
+# hosts agree on all four rows, so the dispatch does not account for the move.
+# The path rows fall by the same amount, which points at start-up rather than
+# work; nothing here isolates which change moved which row.
+print_small 25549698
+print_big 243983633
+path_small 10807312
+path_big 105900317
