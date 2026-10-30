@@ -1088,7 +1088,16 @@
 # hosts agree on all four rows, so the dispatch does not account for the move.
 # The path rows fall by the same amount, which points at start-up rather than
 # work; nothing here isolates which change moved which row.
-print_small 25549698
-print_big 243983633
-path_small 10807312
-path_big 105900317
+# 2026-10-30, pin 21da9aa2 (kanso#2255 to #2258: the entry described, the
+# files beside it, and net/secured, whose runtime opens OpenSSL by dlopen when
+# a program first secures a connection): print_small 25,549,698 -> 25,551,512
+# (+1,814), print_big 243,983,633 -> 243,988,892 (+5,259), path_small
+# 10,807,312 -> 10,808,900 (+1,588), path_big 105,900,317 -> 105,901,905
+# (+1,588). kq never secures a connection. Every program links the larger
+# runtime, and kanso's own instruction rows rose by about a thousand each with
+# the same change; the two path rows rise by the same amount, which points at
+# start-up rather than work. Read by CI on kq#225 on family 0x1a model 0x2.
+print_small 25551512
+print_big 243988892
+path_small 10808900
+path_big 105901905
