@@ -1106,7 +1106,15 @@
 # move, which fits the scheduler's new per-beat work in a program that writes
 # in many effects; nothing here isolates it from the runtime's new layout.
 # Read by CI on kq#226 on family 0x19 model 0x11.
-print_small 25551802
-print_big 243991260
-path_small 10808877
-path_big 105901883
+# 2026-11-02, pin cac19b88 (kanso#2278 and #2279: a long chain in a fiber
+# runs in a loop, and the scheduler is kept out of k_exec natively):
+# print_small 25,551,802 -> 25,550,901 (-901), print_big 243,991,260 ->
+# 243,982,299 (-8,961), path_small 10,808,877 -> 10,808,879 (+2), path_big
+# 105,901,883 -> 105,901,884 (+1). The print rows fall with output size, which
+# fits a k_exec that no longer carries the scheduler's frame on every effect;
+# nothing here isolates it from layout. Read by CI on kq#227 on family 0x19
+# model 0x11; an Intel run of the same job read the same four rows.
+print_small 25550901
+print_big 243982299
+path_small 10808879
+path_big 105901884
