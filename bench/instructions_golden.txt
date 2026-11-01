@@ -1097,7 +1097,16 @@
 # runtime, and kanso's own instruction rows rose by about a thousand each with
 # the same change; the two path rows rise by the same amount, which points at
 # start-up rather than work. Read by CI on kq#225 on family 0x1a model 0x2.
-print_small 25551512
-print_big 243988892
-path_small 10808900
-path_big 105901905
+# 2026-11-01, pin 337af58d (kanso#2268 and #2270: the scheduler lets a
+# finished group go and stages its roots for the arena's rewind, and a module
+# may name what a derivation writes): print_small 25,551,512 -> 25,551,802
+# (+290), print_big 243,988,892 -> 243,991,260 (+2,368), path_small
+# 10,808,900 -> 10,808,877 (-23), path_big 105,901,905 -> 105,901,883 (-22).
+# The print rows rise with the size of the output and the path rows barely
+# move, which fits the scheduler's new per-beat work in a program that writes
+# in many effects; nothing here isolates it from the runtime's new layout.
+# Read by CI on kq#226 on family 0x19 model 0x11.
+print_small 25551802
+print_big 243991260
+path_small 10808877
+path_big 105901883
