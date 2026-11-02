@@ -1114,7 +1114,15 @@
 # fits a k_exec that no longer carries the scheduler's frame on every effect;
 # nothing here isolates it from layout. Read by CI on kq#227 on family 0x19
 # model 0x11; an Intel run of the same job read the same four rows.
-print_small 25550901
-print_big 243982299
-path_small 10808879
-path_big 105901884
+# 2026-11-02, pin 2660ffad (kanso#2277: std/pool, and the scheduler asks
+# whether a pool moved before each pick): print_small 25,550,901 ->
+# 25,550,721 (-180), print_big 243,982,299 -> 243,980,521 (-1,778),
+# path_small 10,808,879 -> 10,808,891 (+12), path_big 105,901,884 ->
+# 105,901,896 (+12). Nothing here isolates the pool's scheduler check from
+# the runtime's layout as the cause.
+# None of three runs on kq#228 landed on the recorded CPU, and all three read
+# these four rows exactly: AMD 0x1a/0x2, AMD 0x19/0x1 and Intel 0x6/0xad.
+print_small 25550721
+print_big 243980521
+path_small 10808891
+path_big 105901896
