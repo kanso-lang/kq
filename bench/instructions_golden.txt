@@ -1118,8 +1118,8 @@
 # whether a pool moved before each pick): print_small 25,550,901 ->
 # 25,550,721 (-180), print_big 243,982,299 -> 243,980,521 (-1,778),
 # path_small 10,808,879 -> 10,808,891 (+12), path_big 105,901,884 ->
-# 105,901,896 (+12). kq never forks, so the pool's scheduler work does not
-# reach it; these are the runtime's layout, which nothing here isolates.
+# 105,901,896 (+12). Nothing here isolates the pool's scheduler check from
+# the runtime's layout as the cause.
 # None of three runs on kq#228 landed on the recorded CPU, and all three read
 # these four rows exactly: AMD 0x1a/0x2, AMD 0x19/0x1 and Intel 0x6/0xad.
 print_small 25550721
