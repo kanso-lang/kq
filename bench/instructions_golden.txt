@@ -1130,7 +1130,15 @@
 # the size of the output, which fits #2283's check on each write; nothing
 # here isolates it from the runtime's layout. Read by CI on kq#229 on family
 # 0x19 model 0x11.
-print_small 25551251
-print_big 243985698
-path_small 10808906
-path_big 105901911
+# 2026-11-04, pin eb8559b5 (kanso#2301 and #2303: sha256's digest and pbkdf2
+# give their arena back each round; kanso#2300: os/random_bytes, which adds
+# 272 bytes of .text to every binary): print_small 25,551,251 -> 25,550,292
+# (-959), print_big 243,985,698 -> 243,983,497 (-2,201), path_small
+# 10,808,906 -> 10,808,061 (-845), path_big 105,901,911 -> 105,901,066
+# (-845). kq calls neither function, so nothing here isolates the fall from
+# the runtime's layout. Read by CI on kq#230 on AMD 0x1a/0x2 and again on
+# AMD 0x19/0x1, which agreed on all four rows.
+print_small 25550292
+print_big 243983497
+path_small 10808061
+path_big 105901066
