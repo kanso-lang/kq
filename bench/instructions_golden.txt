@@ -1122,7 +1122,15 @@
 # the runtime's layout as the cause.
 # None of three runs on kq#228 landed on the recorded CPU, and all three read
 # these four rows exactly: AMD 0x1a/0x2, AMD 0x19/0x1 and Intel 0x6/0xad.
-print_small 25550721
-print_big 243980521
-path_small 10808891
-path_big 105901896
+# 2026-11-04, pin f787b589 (kanso#2283, #2286, #2287 and #2290: a write to a
+# closed pipe answered as an err, build --wasm, the language server and the
+# usage text): print_small 25,550,721 -> 25,551,251 (+530), print_big
+# 243,980,521 -> 243,985,698 (+5,177), path_small 10,808,891 -> 10,808,906
+# (+15), path_big 105,901,896 -> 105,901,911 (+15). The print rows rise with
+# the size of the output, which fits #2283's check on each write; nothing
+# here isolates it from the runtime's layout. Read by CI on kq#229 on family
+# 0x19 model 0x11.
+print_small 25551251
+print_big 243985698
+path_small 10808906
+path_big 105901911
