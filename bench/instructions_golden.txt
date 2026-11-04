@@ -1138,7 +1138,14 @@
 # (-845). kq calls neither function, so nothing here isolates the fall from
 # the runtime's layout. Read by CI on kq#230 on AMD 0x1a/0x2 and again on
 # AMD 0x19/0x1, which agreed on all four rows.
-print_small 25550292
-print_big 243983497
-path_small 10808061
-path_big 105901066
+# 2026-11-04, pin ba7e3578 (kanso#2311: the builtin table in one place;
+# kanso#2312: native find2 refuses a non-int position, a test in the boxed
+# door): print_small 25,550,292 -> 25,550,173 (-119), print_big 243,983,497 ->
+# 243,982,111 (-1,386), path_small 10,808,061 -> 10,808,026 (-35), path_big
+# 105,901,066 -> 105,901,031 (-35). Nothing here isolates the fall from the
+# runtime's layout. Read by CI on kq#231 on AMD 0x19/0x1 and again on the
+# recorded 0x19/0x11, which agreed on all four rows.
+print_small 25550173
+print_big 243982111
+path_small 10808026
+path_big 105901031
