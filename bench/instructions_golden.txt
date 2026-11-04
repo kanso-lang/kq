@@ -1145,7 +1145,14 @@
 # 105,901,066 -> 105,901,031 (-35). Nothing here isolates the fall from the
 # runtime's layout. Read by CI on kq#231 on AMD 0x19/0x1 and again on the
 # recorded 0x19/0x11, which agreed on all four rows.
-print_small 25550173
-print_big 243982111
-path_small 10808026
-path_big 105901031
+# 2026-11-04, pin 1c46023c (kanso#2314: find2 reads a negative byte by its
+# magnitude; kanso#2315: sha256's rounds carry raw words; kanso#2316: the
+# builtin lists derived from one table): print_small 25,550,173 -> 25,550,166
+# (-7), print_big 243,982,111 -> 243,982,153 (+42), path_small 10,808,026 ->
+# 10,808,068 (+42), path_big 105,901,031 -> 105,901,073 (+42). kq calls
+# none of the three, and a move this size fits the runtime's layout; nothing
+# here isolates a cause. Read by CI on kq#232 on AMD 0x19/0x1.
+print_small 25550166
+print_big 243982153
+path_small 10808068
+path_big 105901073
