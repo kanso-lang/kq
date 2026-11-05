@@ -1152,7 +1152,15 @@
 # 10,808,068 (+42), path_big 105,901,031 -> 105,901,073 (+42). kq calls
 # none of the three, and a move this size fits the runtime's layout; nothing
 # here isolates a cause. Read by CI on kq#232 on AMD 0x19/0x1.
-print_small 25550166
-print_big 243982153
-path_small 10808068
-path_big 105901073
+# 2026-11-05, pin 51d5bb23 (kanso#2317: net/peer; kanso#2321: a call to the
+# shipped list/fold answers what its init and lambda can answer, and a put by
+# a text key never answers none): print_small 25,550,166 -> 25,551,506
+# (+1,340), print_big 243,982,153 -> 243,986,176 (+4,023), path_small
+# 10,808,068 -> 10,809,096 (+1,028), path_big 105,901,073 -> 105,902,101
+# (+1,028). kq's own code did not change, and nothing here separates the
+# rise from the runtime's layout. Read by CI on kq#233 on AMD 0x1a/0x2 and
+# again on 0x19/0x1, which agreed on all four rows.
+print_small 25551506
+print_big 243986176
+path_small 10809096
+path_big 105902101
