@@ -1160,7 +1160,15 @@
 # (+1,028). kq's own code did not change, and nothing here separates the
 # rise from the runtime's layout. Read by CI on kq#233 on AMD 0x1a/0x2 and
 # again on 0x19/0x1, which agreed on all four rows.
-print_small 25551506
-print_big 243986176
-path_small 10809096
-path_big 105902101
+# 2026-11-05, pin ff45cd8b -> 7e20455f (33 kanso merges, among them
+# kanso#2336: a lazy effect handed back unread now runs, which adds a tag
+# test per chain word and step): print_small 25,551,506 -> 25,550,450
+# (-1,056), print_big 243,986,176 -> 243,975,661 (-10,515), path_small
+# 10,809,096 -> 10,809,085 (-11), path_big 105,902,101 -> 105,902,090 (-11).
+# Every row fell, and kq's own code did not change; nothing here separates
+# the fall from the runtime's layout. Read by CI on kq#235 on Intel 0x6/0x6a
+# and again on AMD 0x19/0x1, which agreed on all four rows.
+print_small 25550450
+print_big 243975661
+path_small 10809085
+path_big 105902090
