@@ -1168,7 +1168,20 @@
 # Every row fell, and kq's own code did not change; nothing here separates
 # the fall from the runtime's layout. Read by CI on kq#235 on Intel 0x6/0x6a
 # and again on AMD 0x19/0x1, which agreed on all four rows.
-print_small 25550450
-print_big 243975661
-path_small 10809085
-path_big 105902090
+# 2026-11-10, pin 78cd49bb -> d2e04d9c (83 kanso merges, among them
+# kanso#2413: a beat frees the lazy bindings its frames could not, and
+# kanso#2417: a lazy binding under two holders keeps its slots in tenure):
+# print_small 25,550,450 -> 25,550,872 (+422), print_big 243,975,661 ->
+# 243,988,679 (+13,018), path_small 10,809,085 -> 10,808,217 (-868),
+# path_big 105,902,090 -> 105,901,222 (-868). The path rows fall by one
+# constant and the print rows rise against it. Built with both pins on one
+# container, print_big moved +3,498, and by function that is
+# k_beat_pop_slow +5,206 and k_beat_rewind_slow +405 against memcmp -1,267
+# and strcmp -999: a beat that pops now also laps the registry of held
+# lazy cells, which is what kanso#2413 added to it, and start-up compares
+# fewer strings. kq's own code did not change. Read by CI on kq#241 on AMD
+# 0x19/0x1.
+print_small 25550872
+print_big 243988679
+path_small 10808217
+path_big 105901222
