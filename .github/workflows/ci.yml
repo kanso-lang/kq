@@ -28,7 +28,7 @@ jobs:
           cd /tmp/kanso && git checkout "$(cat $GITHUB_WORKSPACE/.kanso-version)"
           cargo build --release
       - name: jq (the oracle)
-        run: sudo apt-get install -y jq
+        run: sh .github/apt_ready.sh && sudo apt-get install -y jq
       # kanso's cost goldens build with clang 19, and so does kq. The image's
       # clang is 18, whose release link of kq differs from 19's: since
       # kanso#1898 it links without `deadargelim`, which on 18 costs path_small
