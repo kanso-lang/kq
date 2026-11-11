@@ -1187,7 +1187,7 @@
 # print_big 243,988,679 -> 243,984,873 (-3,806), path_small 10,808,217 ->
 # 10,808,205 (-12), path_big 105,901,222 -> 105,901,210 (-12). Every row
 # fell, and kq's own code did not change; nothing here separates the fall
-# from the runtime's layout. Read by CI on kq#242 on Intel 0x6/0xcf.
+XX
 print_small 25550566
 print_big 243984873
 path_small 10808205
