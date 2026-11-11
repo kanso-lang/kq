@@ -1181,7 +1181,15 @@
 # lazy cells, which is what kanso#2413 added to it, and start-up compares
 # fewer strings. kq's own code did not change. Read by CI on kq#241 on AMD
 # 0x19/0x1.
-print_small 25550872
-print_big 243988679
-path_small 10808217
-path_big 105901222
+# 2026-11-11, pin d2e04d9c -> 4e4d28bb (42 kanso merges, among them
+# kanso#2451: the library is read as far as the program reaches, and
+# text/replace is a kernel): print_small 25,550,872 -> 25,550,566 (-306),
+# print_big 243,988,679 -> 243,984,873 (-3,806), path_small 10,808,217 ->
+# 10,808,205 (-12), path_big 105,901,222 -> 105,901,210 (-12). Every row
+# fell, and kq's own code did not change; nothing here separates the fall
+# from the runtime's layout. Read by CI on kq#242 on Intel 0x6/0xcf and
+# again on AMD 0x19/0x1, which agreed on all four rows.
+print_small 25550566
+print_big 243984873
+path_small 10808205
+path_big 105901210
