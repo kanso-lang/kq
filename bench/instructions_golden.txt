@@ -8,7 +8,7 @@
 # that nothing enforced: kanso pasted a container's numbers over its runner's
 # on 2026-08-23 on the strength of a diff, and two ubuntu 24.04 boxes one glibc
 # revision apart differ by more than most of what this vein catches.
-# measured-on glibc=2.39-0ubuntu8.9
+# measured-on glibc=2.39-0ubuntu8.12
 #
 # The glibc revision is only half the host. Its ifunc resolvers pick memcpy,
 # memcmp and strlen by CPU feature at load time, so the same libc on other
@@ -1189,7 +1189,16 @@
 # fell, and kq's own code did not change; nothing here separates the fall
 # from the runtime's layout. Read by CI on kq#242 on Intel 0x6/0xcf and
 # again on AMD 0x19/0x1, which agreed on all four rows.
-print_small 25550566
-print_big 243984873
-path_small 10808205
-path_big 105901210
+# 2026-11-12, pin a759d16b -> bacb2e2d (seven kanso merges, among them
+# kanso#2486 and kanso#2487, none in code kq calls), and the runner image
+# moved from glibc 2.39-0ubuntu8.9 to 8.12, so the measured-on line moved
+# with these rows: every row fell by exactly one, print_small 25,550,566 ->
+# 25,550,565, print_big 243,984,873 -> 243,984,872, path_small 10,808,205 ->
+# 10,808,204, path_big 105,901,210 -> 105,901,209. Two things changed at
+# once and nothing here separates them. kanso's own work rows fell by the
+# same one instruction when its goldens moved to 8.12 (kanso#2493). Read by
+# CI on kq#245 on AMD 0x19/0x11.
+print_small 25550565
+print_big 243984872
+path_small 10808204
+path_big 105901209
