@@ -1198,7 +1198,7 @@
 # once and nothing here separates them. kanso's own work rows fell by the
 # same one instruction when its goldens moved to 8.12 (kanso#2493). Read by
 # CI on kq#245 on AMD 0x19/0x11.
-print_small 25550565
-print_big 243984872
-path_small 10808204
-path_big 105901209
+print_small 25400488
+print_big 243834795
+path_small 10658113
+path_big 105751118
