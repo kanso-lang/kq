@@ -153,8 +153,14 @@ for row in ".:bench/large.json:print_small" \
            ".[0].k0_30:bench/large.json:path_small" \
            ".[0].k0_30:/tmp/kq_big.json:path_big"; do
   q=${row%%:*}; rest=${row#*:}; f=${rest%%:*}; name=${rest#*:}
+  # Counted from libc's entry, past the dynamic loader. Before main the loader
+  # searches /etc/ld.so.cache, whose cost is the runner image's: two builds of
+  # one ubuntu-24.04 image put every row here 130 apart on 2026-11-18, all of
+  # it in _dl_cache_libcmp and _dl_load_cache_lookup (kanso's
+  # scripts/gates/past_the_loader.sh has the measurement).
   env -i PATH=/usr/bin:/bin \
-    valgrind --tool=callgrind --callgrind-out-file=/tmp/cg.$name "$KQ" "$q" "$f" \
+    valgrind --tool=callgrind --toggle-collect='__libc_start_main*' \
+    --callgrind-out-file=/tmp/cg.$name "$KQ" "$q" "$f" \
     >/dev/null 2>/tmp/ir.$name
   printf '%s %s\n' "$name" "$(grep -o 'I   refs:.*' /tmp/ir.$name | tr -dc 0-9)"
 done > work.txt
