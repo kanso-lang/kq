@@ -11,7 +11,7 @@ jobs:
         include:
           - os: macos-14
             target: macos-arm64
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             target: linux-x86_64
     runs-on: ${{ matrix.os }}
     steps:
@@ -31,7 +31,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${{ github.ref_name }}" kq-*.tar.gz kq-*.sha256 --clobber
   create-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - env:

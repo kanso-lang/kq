@@ -10,8 +10,13 @@ on:
   # that would have.
   workflow_dispatch:
 jobs:
+  # THE RUNNER IMAGE IS PINNED. bench/instructions_golden.txt was measured on
+  # ubuntu-24.04 (its measured-on line names that image's glibc), and
+  # `ubuntu-latest` moved to ubuntu-26.04 by 2026-11-18, bringing glibc 2.43
+  # and clang 19.1.7. A new image arrives in a pull request that moves every
+  # `runs-on` here and re-sits the rows, as kanso does (kanso#2505).
   spec:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -79,7 +84,7 @@ jobs:
     # regenerates and refuses a mismatch. The referee does not write the
     # score.
     needs: spec
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
